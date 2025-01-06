@@ -17,11 +17,43 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  List<dynamic>? usersList;
+  late final role;
+
+  // Fetch users for the 'Assigned To' dropdown
+  Future<void> _fetchUsers() async {
+    try {
+      final response = await http.get(Uri.parse('https://gms.alihamza.me/gms/get_users.php'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success']) {
+          usersList = data['data'];
+
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error loading users list.')),
+          );
+
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading users list.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
 
   Future<void> _login() async {
+    await _fetchUsers();
+
     try {
       final response = await http.post(
-        Uri.parse("https://gms.alihamza.me/login.php"),
+        Uri.parse("https://gms.alihamza.me/gms/login.php"),
         body: jsonEncode({
           'email': _emailController.text,
           'password': _passwordController.text,
@@ -33,9 +65,24 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = json.decode(response.body);
 
         if (responseData['success']) {
+          // Correct loop condition to iterate through usersList
+          for (var i = 0; i < usersList!.length; i++) {
+
+            // Check if the email matches the user's email
+            if (usersList?[i]['email'] == _emailController.text) {
+              role = usersList?[i]['role'];
+              print("Role: ${usersList?[i]['role']}");
+              // You can handle the user-specific logic here
+            }
+          }
+          print(response.body);
+
           // Save the login status
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setBool('isLoggedIn', true);
+          prefs.setString('userEmail', _emailController.text);
+          prefs.setString('role', role);
+
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Login successful")),
@@ -60,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SnackBar(content: Text("Error: ${e.toString()}")),
       );
     }
+
   }
 
   @override

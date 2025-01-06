@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grievance_system/screens/loginScreen.dart';
+import 'package:grievance_system/screens/usersScreen.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -36,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Stream<List<Map<String, dynamic>>> fetchGrievancesStream() async* {
     while (true) {
       final response = await http
-          .get(Uri.parse('https://gms.alihamza.me/get_grievances.php'));
+          .get(Uri.parse('https://gms.alihamza.me/gms/get_grievances.php'));
 
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> grievances =
@@ -55,6 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('userEmail'); // Remove user email from SharedPreferences
+    await prefs.remove('isLoggedIn');
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -83,46 +85,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<List<Map<String, dynamic>>>(
-        stream: _grievancesStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
+      body: Column(
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => UsersScreen()));
+              },
+              child: Text("Users")),
+          Expanded(child: StreamBuilder<List<Map<String, dynamic>>>(
+            stream: _grievancesStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
 
-          final grievances = snapshot.data ?? [];
+              final grievances = snapshot.data ?? [];
 
-          return ListView.builder(
-            itemCount: grievances.length,
-            itemBuilder: (context, index) {
-              final grievance = grievances[index];
-              return Card(
-                child: ListTile(
-                  title: Text(grievance['title'] ?? 'No Title'),
-                  subtitle: Text(
-                    'Status: ${grievance['status'] ?? 'No Status'}\nSubmitted By: ${grievance['submitted_by'] ?? 'Unknown'}',
-                  ),
-                  trailing: Text(
-                    'Assigned To: ${grievance['assigned_to'] ?? 'Not Assigned'}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => GrievanceDetailsScreen(
-                          grievanceId:
-                              grievance['id']), // Navigate to grievance details
+              return ListView.builder(
+                itemCount: grievances.length,
+                itemBuilder: (context, index) {
+                  final grievance = grievances[index];
+                  return Card(
+                    child: ListTile(
+                      title: Text(grievance['title'] ?? 'No Title'),
+                      subtitle: Text(
+                        'Status: ${grievance['status'] ?? 'No Status'}\nSubmitted By: ${grievance['submitted_by'] ?? 'Unknown'}',
+                      ),
+                      trailing: Text(
+                        'Assigned To: ${grievance['assigned_to'] ?? 'Not Assigned'}',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onTap: ()
+                      {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => GrievanceDetailsScreen(
+                                grievanceId: grievance[
+                                'id']), // Navigate to grievance details
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                ),
+                  );
+                },
               );
             },
-          );
-        },
+          ))
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

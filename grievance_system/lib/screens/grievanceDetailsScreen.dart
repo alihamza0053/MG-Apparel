@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class GrievanceDetailsScreen extends StatefulWidget {
   final String grievanceId;
@@ -16,38 +18,50 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
   Map<String, dynamic>? grievanceData;
   String? selectedStatus;
   String? selectedAssignee;
-  bool isAdmin = false;
+  String role = "";
   bool isAssigned = false;
   List<String> usersList = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchGrievance();
     _fetchUsers();
-    _checkUserRole();
+    _role();
+    _fetchGrievance();
   }
 
+  // is admin SharedPreferences
+  Future<void> _role() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      role = prefs.getString('role') ?? "";
+    });
+  }
   // Fetch grievance data using grievance_details.php
   Future<void> _fetchGrievance() async {
     try {
       final response = await http.post(
-        Uri.parse('https://gms.alihamza.me/grievance_details.php'),
+        Uri.parse('https://gms.alihamza.me/gms/grievance_details.php'),
         body: {'id': widget.grievanceId},
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
+          print(data['data']);
           setState(() {
             grievanceData = data['data'];
             selectedStatus = grievanceData!['status'];
-            selectedAssignee = grievanceData!['assignedTo'] ?? null;
+            selectedAssignee = grievanceData!['assigned_to'];
+            print(grievanceData!['assigned_to']);
           });
+
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Grievance not found.')),
           );
+
+          print(response.body);
           Navigator.pop(context);
         }
       } else {
@@ -65,11 +79,12 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
   // Fetch users for the 'Assigned To' dropdown
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse('https://gms.alihamza.me/get_users.php'));
+      final response = await http.get(Uri.parse('https://gms.alihamza.me/gms/get_users.php'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
+          print(data['data']);
           setState(() {
             usersList = List<String>.from(data['data'].map((user) => user['email']));
           });
@@ -80,7 +95,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error loading users list1.')),
           );
-          print(response.body);
+          print(usersList);
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,14 +109,43 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
     }
   }
 
-  // Check if the current user is admin or assigned to the grievance
-  Future<void> _checkUserRole() async {
-    final currentUserEmail = 'alihamza00053@gmail.com'; // Replace with actual user email if needed
-    setState(() {
-      isAdmin = currentUserEmail == 'alihamza00053@gmail.com'; // Replace with actual admin check
-      isAssigned = grievanceData?['assignedTo']?.trim() == currentUserEmail.trim();
-    });
+  // // Check if the current user is admin or assigned to the grievance
+  // Future<void> _checkUserRole() async {
+  //   final currentUserEmail = 'alihamza00053@gmail.com'; // Replace with actual user email if needed
+  //   setState(() {
+  //     isAdmin = currentUserEmail == 'alihamza00053@gmail.com'; // Replace with actual admin check
+  //     isAssigned = grievanceData?['assignedTo']?.trim() == currentUserEmail.trim();
+  //   });
+  // }
+
+  Future<bool> updateGrievance(String grievanceId, String assignedTo, String status) async {
+    try {
+      final response = await http.post(
+        Uri.parse('https://gms.alihamza.me/gms/update_grievance.php'),
+        body: {
+          'grievanceId': grievanceId,
+          'assignedTo': assignedTo,
+          'status': status,
+        },
+      );
+
+      print(response.body); // Log the server's response for debugging.
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        Navigator.pop(context);
+        return data['success'] ?? false;
+      } else {
+        print("HTTP Error: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      print("Exception occurred: $e");
+      return false;
+    }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -121,14 +165,76 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             SizedBox(height: 10),
             Text('Description: ${grievanceData!['description']}'),
             SizedBox(height: 10),
+            role=="admin" ?
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        'Status: ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(width: 10),
+                      // Status dropdown
+                      DropdownButton<String>(
+                        value: selectedStatus,
+                        items: ['Pending', 'In Progress', 'Resolved', 'Closed']
+                            .map((status) => DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(status),
+                        ))
+                            .toList(),
+                        onChanged: (newStatus) {
+                          if (newStatus != null) {
+                            setState(() {
+                              selectedStatus = newStatus;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        'Assigned To: ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(width: 10),
+                      DropdownButton<String>(
+                        value: usersList.contains(selectedAssignee) ? selectedAssignee : null,
+                        hint: Text('Select Assignee'),
+                        items: usersList
+                            .map((assigned) => DropdownMenuItem<String>(
+                          value: assigned,
+                          child: Text(assigned),
+                        ))
+                            .toList(),
+                        onChanged: (newAssign) {
+                          if (newAssign != null) {
+                            setState(() {
+                              selectedAssignee = newAssign;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+
+                ],
+              ) :
             Text('Status: ${grievanceData!['status']}'),
             SizedBox(height: 10),
-            Text('Submission Date: ${grievanceData!['submissionDate']}'),
+            Text('Submission Date: ${grievanceData!['created_at']}'),
             SizedBox(height: 10),
             Text('Assigned To: ${grievanceData!['assignedTo'] ?? 'Not assigned yet'}'),
             SizedBox(height: 10),
-            Text('Last Updated: ${grievanceData!['lastUpdatedDate']}'),
+            Text('Last Updated: ${grievanceData!['updated_at']}'),
             SizedBox(height: 20),
+            if (role=="admin")
+              ElevatedButton(onPressed: (){
+                updateGrievance(widget.grievanceId ,selectedAssignee.toString(), selectedStatus.toString());
+              }, child: Text("Update"))
           ],
         ),
       ),
