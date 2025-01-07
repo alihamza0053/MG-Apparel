@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fileViewerScreen.dart';
+
 
 class GrievanceDetailsScreen extends StatefulWidget {
   final String grievanceId;
@@ -165,65 +167,82 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             SizedBox(height: 10),
             Text('Description: ${grievanceData!['description']}'),
             SizedBox(height: 10),
+            DropdownButton<String>(
+              value: selectedStatus,
+              items: ['Pending', 'In Progress', 'Resolved', 'Closed']
+                  .map((status) => DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              ))
+                  .toList(),
+              onChanged: (newStatus) {
+                if (newStatus != null) {
+                  setState(() {
+                    selectedStatus = newStatus;
+                  });
+                }
+              },
+            ),
+            SizedBox(height: 10),
             role=="hr" || role=="admin" ?
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        'Status: ',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(width: 10),
-                      // Status dropdown
-                      DropdownButton<String>(
-                        value: selectedStatus,
-                        items: ['Pending', 'In Progress', 'Resolved', 'Closed']
-                            .map((status) => DropdownMenuItem<String>(
-                          value: status,
-                          child: Text(status),
-                        ))
-                            .toList(),
-                        onChanged: (newStatus) {
-                          if (newStatus != null) {
-                            setState(() {
-                              selectedStatus = newStatus;
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                  role == "admin" ?
-                  Row(
-                    children: [
-                      Text(
-                        'Assigned To: ',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(width: 10),
-                      DropdownButton<String>(
-                        value: usersList.contains(selectedAssignee) ? selectedAssignee : null,
-                        hint: Text('Select Assignee'),
-                        items: usersList
-                            .map((assigned) => DropdownMenuItem<String>(
-                          value: assigned,
-                          child: Text(assigned),
-                        ))
-                            .toList(),
-                        onChanged: (newAssign) {
-                          if (newAssign != null) {
-                            setState(() {
-                              selectedAssignee = newAssign;
-                            });
-                          }
-                        },
-                      ),
-                    ],
-                  ) : SizedBox(),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Status: ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(width: 10),
+                    // Status dropdown
+                    DropdownButton<String>(
+                      value: selectedStatus,
+                      items: ['Pending', 'In Progress', 'Resolved', 'Closed']
+                          .map((status) => DropdownMenuItem<String>(
+                        value: status,
+                        child: Text(status),
+                      ))
+                          .toList(),
+                      onChanged: (newStatus) {
+                        if (newStatus != null) {
+                          setState(() {
+                            selectedStatus = newStatus;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                role == "admin" ?
+                Row(
+                  children: [
+                    Text(
+                      'Assigned To: ',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(width: 10),
+                    DropdownButton<String>(
+                      value: usersList.contains(selectedAssignee) ? selectedAssignee : null,
+                      hint: Text('Select Assignee'),
+                      items: usersList
+                          .map((assigned) => DropdownMenuItem<String>(
+                        value: assigned,
+                        child: Text(assigned),
+                      ))
+                          .toList(),
+                      onChanged: (newAssign) {
+                        if (newAssign != null) {
+                          setState(() {
+                            selectedAssignee = newAssign;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ) : SizedBox(),
 
-                ],
-              ) :
+              ],
+            ) :
             Text('Status: ${grievanceData!['status']}'),
             SizedBox(height: 10),
             Text('Submission Date: ${grievanceData!['created_at']}'),
@@ -232,10 +251,30 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             SizedBox(height: 10),
             Text('Last Updated: ${grievanceData!['updated_at']}'),
             SizedBox(height: 20),
+
+            if (grievanceData?['file_url'] != null)
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          FileViewerScreen(fileUrl: grievanceData!['file_path']),
+                    ),
+                  );
+                },
+                child: Text(
+                  'File: Click to View',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
             if (role=="admin" || role == "hr")
               ElevatedButton(onPressed: (){
                 updateGrievance(widget.grievanceId ,selectedAssignee.toString(), selectedStatus.toString());
-              }, child: Text("Update"))
+              }, child: Text("Update")),
           ],
         ),
       ),
