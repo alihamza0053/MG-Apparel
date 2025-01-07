@@ -165,7 +165,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             SizedBox(height: 10),
             Text('Description: ${grievanceData!['description']}'),
             SizedBox(height: 10),
-            role=="admin" ?
+            role=="hr" || role=="admin" ?
               Column(
                 children: [
                   Row(
@@ -194,6 +194,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
                       ),
                     ],
                   ),
+                  role == "admin" ?
                   Row(
                     children: [
                       Text(
@@ -219,7 +220,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
                         },
                       ),
                     ],
-                  ),
+                  ) : SizedBox(),
 
                 ],
               ) :
@@ -227,11 +228,11 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             SizedBox(height: 10),
             Text('Submission Date: ${grievanceData!['created_at']}'),
             SizedBox(height: 10),
-            Text('Assigned To: ${grievanceData!['assignedTo'] ?? 'Not assigned yet'}'),
+            Text('Assigned To: ${grievanceData!['assigned_to'] ?? 'Not assigned yet'}'),
             SizedBox(height: 10),
             Text('Last Updated: ${grievanceData!['updated_at']}'),
             SizedBox(height: 20),
-            if (role=="admin")
+            if (role=="admin" || role == "hr")
               ElevatedButton(onPressed: (){
                 updateGrievance(widget.grievanceId ,selectedAssignee.toString(), selectedStatus.toString());
               }, child: Text("Update"))

@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   List<dynamic>? usersList;
-  late final role;
+  String? role;
 
   // Fetch users for the 'Assigned To' dropdown
   Future<void> _fetchUsers() async {
@@ -81,11 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setBool('isLoggedIn', true);
           prefs.setString('userEmail', _emailController.text);
-          prefs.setString('role', role);
+          prefs.setString('role', role!);
 
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Login successful")),
+            SnackBar(content: Text("Login successful $role")),
           );
 
           Navigator.pushReplacement(

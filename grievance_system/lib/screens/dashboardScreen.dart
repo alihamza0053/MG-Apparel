@@ -16,20 +16,22 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late Stream<List<Map<String, dynamic>>> _grievancesStream;
-  late String userEmail;
+  String userEmail = ''; // Default value to avoid initialization issues
+  String role = '';      // Default value to avoid initialization issues
 
   @override
   void initState() {
     super.initState();
-    _loadUserEmail(); // Load the user's email from SharedPreferences
+    _loadUserDetails(); // Load user email and role
     _grievancesStream = fetchGrievancesStream();
   }
 
-  // Load the user email from SharedPreferences
-  Future<void> _loadUserEmail() async {
+  // Load the user email and role from SharedPreferences
+  Future<void> _loadUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       userEmail = prefs.getString('userEmail') ?? '';
+      role = prefs.getString('role') ?? '';
     });
   }
 
@@ -41,14 +43,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> grievances =
-            List<Map<String, dynamic>>.from(json.decode(response.body)['data']);
+        List<Map<String, dynamic>>.from(json.decode(response.body)['data']);
         yield grievances; // Yield data whenever there's a new grievance
       } else {
         throw Exception('Failed to load grievances');
       }
 
-      await Future.delayed(Duration(
-          seconds: 5)); // Re-fetch every 5 seconds to check for new data
+      await Future.delayed(Duration(seconds: 5)); // Re-fetch every 5 seconds
     }
   }
 
@@ -59,8 +60,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     await prefs.remove('isLoggedIn');
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-          builder: (_) => LoginScreen()), // Navigate back to LoginPage
+      MaterialPageRoute(builder: (_) => LoginScreen()), // Navigate back to LoginPage
     );
   }
 
@@ -74,69 +74,83 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(Icons.notifications),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(
-                  builder: (_) => LoginScreen()), // Navigate to LoginPage
+              MaterialPageRoute(builder: (_) => LoginScreen()), // Navigate to LoginPage
             ),
           ),
           IconButton(
             icon: Icon(Icons.logout),
-            onPressed:
-                _logout, // Call logout method when logout icon is pressed
+            onPressed: _logout, // Call logout method when logout icon is pressed
           ),
         ],
       ),
       body: Column(
         children: [
-          ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UsersScreen()));
-              },
-              child: Text("Users")),
-          Expanded(child: StreamBuilder<List<Map<String, dynamic>>>(
-            stream: _grievancesStream,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-
-              if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              }
-
-              final grievances = snapshot.data ?? [];
-
-              return ListView.builder(
-                itemCount: grievances.length,
-                itemBuilder: (context, index) {
-                  final grievance = grievances[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(grievance['title'] ?? 'No Title'),
-                      subtitle: Text(
-                        'Status: ${grievance['status'] ?? 'No Status'}\nSubmitted By: ${grievance['submitted_by'] ?? 'Unknown'}',
-                      ),
-                      trailing: Text(
-                        'Assigned To: ${grievance['assigned_to'] ?? 'Not Assigned'}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      onTap: ()
-                      {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => GrievanceDetailsScreen(
-                                grievanceId: grievance[
-                                'id']), // Navigate to grievance details
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
+          // Show "Users" button only for admin role
+          role == 'admin'
+              ? ElevatedButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UsersScreen()));
             },
-          ))
+            child: Text("Users"),
+          )
+              : SizedBox(),
+          Expanded(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: _grievancesStream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                // Fetch grievances data
+                final allGrievances = snapshot.data ?? [];
+
+                // Apply filtering logic
+                final grievances = role == 'admin'
+                    ? allGrievances // Show all grievances for admin
+                    : allGrievances.where((grievance) {
+                  final assignedTo = grievance['assigned_to'] ?? '';
+                  final submittedBy = grievance['submitted_by'] ?? '';
+                  return assignedTo == userEmail ||
+                      submittedBy == userEmail;
+                }).toList();
+
+                return ListView.builder(
+                  itemCount: grievances.length,
+                  itemBuilder: (context, index) {
+                    final grievance = grievances[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text(grievance['title'] ?? 'No Title'),
+                        subtitle: Text(
+                          'Status: ${grievance['status'] ?? 'No Status'}\nSubmitted By: ${grievance['submitted_by'] ?? 'Unknown'}',
+                        ),
+                        trailing: Text(
+                          'Assigned To: ${grievance['assigned_to'] ?? 'Not Assigned'}',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => GrievanceDetailsScreen(
+                                  grievanceId: grievance[
+                                  'id']), // Navigate to grievance details
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -145,8 +159,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) =>
-                    NewGrievanceScreen()), // Navigate to NewGrievanceScreen
+                builder: (_) => NewGrievanceScreen()), // Navigate to NewGrievanceScreen
           );
           // If grievance is submitted, refresh the list
           if (result == true) {
