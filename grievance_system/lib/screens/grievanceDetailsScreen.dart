@@ -43,7 +43,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
   Future<void> _fetchGrievance() async {
     try {
       final response = await http.post(
-        Uri.parse('https://gms.alihamza.me/gms/grievance_details.php'),
+        Uri.parse('https://groundup.pk/gms/grievance_details.php'),
         body: {'id': widget.grievanceId},
       );
 
@@ -81,7 +81,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
   // Fetch users for the 'Assigned To' dropdown
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse('https://gms.alihamza.me/gms/get_users.php'));
+      final response = await http.get(Uri.parse('https://groundup.pk/gms/get_users.php'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -123,7 +123,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
   Future<bool> updateGrievance(String grievanceId, String assignedTo, String status) async {
     try {
       final response = await http.post(
-        Uri.parse('https://gms.alihamza.me/gms/update_grievance.php'),
+        Uri.parse('https://groundup.pk/gms/update_grievance.php'),
         body: {
           'grievanceId': grievanceId,
           'assignedTo': assignedTo,
@@ -166,23 +166,10 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
             ),
             SizedBox(height: 10),
             Text('Description: ${grievanceData!['description']}'),
+
             SizedBox(height: 10),
-            DropdownButton<String>(
-              value: selectedStatus,
-              items: ['Pending', 'In Progress', 'Resolved', 'Closed']
-                  .map((status) => DropdownMenuItem<String>(
-                value: status,
-                child: Text(status),
-              ))
-                  .toList(),
-              onChanged: (newStatus) {
-                if (newStatus != null) {
-                  setState(() {
-                    selectedStatus = newStatus;
-                  });
-                }
-              },
-            ),
+            Text('Category: ${grievanceData!['category']}'),
+
             SizedBox(height: 10),
             role=="hr" || role=="admin" ?
             Column(

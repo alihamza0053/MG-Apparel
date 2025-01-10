@@ -24,7 +24,7 @@ class _UsersScreenState extends State<UsersScreen> {
   Stream<List<Map<String, dynamic>>> fetchUsersData() async* {
     while (true) {
       final response = await http.get(
-        Uri.parse('https://gms.alihamza.me/gms/get_users.php'),
+        Uri.parse('https://groundup.pk/gms/get_users.php'),
       );
 
       if (response.statusCode == 200) {
@@ -45,7 +45,7 @@ class _UsersScreenState extends State<UsersScreen> {
   Future<void> updateUserRole(String email, String newRole) async {
     try {
       final response = await http.post(
-        Uri.parse('https://gms.alihamza.me/gms/update_user_role.php'),
+        Uri.parse('https://groundup.pk/gms/update_user_role.php'),
         body: {
           'email': email,
           'role': newRole,
@@ -115,6 +115,7 @@ class _UsersScreenState extends State<UsersScreen> {
                         setState(() {
                           isLoading = true;
                           selectedRole = newRole;
+                          print(newRole);
                         });
                         await updateUserRole(user['email'], newRole);
                       }

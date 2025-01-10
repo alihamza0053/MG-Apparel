@@ -15,10 +15,14 @@ class NewGrievanceScreen extends StatefulWidget {
 class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _othersController = TextEditingController();
+
+  String? selectedCategory;
   String userEmail = "";
   File? selectedFile; // For Android/iOS
   Uint8List? webSelectedFile; // For Web
   String? fileName;
+  bool othersField = false;
 
   @override
   void initState() {
@@ -92,7 +96,7 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse("https://gms.alihamza.me/gms/submit_grievance.php"),
+        Uri.parse("https://groundup.pk/gms/submit_grievance.php"),
       );
 
       request.fields['title'] = _titleController.text.trim();
@@ -100,6 +104,7 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
       request.fields['status'] = 'Pending';
       request.fields['submittedBy'] = userEmail;
       request.fields['assignedTo'] = "Not Assigned";
+      request.fields['category'] = selectedCategory!;
 
       // Print request fields for debugging
       print("Request Fields: ${request.fields}");
@@ -122,15 +127,25 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
       var response = await request.send();
 
       if (response.statusCode == 200) {
-        var responseData = json.decode(await response.stream.bytesToString());
-        if (responseData['success']) {
+        var responseBody = await response.stream.bytesToString();
+        print("Response Body: $responseBody"); // Log the response for debugging
+
+        try {
+          var responseData = json.decode(responseBody);
+          if (responseData['success']) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Grievance submitted successfully')),
+            );
+            Navigator.pop(context, true); // Return true to indicate success
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error: ${responseData['message']}')),
+            );
+          }
+        } catch (jsonError) {
+          print("JSON Decoding Error: $jsonError");
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Grievance submitted successfully')),
-          );
-          Navigator.pop(context, true); // Return true to indicate success
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: ${responseData['message']}')),
+            SnackBar(content: Text('Error decoding server response')),
           );
         }
       } else {
@@ -138,6 +153,7 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
           SnackBar(content: Text('Server error: ${response.statusCode}')),
         );
       }
+
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
@@ -155,13 +171,45 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
           children: [
             TextField(
               controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              decoration: InputDecoration(labelText: 'Title*'),
             ),
+
             TextField(
               controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
+              decoration: InputDecoration(labelText: 'Description*'),
               maxLines: 3,
             ),
+            SizedBox(height: 20),
+
+            othersField ?
+            TextField(
+              controller: _othersController,
+              decoration: InputDecoration(labelText: 'Other Category*'),
+            ) : SizedBox(),
+            SizedBox(height: 20),
+            DropdownButton<String>(
+              value: selectedCategory,
+              hint: Text("Select Category"),
+              items: ['Discrimination', 'Pay and Benefits', 'Work Conditions ', 'Workplace Harassment', 'Others']
+                  .map((status) => DropdownMenuItem<String>(
+                value: status,
+                child: Text(status),
+              ))
+                  .toList(),
+              onChanged: (newCategory) {
+                if (newCategory != null) {
+                  setState(() {
+                    selectedCategory = newCategory;
+                    if(newCategory == 'Others'){
+                      othersField = true;
+                    }else{
+                      othersField = false;
+                    }
+                  });
+                }
+              },
+            ),
+
             SizedBox(height: 20),
             ElevatedButton.icon(
               icon: Icon(Icons.attach_file),

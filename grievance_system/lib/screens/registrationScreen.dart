@@ -21,7 +21,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future<void> _register() async {
     try {
       final response = await http.post(
-        Uri.parse('https://gms.alihamza.me/gms/register.php'),
+        Uri.parse('https://groundup.pk/gms/register.php'),
         headers: {
           'Content-Type': 'application/json', // Make sure content type is JSON
         },

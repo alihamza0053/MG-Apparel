@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // Fetch users for the 'Assigned To' dropdown
   Future<void> _fetchUsers() async {
     try {
-      final response = await http.get(Uri.parse('https://gms.alihamza.me/gms/get_users.php'));
+      final response = await http.get(Uri.parse('https://groundup.pk/gms/get_users.php'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse("https://gms.alihamza.me/gms/login.php"),
+        Uri.parse("https://groundup.pk/gms/login.php"),
         body: jsonEncode({
           'email': _emailController.text,
           'password': _passwordController.text,
@@ -77,6 +77,11 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           print(response.body);
 
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Login successful $role")),
+          );
+
           // Save the login status
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setBool('isLoggedIn', true);
@@ -84,9 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
           prefs.setString('role', role!);
 
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Login successful $role")),
-          );
 
           Navigator.pushReplacement(
             context,

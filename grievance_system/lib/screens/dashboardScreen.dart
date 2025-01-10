@@ -39,8 +39,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Stream<List<Map<String, dynamic>>> fetchGrievancesStream() async* {
     while (true) {
       final response = await http
-          .get(Uri.parse('https://gms.alihamza.me/gms/get_grievances.php'));
+          .get(Uri.parse('https://groundup.pk/gms/get_grievances.php'));
 
+      print('Content-Length: ${response.headers['content-length']}');
       if (response.statusCode == 200) {
         List<Map<String, dynamic>> grievances =
         List<Map<String, dynamic>>.from(json.decode(response.body)['data']);
@@ -48,6 +49,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       } else {
         throw Exception('Failed to load grievances');
       }
+
+
 
       await Future.delayed(Duration(seconds: 5)); // Re-fetch every 5 seconds
     }
@@ -171,3 +174,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 }
+
+
