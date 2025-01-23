@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grievance_system/screens/loginScreen.dart';
+import 'package:grievance_system/theme/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -15,7 +17,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final _passwordController = TextEditingController();
   final _departmentController = TextEditingController();
   String? _selectedRole;
-  List<String> roles = ['Admin', 'HR', 'Employee'];
+  List<String> roles = ['HR', 'Employee'];
 
   // This function is for registration
   Future<void> _register() async {
@@ -63,51 +65,83 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+      backgroundColor: AppColors.accentColor,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(),
+          Container(
+            width: 500,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10)
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _departmentController,
-              decoration: InputDecoration(labelText: 'Department'),
-            ),
-            // Role Radio Buttons
-            Column(
-              children: [
-                Row(
-                  children: roles.map((role) {
-                    return Row(
-                      children: [
-                        Radio<String>(
-                          value: role,
-                          groupValue: _selectedRole,
-                          onChanged: (String? value) {
-                            setState(() {
-                              _selectedRole = value!;
-                            });
-                          },
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text("GMS Registration",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                  SizedBox(height: 20,),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                  ),
+                  SizedBox(height: 20,),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 20,),
+                  TextField(
+                    controller: _departmentController,
+                    decoration: InputDecoration(labelText: 'Department'),
+                  ),
+                  // Role Radio Buttons
+                  SizedBox(height: 20,),
+                  Column(
+                    children: [
+                      Row(
+                        children: roles.map((role) {
+                          return Row(
+                            children: [
+                              Radio<String>(
+                                value: role,
+                                groupValue: _selectedRole,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    _selectedRole = value!;
+                                  });
+                                },
+                              ),
+                              Text(role),
+                            ],
+                          );
+                        }).toList(),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => LoginScreen()),
                         ),
-                        Text(role),
-                      ],
-                    );
-                  }).toList(),
-                )
-              ],
+                        child: Text('    Login    ', style: TextStyle(color: Colors.black),),
+                      ),
+                      ElevatedButton(onPressed: _register, child: Text('Register',)),
+
+                    ],
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: _register, child: Text('Register')),
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

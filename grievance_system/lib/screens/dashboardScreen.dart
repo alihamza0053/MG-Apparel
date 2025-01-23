@@ -75,10 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: Icon(Icons.notifications),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => LoginScreen()), // Navigate to LoginPage
-            ),
+            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Coming Soon"))),
           ),
           IconButton(
             icon: Icon(Icons.logout),
@@ -119,10 +116,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     : allGrievances.where((grievance) {
                   final assignedTo = grievance['assigned_to'] ?? '';
                   final submittedBy = grievance['submitted_by'] ?? '';
+                  print(grievance['submitted_by']);
                   return assignedTo == userEmail ||
                       submittedBy == userEmail;
                 }).toList();
-
+print(grievances);
                 return ListView.builder(
                   itemCount: grievances.length,
                   itemBuilder: (context, index) {

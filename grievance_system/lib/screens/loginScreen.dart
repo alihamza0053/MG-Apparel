@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:grievance_system/components/neo_box.dart';
 import 'package:grievance_system/screens/registrationScreen.dart';
+import 'package:grievance_system/theme/theme.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -115,32 +117,55 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+      backgroundColor: AppColors.accentColor,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10)
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(onPressed: _login, child: Text('Login')),
-            TextButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => RegistrationScreen()),
+            width: 350,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Text("GMS Login",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+                  SizedBox(height: 20,),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                  ),
+                  SizedBox(height: 20,),
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ElevatedButton(onPressed: _login, child: Text('Login',)),
+                      TextButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => RegistrationScreen()),
+                        ),
+                        child: Text('Register', style: TextStyle(color: Colors.black),),
+                      ),
+                    ],
+                  ),
+
+                ],
               ),
-              child: Text('Register'),
             ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      )
     );
   }
 }
