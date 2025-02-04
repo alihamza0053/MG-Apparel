@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grievance_system/screens/dashboard/dashboard.dart';
 import 'package:grievance_system/screens/loginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (isLoggedIn) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        MaterialPageRoute(builder: (context) => Dashboard()),
       );
     } else {
       Navigator.pushReplacement(

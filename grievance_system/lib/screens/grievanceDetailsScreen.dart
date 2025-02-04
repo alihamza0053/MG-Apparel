@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grievance_system/screens/dashboard/dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -135,7 +136,7 @@ class _GrievanceDetailsScreenState extends State<GrievanceDetailsScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        Navigator.pop(context);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Dashboard()));
         return data['success'] ?? false;
       } else {
         print("HTTP Error: ${response.statusCode}");

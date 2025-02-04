@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grievance_system/components/neo_box.dart';
+import 'package:grievance_system/screens/dashboard/dashboard.dart';
 import 'package:grievance_system/screens/registrationScreen.dart';
 import 'package:grievance_system/theme/theme.dart';
 import 'package:http/http.dart' as http;
@@ -94,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => DashboardScreen()),
+            MaterialPageRoute(builder: (context) => Dashboard()),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

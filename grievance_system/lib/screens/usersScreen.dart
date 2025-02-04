@@ -73,6 +73,9 @@ class _UsersScreenState extends State<UsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Users"),
+      ),
       body:  StreamBuilder<List<Map<String, dynamic>>>(
         stream: userData,
         builder: (context, snapshot) {

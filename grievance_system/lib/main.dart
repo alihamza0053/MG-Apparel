@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:grievance_system/display.dart';
+import 'package:grievance_system/screens/dashboard/dashboard.dart';
 import 'package:grievance_system/screens/splashScreen.dart';
 import 'package:grievance_system/theme/theme.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
       theme: primaryTheme,
       debugShowCheckedModeBanner: false,
       title: 'Grievance Management System',
-      home: DisplayLogin(),
+      home: SplashScreen(),
     );
   }
 }
