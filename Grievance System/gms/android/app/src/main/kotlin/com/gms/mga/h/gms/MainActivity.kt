@@ -1,4 +1,4 @@
-package com.gms.mga.ah.gms
+package com.gms.mga.h.gms
 
 import io.flutter.embedding.android.FlutterActivity
 
