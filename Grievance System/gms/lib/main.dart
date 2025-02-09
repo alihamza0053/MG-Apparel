@@ -32,15 +32,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class DashboardScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Grievance Dashboard")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GrievanceChart(),
-      ),
-    );
-  }
-}
