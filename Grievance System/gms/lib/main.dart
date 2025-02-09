@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gms/GrievanceChart.dart';
 import 'package:gms/screens/credentials/auth/authGate.dart';
 import 'package:gms/screens/credentials/login.dart';
 import 'package:gms/screens/dashboard.dart';
@@ -26,7 +27,20 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      home: SplashScreen(),
+      home: DashboardScreen(),
+    );
+  }
+}
+
+class DashboardScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Grievance Dashboard")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GrievanceChart(),
+      ),
     );
   }
 }
