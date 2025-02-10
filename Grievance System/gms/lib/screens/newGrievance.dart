@@ -43,106 +43,113 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
         ),
         title: Text("New Grievance"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            TextField(
-              cursorColor: Colors.white,
-              controller: title,
-              decoration: InputDecoration(hintText: "Title"),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextField(
-              controller: des,
-              decoration: InputDecoration(hintText: "Description"),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextField(
-              controller: other,
-              decoration: InputDecoration(
-                hintText: "Other",
+      body: Center(
+        child: Container(
+          width: 800,
+          height: 500,
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+              border: Border.all(width: 1, color: AppColors.primaryColor),
+              borderRadius: BorderRadius.circular(10)),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
               ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            DropdownButton<String>(
-              dropdownColor: AppColors.primaryColor,
-              value: selectedCategory,
-              // Selected value
-              hint: Text(
-                "Select Category",
-                style: TextStyle(
-                    color: AppColors.secondaryColor), // Hint text color
+              TextField(
+                controller: title,
+                decoration: InputDecoration(hintText: "Title"),
               ),
-              style: TextStyle(color: Colors.white),
-              // Selected item text color
-              items: [
-                'Discrimination',
-                'Pay and Benefits',
-                'Work Conditions',
-                'Workplace Harassment',
-                'Others'
-              ]
-                  .map((String status) => DropdownMenuItem<String>(
-                        value: status,
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                              color: Colors.white), // Dropdown items text color
-                        ),
-                      ))
-                  .toList(),
-              onChanged: (String? newValue) {
-                setState(() {
-                  selectedCategory = newValue; // Update selected value
-                });
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            TextButton(
-                onPressed: () {
-                  TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
-                  DateTime now = DateTime.now();
-                  DateTime combinedDateTime = DateTime(now.year, now.month,
-                      now.day, selectedTime.hour, selectedTime.minute);
-
-                  // Send this `combinedDateTime.toIso8601String()` to Supabase
-                  String timestamp = combinedDateTime.toIso8601String();
-
-                  final newGrievance = Grievance(
-                    title: title.text,
-                    description: des.text,
-                    other: other.text,
-                    category: selectedCategory!,
-                    imgUrl: imgUrl,
-                    assignTo: '',
-                    status: 'pending',
-                    updateAt: timestamp,
-                    submittedBy: userEmail,
-                  );
-                  try {
-                    grievanceDB.createGrievance(newGrievance);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Grievance Submitted")));
-                    Navigator.pop(context);
-                  } catch (e) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text("Error: $e")));
-                  }
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: des,
+                maxLines: 5,
+                decoration: InputDecoration(hintText: "Description"),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: other,
+                decoration: InputDecoration(
+                  hintText: "Other",
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              DropdownButton<String>(
+                dropdownColor: AppColors.primaryColor,
+                value: selectedCategory,
+                // Selected value
+                hint: Text(
+                  "Select Category",
+                  style: TextStyle(
+                      color: AppColors.secondaryColor), // Hint text color
+                ),
+                style: TextStyle(color: Colors.white),
+                // Selected item text color
+                items: [
+                  'Discrimination',
+                  'Pay and Benefits',
+                  'Work Conditions',
+                  'Workplace Harassment',
+                  'Others'
+                ]
+                    .map((String status) => DropdownMenuItem<String>(
+                          value: status,
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                                color: Colors.white), // Dropdown items text color
+                          ),
+                        ))
+                    .toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedCategory = newValue; // Update selected value
+                  });
                 },
-                child: Text("Submit"))
-          ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              TextButton(
+                  onPressed: () {
+                    TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
+                    DateTime now = DateTime.now();
+                    DateTime combinedDateTime = DateTime(now.year, now.month,
+                        now.day, selectedTime.hour, selectedTime.minute);
+
+                    // Send this `combinedDateTime.toIso8601String()` to Supabase
+                    String timestamp = combinedDateTime.toIso8601String();
+
+                    final newGrievance = Grievance(
+                      title: title.text,
+                      description: des.text,
+                      other: other.text,
+                      category: selectedCategory!,
+                      imgUrl: imgUrl,
+                      assignTo: '',
+                      status: 'pending',
+                      updateAt: timestamp,
+                      submittedBy: userEmail,
+                    );
+                    try {
+                      grievanceDB.createGrievance(newGrievance);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Grievance Submitted")));
+                      Navigator.pop(context);
+                    } catch (e) {
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(SnackBar(content: Text("Error: $e")));
+                    }
+                  },
+                  child: Text("Submit",style: TextStyle(color: Colors.white),))
+            ],
+          ),
         ),
       ),
     );

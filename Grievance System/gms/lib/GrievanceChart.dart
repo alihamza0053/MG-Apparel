@@ -74,62 +74,74 @@ class _GrievanceChartState extends State<GrievanceChart> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 10),
-        DropdownButton<String>(
-          dropdownColor: AppColors.primaryColor,
-          value: selectedMonth,
-          onChanged: (String? newValue) {
-            if (newValue != null) {
-              setState(() {
-                selectedMonth = newValue;
-                fetchGrievanceData(month: newValue == "All" ? null : int.tryParse(newValue));
-              });
-            }
-          },
-          items: ["All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-              .map((String value) => DropdownMenuItem<String>(
-            value: value,
-            child: Text(value == "All" ? "All Months" : "Month $value"),
-          ))
-              .toList(),
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                maxY: _getMaxCount().toDouble() + 4,
-                barGroups: _getBarGroups(),
-                titlesData: FlTitlesData(
-                  leftTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      interval: 1,
-                      getTitlesWidget: (double value, TitleMeta meta) {
-                        return Text(value.toInt().toString(), style: TextStyle(fontSize: 12));
-                      },
-                      reservedSize: 40,
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+          border: Border.all(width: 1, color: AppColors.primaryColor),
+          borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              DropdownButton<String>(
+                dropdownColor: AppColors.primaryColor,
+                value: selectedMonth,
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    setState(() {
+                      selectedMonth = newValue;
+                      fetchGrievanceData(month: newValue == "All" ? null : int.tryParse(newValue));
+                    });
+                  }
+                },
+                items: ["All", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+                    .map((String value) => DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value == "All" ? "All Months" : "Month $value"),
+                ))
+                    .toList(),
+              ),
+              TextButton(
+                onPressed: () => generateAndDownloadReport(grievanceCounts),
+                child: Text("Download Report",style: TextStyle(color: Colors.white),),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: _getMaxCount().toDouble() + 4,
+                  barGroups: _getBarGroups(),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 1,
+                        getTitlesWidget: (double value, TitleMeta meta) {
+                          return Text(value.toInt().toString(), style: TextStyle(fontSize: 12));
+                        },
+                        reservedSize: 40,
+                      ),
+                    ),
+                    rightTitles: AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
-                  rightTitles: AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
+                  borderData: FlBorderData(show: false),
+                  gridData: FlGridData(show: false),
                 ),
-                borderData: FlBorderData(show: false),
-                gridData: FlGridData(show: false),
               ),
             ),
           ),
-        ),
-        ElevatedButton(
-          onPressed: () => generateAndDownloadReport(grievanceCounts),
-          child: Text("Download Report"),
-        ),
-      ],
+
+        ],
+      ),
     );
   }
 

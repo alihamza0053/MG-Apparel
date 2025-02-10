@@ -5,6 +5,7 @@ import 'package:gms/screens/credentials/users/user.dart';
 import 'package:gms/screens/credentials/users/userDatabase.dart';
 import 'package:gms/screens/dashboard.dart';
 import 'package:gms/screens/employee/employee.dart';
+import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -45,55 +46,63 @@ void createUser() async{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back), color: Colors.white,),
-        title: Text("Login"),
-      ),
       body:
-      Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //Text("Create New Account", style: TextStyle(fontSize: 20),),
-            TextField(
-              controller: email,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: "Email"),
-
+      Center(
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Container(
+            width:400,
+            height: 350,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+                border:Border.all(width: 2, color: AppColors.primaryColor),
+                borderRadius: BorderRadius.circular(10)
             ),
-            TextField(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Image(image: AssetImage("assets/images/logo.png"),width: 100,),
 
-              controller: password,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Password",
-                counterText: "", // ✅ Hides the default character counter
-              ),
-            ),
-            SizedBox(height: 20,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(onPressed: signUp, child: Text("SignUp")),
-                GestureDetector(
-                  onTap: (){
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Login()));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(24, 10, 24, 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.white),),
-                    child: Text("Login", style: TextStyle(fontSize: 16),),
+                Text("Create New Account", style: TextStyle(fontSize: 30),),
+                SizedBox(
+                  height: 20,
+                ),
+                //Text("Create New Account", style: TextStyle(fontSize: 20),),
+                TextField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(hintText: "Email"),
+
+                ),
+                TextField(
+
+                  controller: password,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    counterText: "", // ✅ Hides the default character counter
                   ),
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(onPressed: signUp, child: Text("SignUp",style: TextStyle(color: Colors.white),)),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Login()));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(24, 10, 24, 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: AppColors.primaryColor),),
+                        child: Text("Login", style: TextStyle(fontSize: 16),),
+                      ),
+                    )
+                  ],
                 )
               ],
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/credentials/signUp.dart';
 import 'package:gms/screens/employee/employee.dart';
+import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../dashboard.dart';
@@ -80,62 +81,68 @@ void login() async{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-        ),
-        title: Text("Login"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(18.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            //Text("Welcome Back", style: TextStyle(fontSize: 25),),
-            TextField(
-              controller: email,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: "Email"),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Container(
+            width:400,
+            height: 350,
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              border:Border.all(width: 2, color: AppColors.primaryColor),
+              borderRadius: BorderRadius.circular(10)
             ),
-            TextField(
-              controller: password,
-              obscureText: true,
-              decoration: InputDecoration(
-                hintText: "Password",
-                counterText: "", // ✅ Hides the default character counter
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(onPressed: login, child: Text("Login")),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => SignUp()));
-                  },
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                    decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.white),
-                    ),
-                    child: Text(
-                      "SignUp",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                Image(image: AssetImage("assets/images/logo.png"),width: 100,),
+                Text("Welcome Back", style: TextStyle(fontSize: 30),),
+                SizedBox(
+                  height: 20,
+                ),
+                //Text("Welcome Back", style: TextStyle(fontSize: 25),),
+                TextField(
+                  controller: email,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(hintText: "Email"),
+                ),
+                TextField(
+                  controller: password,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Password",
+                    counterText: "", // ✅ Hides the default character counter
                   ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    TextButton(onPressed: login, child: Text("Login",style: TextStyle(color: Colors.white),)),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => SignUp()));
+                      },
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1, color: AppColors.primaryColor),
+                        ),
+                        child: Text(
+                          "SignUp",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    )
+                  ],
                 )
               ],
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );
