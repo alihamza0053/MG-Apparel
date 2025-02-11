@@ -21,18 +21,35 @@ class _SignUpState extends State<SignUp> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   AuthService authService = AuthService();
+  bool progressBar = false;
 
   void signUp() async{
-    try{
-      await authService.signUp(email.text, password.text);
-      createUser();
-  }catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error $e")));
+
+    if(email.text.isEmpty || password.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields."),backgroundColor: Colors.red,));
+    }else{
+      setState(() {
+        progressBar= true;
+      });
+      try{
+        await authService.signUp(email.text, password.text);
+        createUser();
+      }on AuthException catch(e){
+        setState(() {
+          progressBar = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}"),backgroundColor: Colors.red,));
+      }
     }
+
 }
 
 void createUser() async{
-    final newUser = Users(email: email.text, role: "hr");
+
+
+
+
+    final newUser = Users(email: email.text, role: "employee");
     try{
       users.createUser(newUser);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Account Created")));
@@ -48,7 +65,16 @@ void createUser() async{
     return Scaffold(
       body:
       Center(
-        child: Padding(
+        child: progressBar ?
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                Text("Creating New Account....", style: TextStyle(fontSize: 18),)
+              ],
+            )
+            : Padding(
           padding: const EdgeInsets.all(18.0),
           child: Container(
             width:400,
@@ -60,9 +86,13 @@ void createUser() async{
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Image(image: AssetImage("assets/images/logo.png"),width: 100,),
+              children: [
+                Image(image: AssetImage("assets/images/logo.png"),width: 100,),
+                SizedBox(
+                  height: 10,
+                ),
 
-                Text("Create New Account", style: TextStyle(fontSize: 30),),
+                Text("Create New Account", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
                 SizedBox(
                   height: 20,
                 ),
@@ -95,7 +125,7 @@ void createUser() async{
                         padding: EdgeInsets.fromLTRB(24, 10, 24, 10),
                         decoration: BoxDecoration(
                           border: Border.all(width: 1, color: AppColors.primaryColor),),
-                        child: Text("Login", style: TextStyle(fontSize: 16),),
+                        child: Text("Login", style: TextStyle(fontSize: 18),),
                       ),
                     )
                   ],

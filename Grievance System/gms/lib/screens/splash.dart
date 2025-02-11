@@ -27,7 +27,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text("GMS"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("GMS",style: TextStyle(fontSize: 50,fontWeight: FontWeight.w800),),
+            Text("Grievance Management System",style: TextStyle(fontSize: 25,fontWeight: FontWeight.normal),),
+          ],
+        ),
       ),
     );
   }

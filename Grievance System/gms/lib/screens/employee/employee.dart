@@ -57,7 +57,7 @@ class _EmployeeState extends State<Employee> {
               context, MaterialPageRoute(builder: (context) => NewGrievanceScreen()));
         },
         backgroundColor: Colors.blueAccent,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Text("Add",style: TextStyle(color: Colors.white),),
       ),
       appBar: AppBar(
         title: const Text("Dashboard",style: TextStyle(fontSize: 25),),
@@ -86,7 +86,7 @@ class _EmployeeState extends State<Employee> {
 
             return Column(
               children: [
-                Text("All Grievances",style: TextStyle(fontSize: 30),),
+                Text("All Grievances",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
                 SizedBox(height: 50,),
                 Expanded(
                   child: StreamBuilder(
@@ -114,7 +114,7 @@ class _EmployeeState extends State<Employee> {
                                 statusColor = Colors.orange;
                                 break;
                               case 'in progress':
-                                statusColor = Colors.indigo;
+                                statusColor = Colors.blue;
                                 break;
                               case 'resolved':
                                 statusColor = Colors.green;

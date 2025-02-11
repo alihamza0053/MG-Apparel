@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gms/GrievanceChart.dart';
+import 'package:gms/screens/chart/GrievanceChart.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/credentials/login.dart';
 import 'package:gms/screens/credentials/userData.dart';
@@ -63,15 +63,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => NewGrievanceScreen()));
         },
         backgroundColor: Colors.blueAccent,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
+        child: Text("Add",style: TextStyle(color: Colors.white),)
       ),
       appBar: AppBar(
         title: Text("Dashboard", style: TextStyle(fontSize: 25),),
@@ -85,7 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Login()));
             },
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 200, 0),
+              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
               child: Row(
                 children: [
                   Text("Logout", style: TextStyle(color: Colors.white),),
@@ -98,7 +96,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(200, 50, 200, 50),
+        padding: const EdgeInsets.all(50),
         child: Column(
           children: [
             Expanded(child: GrievanceChart()),
@@ -126,17 +124,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemBuilder: (context,index){
                     final grievance = grievances[index];
 
-                    if(grievance.status == 'pending'){
-                      statusColor = Colors.orange;
+                    if(grievance.status == 'Pending'){
+                      statusColor = Colors.red;
                     }
-                    if(grievance.status == 'in progress'){
-                      statusColor = Colors.indigo;
+                    if(grievance.status == 'In Progress'){
+                      statusColor = Colors.blue;
                     }
-                    if(grievance.status == 'resolved'){
+                    if(grievance.status == 'Resolved'){
                       statusColor = Colors.green;
                     }
-                    if(grievance.status == 'closed'){
-                      statusColor = Colors.red;
+                    if(grievance.status == 'Closed'){
+                      statusColor = Colors.green;
                     }
                     return Padding(
                       padding: const EdgeInsets.all(18.0),
@@ -175,7 +173,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       Container(
                                         padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                                         color: statusColor,
-                                        child: Text(grievance.status),
+                                        child: Text(grievance.status,style: TextStyle(color: Colors.white),),
                                       )
                                     ],
                                   ),
@@ -195,20 +193,37 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     height: 10,
                                   ),
                                   Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text(
-                                        "Assigned to: ",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                        ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Assigned to: ",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          Text(
+                                            grievance.assignTo,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Text(
-                                        grievance.assignTo,
-                                        style: TextStyle(
-                                          fontSize: 12,
+
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          backgroundColor: MaterialStateProperty.all(Colors.black54),
+
                                         ),
-                                      )
+                                          onPressed: (){
+                                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Grievancedetails(id:grievance.id,role:'admin')));
+                                        print("grievance.id");
+                                        print(grievance.id);
+                                      }, child: Text("View Details",style: TextStyle(color: Colors.white,fontSize: 12),)),
                                     ],
+
                                   )
                                 ],
                               ),

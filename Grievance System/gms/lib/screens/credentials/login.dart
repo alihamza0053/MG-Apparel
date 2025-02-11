@@ -21,6 +21,7 @@ class _LoginState extends State<Login> {
   TextEditingController password = TextEditingController();
   String role = "";
   Widget screen = Employee();
+  bool progressBar = false;
 
 
 
@@ -70,19 +71,38 @@ class _LoginState extends State<Login> {
 
 void login() async{
 
-  try{
-    await authService.login(email.text, password.text);
-    fetchUserRole(); // Fetch user role when dashboard loads
-  }on AuthException catch(e){
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}")));
-  }
+    if(email.text.isEmpty || password.text.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields."),backgroundColor: Colors.red,));
+    }else{
+      setState(() {
+        progressBar = true;
+      });
+
+      try{
+        await authService.login(email.text, password.text);
+        fetchUserRole(); // Fetch user role when dashboard loads
+      }on AuthException catch(e){
+        setState(() {
+          progressBar = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}"),backgroundColor: Colors.red,));
+      }
+    }
+
 }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Padding(
+        child: progressBar ? Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            Text("Logging in....", style: TextStyle(fontSize: 18),)
+          ],
+        ) : Padding(
           padding: const EdgeInsets.all(18.0),
           child: Container(
             width:400,
@@ -97,7 +117,10 @@ void login() async{
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image(image: AssetImage("assets/images/logo.png"),width: 100,),
-                Text("Welcome Back", style: TextStyle(fontSize: 30),),
+                SizedBox(
+                  height: 10,
+                ),
+                Text("Login", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
                 SizedBox(
                   height: 20,
                 ),
@@ -134,7 +157,7 @@ void login() async{
                         ),
                         child: Text(
                           "SignUp",
-                          style: TextStyle(fontSize: 16),
+                          style: TextStyle(fontSize: 18),
                         ),
                       ),
                     )

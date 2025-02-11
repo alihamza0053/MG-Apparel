@@ -8,6 +8,8 @@ class AppColors {
 ThemeData themeData = ThemeData(
   colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
 
+  fontFamily: 'aptos',
+
   //scaffold
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
@@ -19,15 +21,15 @@ ThemeData themeData = ThemeData(
 
   //text
   textTheme: TextTheme(
-    bodyLarge: TextStyle(color: Colors.black),
-    bodyMedium: TextStyle(color: Colors.black),
-    bodySmall: TextStyle(color: Colors.black),
-    headlineLarge: TextStyle(color: Colors.black),
-    headlineMedium: TextStyle(color: Colors.black),
-    headlineSmall: TextStyle(color: Colors.black),
-    titleLarge: TextStyle(color: Colors.black),
-    titleMedium: TextStyle(color: Colors.black),
-    titleSmall: TextStyle(color: Colors.black),
+    bodyLarge: TextStyle(color: Colors.black,fontWeight: FontWeight.w800),
+    bodyMedium: TextStyle(color: Colors.black,fontWeight: FontWeight.normal),
+    bodySmall: TextStyle(color: Colors.black,fontWeight: FontWeight.w200),
+    headlineLarge: TextStyle(color: Colors.black,fontWeight: FontWeight.w800),
+    headlineMedium: TextStyle(color: Colors.black,fontWeight: FontWeight.normal),
+    headlineSmall: TextStyle(color: Colors.black,fontWeight: FontWeight.w200),
+    titleLarge: TextStyle(color: Colors.black,fontWeight: FontWeight.w800),
+    titleMedium: TextStyle(color: Colors.black,fontWeight: FontWeight.normal),
+    titleSmall: TextStyle(color: Colors.black,fontWeight: FontWeight.w200),
   ),
 
   //input

@@ -57,10 +57,10 @@ class _hrState extends State<hr> {
               context, MaterialPageRoute(builder: (context) => NewGrievanceScreen()));
         },
         backgroundColor: Colors.blueAccent,
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Text("Add",style: TextStyle(color: Colors.white),),
       ),
       appBar: AppBar(
-        title: const Text("Dashboard",style: TextStyle(fontSize: 25),),
+        title: const Text("Dashboard",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
         actions: [
           GestureDetector(
             onTap: () {
@@ -111,16 +111,16 @@ class _hrState extends State<hr> {
 
                             switch (grievance.status) {
                               case 'pending':
-                                statusColor = Colors.orange;
+                                statusColor = Colors.red;
                                 break;
                               case 'in progress':
-                                statusColor = Colors.indigo;
+                                statusColor = Colors.orange;
                                 break;
                               case 'resolved':
                                 statusColor = Colors.green;
                                 break;
                               case 'closed':
-                                statusColor = Colors.red;
+                                statusColor = Colors.green;
                                 break;
                             }
                             String formatDate(String isoString) {
