@@ -34,7 +34,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
         leading: SizedBox(),
         title: Text("Grievance Details"),
       ),
-
       body: Center(
         child: Column(
           children: [
@@ -60,12 +59,13 @@ class _GrievancedetailsState extends State<Grievancedetails> {
 
                             // Find grievance by ID safely
                             final grievance = grievances.firstWhere(
-                                  (g) => g.id == widget.id,
+                              (g) => g.id == widget.id,
                             );
 
                             if (grievance == null) {
                               return Center(
-                                child: Text("No record found for ID ${widget.id}"),
+                                child:
+                                    Text("No record found for ID ${widget.id}"),
                               );
                             }
 
@@ -75,7 +75,8 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                               statusColor = Colors.red;
                             } else if (grievance.status == 'In Progress') {
                               statusColor = Colors.orange;
-                            } else if (grievance.status == 'Resolved' || grievance.status == 'Closed') {
+                            } else if (grievance.status == 'Resolved' ||
+                                grievance.status == 'Closed') {
                               statusColor = Colors.green;
                             }
 
@@ -85,7 +86,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                             return ListView.builder(
                                 itemCount: 1,
                                 itemBuilder: (context, index) {
-
                                   return Padding(
                                     padding: EdgeInsets.all(18),
                                     child: Column(
@@ -121,10 +121,58 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
+                                        SizedBox(
+                                          height: 25,
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color:
+                                                      AppColors.primaryColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(),
+                                              Text(
+                                                "Description:",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 0, 0, 0),
+                                                child: Text(
+                                                  grievance.description,
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w100,
+                                                      color: Colors.black),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+
+
                                         SizedBox(
                                           height: 25,
                                         ),
@@ -138,39 +186,69 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                               borderRadius:
                                               BorderRadius.circular(5)),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                             children: [
-                                              Row(),
                                               Text(
-                                                "Description:",
+                                                "Employee Details: ",
                                                 style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: AppColors.secondaryColor,
-                                                  fontWeight: FontWeight.bold
-                                                ),
+                                                    fontSize: 16,
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    fontWeight:
+                                                    FontWeight.bold),
                                               ),
                                               SizedBox(
                                                 height: 10,
                                               ),
                                               Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        10, 0, 0, 0),
-                                                child: Text(
-                                                  grievance.description,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight: FontWeight.w100,
-                                                      color: Colors.black),
+                                                padding: const EdgeInsets
+                                                    .fromLTRB(10, 0, 0, 0),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                         "Name: ",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                          grievance.my_name,
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Employee ID: ",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                          grievance.my_employee_id,
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
+
                                         SizedBox(
                                           height: 25,
                                         ),
-
                                         Container(
                                           padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
@@ -180,26 +258,100 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                   AppColors.primaryColor),
                                               borderRadius:
                                               BorderRadius.circular(5)),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Accused Details: ",
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    color: AppColors
+                                                        .secondaryColor,
+                                                    fontWeight:
+                                                    FontWeight.bold),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets
+                                                    .fromLTRB(10, 0, 0, 0),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Name: ",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                          grievance.complain_against_name,
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Text(
+                                                          "Employee ID: ",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        Text(
+                                                          grievance.complain_against_id,
+                                                          style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: Colors.black),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        SizedBox(
+                                          height: 25,
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1,
+                                                  color:
+                                                      AppColors.primaryColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
                                           child: Row(
                                             children: [
                                               Column(
                                                 crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     "Assigned to: ",
                                                     style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: AppColors.secondaryColor,
-                                                      fontWeight: FontWeight.bold
-                                                    ),
+                                                        fontSize: 16,
+                                                        color: AppColors
+                                                            .secondaryColor,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                   SizedBox(
                                                     height: 10,
                                                   ),
                                                   Padding(
-                                                    padding: const EdgeInsets.fromLTRB(
-                                                        10, 0, 0, 0),
+                                                    padding: const EdgeInsets
+                                                        .fromLTRB(10, 0, 0, 0),
                                                     child: Text(
                                                       grievance.assignTo,
                                                       style: TextStyle(
@@ -212,7 +364,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                             ],
                                           ),
                                         ),
-
                                         SizedBox(
                                           height: 25,
                                         ),
@@ -222,9 +373,9 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                               border: Border.all(
                                                   width: 1,
                                                   color:
-                                                  AppColors.primaryColor),
+                                                      AppColors.primaryColor),
                                               borderRadius:
-                                              BorderRadius.circular(5)),
+                                                  BorderRadius.circular(5)),
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceAround,
@@ -254,7 +405,8 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                             dropdownColor:
                                                                 AppColors
                                                                     .primaryColor,
-                                                            value: selectedStatus,
+                                                            value:
+                                                                selectedStatus,
                                                             // Selected value
                                                             hint: Text(
                                                               "Select Status",
@@ -263,8 +415,8 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                                       .primaryColor), // Hint text color
                                                             ),
                                                             style: TextStyle(
-                                                                color:
-                                                                    Colors.black),
+                                                                color: Colors
+                                                                    .black),
                                                             // Selected item text color
                                                             items: [
                                                               'Pending',
@@ -278,7 +430,8 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                                         String>(
                                                                       value:
                                                                           status,
-                                                                      child: Text(
+                                                                      child:
+                                                                          Text(
                                                                         status,
                                                                         style: TextStyle(
                                                                             color:
@@ -366,12 +519,13 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                                     email) {
                                                                   return DropdownMenuItem<
                                                                       String>(
-                                                                    value: email,
+                                                                    value:
+                                                                        email,
                                                                     child: Text(
                                                                       email,
                                                                       style: TextStyle(
-                                                                          color: Colors
-                                                                              .black),
+                                                                          color:
+                                                                              Colors.black),
                                                                     ),
                                                                   );
                                                                 }).toList(),
@@ -401,7 +555,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
                                                 children: [
-
                                                   TextButton(
                                                       onPressed: () {
                                                         selectedStatus ??=
