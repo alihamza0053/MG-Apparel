@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/database/grievance.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 class NewGrievanceScreen extends StatefulWidget {
   const NewGrievanceScreen({super.key});
@@ -28,12 +31,115 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
   String? selectedCategory;
   SupabaseClient supabaseClient = Supabase.instance.client;
   String? userEmail = "";
+  String fileName = "";
+  html.File? fileObj;
+  String filePath = "";
+
 
   @override
   void initState() {
    userEmail =  supabaseClient.auth.currentUser?.email;
     super.initState();
   }
+
+
+  //upload file start
+  void pickAndUploadFile() async {
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*,application/pdf'; // Allow images & PDFs
+    uploadInput.click();
+
+    uploadInput.onChange.listen((event) {
+      final files = uploadInput.files;
+      if (files != null && files.isNotEmpty) {
+        final file = files[0];
+        fileObj = file;
+        setState(() {
+          fileName = file.name;
+          print(file.name);
+        });
+      }
+    });
+  }
+
+  Future<void> uploadFile(html.File file) async {
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onLoadEnd.listen((event) async {
+      var request = http.MultipartRequest(
+        "POST",
+        Uri.parse("https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
+      );
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file', // Must match the PHP $_FILES['file'] key
+          reader.result as List<int>,
+          filename: file.name,
+        ),
+      );
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseData);
+        if (jsonResponse['success']) {
+          imgUrl = "https://groundup.pk/gms/${jsonResponse['file_path']}";
+          newGrievance();
+          print("File uploaded successfully: ${jsonResponse['file_path']}");
+        } else {
+          print("Upload failed: ${jsonResponse['message']}");
+        }
+      } else {
+        print("Server error: ${response.reasonPhrase}");
+      }
+    });
+  }
+  // upload file end
+
+
+  //submit data to supabase start
+  Future<void> newGrievance() async{
+    TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
+    DateTime now = DateTime.now();
+    DateTime combinedDateTime = DateTime(now.year, now.month,
+        now.day, selectedTime.hour, selectedTime.minute);
+
+    // Send this `combinedDateTime.toIso8601String()` to Supabase
+    String timestamp = combinedDateTime.toIso8601String();
+
+    final newGrievance = Grievance(
+      title: title.text,
+      description: des.text,
+      my_name: my_name.text,
+      my_employee_id: my_id.text,
+      my_depart: my_depart.text,
+      complain_against_name: complain_against_name.text,
+      complain_against_id: complain_against_id.text,
+      complain_against_depart: complain_against_depart.text,
+      other: "",
+      category: selectedCategory!,
+      imgUrl: imgUrl,
+      assignTo: '',
+      status: 'pending',
+      updateAt: timestamp,
+      submittedBy: userEmail,
+    );
+
+    try{
+      grievanceDB.createGrievance(newGrievance);
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Grievance Submitted")));
+      Navigator.pop(context);
+    }catch(e){
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+
+}
+
+  //submit data to end
 
 
   @override
@@ -168,41 +274,18 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
                   },
                 ),
 
+
+                TextButton(
+                  onPressed: pickAndUploadFile,
+                  child: Text(fileName == "" ? "Attach File": fileName,style: TextStyle(color: Colors.white),),),
+
                 SizedBox(
                   height: 20,
                 ),
                 TextButton(
                     onPressed: () {
-                      TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
-                      DateTime now = DateTime.now();
-                      DateTime combinedDateTime = DateTime(now.year, now.month,
-                          now.day, selectedTime.hour, selectedTime.minute);
-
-                      // Send this `combinedDateTime.toIso8601String()` to Supabase
-                      String timestamp = combinedDateTime.toIso8601String();
-
-                      final newGrievance = Grievance(
-                        title: title.text,
-                        description: des.text,
-                        my_name: my_name.text,
-                        my_employee_id: my_id.text,
-                        my_depart: my_depart.text,
-                        complain_against_name: complain_against_name.text,
-                        complain_against_id: complain_against_id.text,
-                        complain_against_depart: complain_against_depart.text,
-                        other: "",
-                        category: selectedCategory!,
-                        imgUrl: imgUrl,
-                        assignTo: '',
-                        status: 'pending',
-                        updateAt: timestamp,
-                        submittedBy: userEmail,
-                      );
                       try {
-                        grievanceDB.createGrievance(newGrievance);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Grievance Submitted")));
-                        Navigator.pop(context);
+                        uploadFile(fileObj!);
                       } catch (e) {
                         ScaffoldMessenger.of(context)
                             .showSnackBar(SnackBar(content: Text("Error: $e")));

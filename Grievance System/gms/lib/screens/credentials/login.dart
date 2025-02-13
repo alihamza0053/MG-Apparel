@@ -1,11 +1,21 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/credentials/signUp.dart';
 import 'package:gms/screens/employee/employee.dart';
 import 'package:gms/theme/themeData.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'package:mime/mime.dart';
+import 'dart:html' as html;
+
 
 import '../dashboard.dart';
+import '../database/uploadFile.dart';
 import '../hr/hr.dart';
 
 class Login extends StatefulWidget {
@@ -30,6 +40,59 @@ class _LoginState extends State<Login> {
     super.initState();
     fetchUserRole(); // Fetch user role when dashboard loads
   }
+
+
+
+  //upload file
+  void pickAndUploadFile() async {
+    html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+    uploadInput.accept = 'image/*,application/pdf'; // Allow images & PDFs
+    uploadInput.click();
+
+    uploadInput.onChange.listen((event) {
+      final files = uploadInput.files;
+      if (files != null && files.isNotEmpty) {
+        final file = files[0];
+        uploadFile(file);
+      }
+    });
+  }
+
+  Future<void> uploadFile(html.File file) async {
+    final reader = html.FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onLoadEnd.listen((event) async {
+      var request = http.MultipartRequest(
+        "POST",
+        Uri.parse("https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
+      );
+
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file', // Must match the PHP $_FILES['file'] key
+          reader.result as List<int>,
+          filename: file.name,
+        ),
+      );
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        var responseData = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseData);
+        if (jsonResponse['success']) {
+          print("File uploaded successfully: ${jsonResponse['file_path']}");
+        } else {
+          print("Upload failed: ${jsonResponse['message']}");
+        }
+      } else {
+        print("Server error: ${response.reasonPhrase}");
+      }
+    });
+  }
+  // upload file
+
+
 
   // Function to fetch user role from Supabase
   Future<void> fetchUserRole() async {
@@ -146,10 +209,7 @@ void login() async{
                   children: [
                     TextButton(onPressed: login, child: Text("Login",style: TextStyle(color: Colors.white),)),
                     GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => SignUp()));
-                      },
+                      onTap: pickAndUploadFile,
                       child: Container(
                         padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
                         decoration: BoxDecoration(
