@@ -122,7 +122,8 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
       category: selectedCategory!,
       imgUrl: imgUrl,
       assignTo: '',
-      status: 'pending',
+      status: 'Pending',
+      priority: 'Low',
       updateAt: timestamp,
       submittedBy: userEmail,
     );

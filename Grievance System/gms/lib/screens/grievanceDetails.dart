@@ -20,12 +20,15 @@ class _GrievancedetailsState extends State<Grievancedetails> {
   final grievanceDB = GrievanceDB();
   final usersDB = UserDatabase();
   Color statusColor = Colors.orangeAccent;
+  Color priorityColor = Colors.orange;
   String? selectedStatus;
   String? selectedEmail;
+  String? selectedPriority;
   List<String> emailList = [];
   String? selectedUserEmail; // Selected email
   String defaultStatus = '';
   String defaultEmail = '';
+  String defaultPriority = '';
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +82,15 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                 grievance.status == 'Closed') {
                               statusColor = Colors.green;
                             }
-
+                            if (grievance.priority == 'Low') {
+                              priorityColor = Colors.orange;
+                            }
+                            if (grievance.priority == 'High') {
+                              priorityColor = Colors.red;
+                            }
                             defaultStatus = grievance.status;
                             defaultEmail = grievance.assignTo;
+                            defaultPriority = grievance.priority;
 
                             return ListView.builder(
                                 itemCount: 1,
@@ -112,15 +121,20 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              Container(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    10, 5, 10, 5),
-                                                color: statusColor,
-                                                child: Text(
-                                                  grievance.status,
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                                    color: priorityColor,
+                                                    child: Text(grievance.priority,style: TextStyle(color: Colors.white),),
+                                                  ),
+                                                  SizedBox(width: 10,),
+                                                  Container(
+                                                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                                    color: statusColor,
+                                                    child: Text(grievance.status,style: TextStyle(color: Colors.white),),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -170,9 +184,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                             ],
                                           ),
                                         ),
-
-
-
                                         SizedBox(
                                           height: 25,
                                         ),
@@ -182,12 +193,12 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                               border: Border.all(
                                                   width: 1,
                                                   color:
-                                                  AppColors.primaryColor),
+                                                      AppColors.primaryColor),
                                               borderRadius:
-                                              BorderRadius.circular(5)),
+                                                  BorderRadius.circular(5)),
                                           child: Column(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 "Employee Details: ",
@@ -196,30 +207,38 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                     color: AppColors
                                                         .secondaryColor,
                                                     fontWeight:
-                                                    FontWeight.bold),
+                                                        FontWeight.bold),
                                               ),
                                               SizedBox(
                                                 height: 10,
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets
-                                                    .fromLTRB(10, 0, 0, 0),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 0, 0, 0),
                                                 child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
                                                   children: [
                                                     Row(
                                                       children: [
                                                         Text(
-                                                         "Name: ",
+                                                          "Name: ",
                                                           style: TextStyle(
                                                               fontSize: 18,
-                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Text(
                                                           grievance.my_name,
                                                           style: TextStyle(
                                                               fontSize: 16,
-                                                              color: Colors.black),
+                                                              color:
+                                                                  Colors.black),
                                                         ),
                                                       ],
                                                     ),
@@ -229,13 +248,19 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                           "Employee ID: ",
                                                           style: TextStyle(
                                                               fontSize: 18,
-                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Text(
-                                                          grievance.my_employee_id,
+                                                          grievance
+                                                              .my_employee_id,
                                                           style: TextStyle(
                                                               fontSize: 16,
-                                                              color: Colors.black),
+                                                              color:
+                                                                  Colors.black),
                                                         ),
                                                       ],
                                                     ),
@@ -245,7 +270,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                             ],
                                           ),
                                         ),
-
                                         SizedBox(
                                           height: 25,
                                         ),
@@ -255,12 +279,12 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                               border: Border.all(
                                                   width: 1,
                                                   color:
-                                                  AppColors.primaryColor),
+                                                      AppColors.primaryColor),
                                               borderRadius:
-                                              BorderRadius.circular(5)),
+                                                  BorderRadius.circular(5)),
                                           child: Column(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 "Accused Details: ",
@@ -269,16 +293,19 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                     color: AppColors
                                                         .secondaryColor,
                                                     fontWeight:
-                                                    FontWeight.bold),
+                                                        FontWeight.bold),
                                               ),
                                               SizedBox(
                                                 height: 10,
                                               ),
                                               Padding(
-                                                padding: const EdgeInsets
-                                                    .fromLTRB(10, 0, 0, 0),
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        10, 0, 0, 0),
                                                 child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
                                                   children: [
                                                     Row(
                                                       children: [
@@ -286,13 +313,19 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                           "Name: ",
                                                           style: TextStyle(
                                                               fontSize: 18,
-                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Text(
-                                                          grievance.complain_against_name,
+                                                          grievance
+                                                              .complain_against_name,
                                                           style: TextStyle(
                                                               fontSize: 16,
-                                                              color: Colors.black),
+                                                              color:
+                                                                  Colors.black),
                                                         ),
                                                       ],
                                                     ),
@@ -302,13 +335,19 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                           "Employee ID: ",
                                                           style: TextStyle(
                                                               fontSize: 18,
-                                                              color: Colors.black, fontWeight: FontWeight.bold),
+                                                              color:
+                                                                  Colors.black,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Text(
-                                                          grievance.complain_against_id,
+                                                          grievance
+                                                              .complain_against_id,
                                                           style: TextStyle(
                                                               fontSize: 16,
-                                                              color: Colors.black),
+                                                              color:
+                                                                  Colors.black),
                                                         ),
                                                       ],
                                                     ),
@@ -318,7 +357,6 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                             ],
                                           ),
                                         ),
-
                                         SizedBox(
                                           height: 25,
                                         ),
@@ -453,95 +491,167 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                   : SizedBox(),
                                               widget.role == "admin"
                                                   ? Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        SizedBox(
-                                                          height: 15,
-                                                        ),
-
-                                                        Text(
-                                                          "Update Assign Person: ",
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: AppColors
-                                                                .secondaryColor,
+                                                    children: [
+                                                      Column(
+                                                        children: [
+                                                          Text(
+                                                            "Update Priority: ",
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              color: AppColors
+                                                                  .secondaryColor,
+                                                            ),
                                                           ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        // Fetch and Show Users in Dropdown
-                                                        FutureBuilder<
-                                                            List<String>>(
-                                                          future:
-                                                              fetchUsersEmails(),
-                                                          // Fetch emails
-                                                          builder: (context,
-                                                              snapshot) {
-                                                            if (!snapshot
-                                                                .hasData) {
-                                                              return CircularProgressIndicator();
-                                                            }
-
-                                                            final userEmails =
-                                                                snapshot.data!;
-
-                                                            return Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .fromLTRB(
-                                                                      10,
-                                                                      0,
-                                                                      0,
-                                                                      0),
-                                                              child:
-                                                                  DropdownButton<
-                                                                      String>(
-                                                                dropdownColor:
-                                                                    AppColors
-                                                                        .primaryColor,
-                                                                value:
-                                                                    selectedUserEmail,
-                                                                hint: Text(
-                                                                  "Select Email to Assign",
-                                                                  style: TextStyle(
-                                                                      color: AppColors
-                                                                          .primaryColor),
-                                                                ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Padding(
+                                                            padding:
+                                                            const EdgeInsets
+                                                                .fromLTRB(
+                                                                10, 0, 0, 0),
+                                                            child: DropdownButton<
+                                                                String>(
+                                                              dropdownColor:
+                                                              AppColors
+                                                                  .primaryColor,
+                                                              value:
+                                                              selectedPriority,
+                                                              // Selected value
+                                                              hint: Text(
+                                                                "Select Priority",
                                                                 style: TextStyle(
-                                                                    color: Colors
-                                                                        .black),
-                                                                items: userEmails.map<
-                                                                    DropdownMenuItem<
-                                                                        String>>((String
-                                                                    email) {
-                                                                  return DropdownMenuItem<
+                                                                    color: AppColors
+                                                                        .primaryColor), // Hint text color
+                                                              ),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .black),
+                                                              // Selected item text color
+                                                              items: [
+                                                                'Low',
+                                                                'High',
+                                                              ]
+                                                                  .map((String
+                                                              status) =>
+                                                                  DropdownMenuItem<
                                                                       String>(
                                                                     value:
-                                                                        email,
-                                                                    child: Text(
-                                                                      email,
+                                                                    status,
+                                                                    child:
+                                                                    Text(
+                                                                      status,
                                                                       style: TextStyle(
                                                                           color:
-                                                                              Colors.black),
+                                                                          Colors.black), // Dropdown items text color
                                                                     ),
-                                                                  );
-                                                                }).toList(),
-                                                                onChanged: (String?
-                                                                    newValue) {
-                                                                  setState(() {
-                                                                    selectedUserEmail =
-                                                                        newValue;
-                                                                  });
-                                                                },
+                                                                  ))
+                                                                  .toList(),
+                                                              onChanged: (String?
+                                                              newValue) {
+                                                                setState(() {
+                                                                  selectedPriority =
+                                                                      newValue; // Update selected value
+                                                                });
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+
+
+                                                      Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            SizedBox(
+                                                              height: 15,
+                                                            ),
+
+                                                            Text(
+                                                              "Update Assign Person: ",
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: AppColors
+                                                                    .secondaryColor,
                                                               ),
-                                                            );
-                                                          },
+                                                            ),
+                                                            SizedBox(
+                                                              height: 10,
+                                                            ),
+                                                            // Fetch and Show Users in Dropdown
+                                                            FutureBuilder<
+                                                                List<String>>(
+                                                              future:
+                                                                  fetchUsersEmails(),
+                                                              // Fetch emails
+                                                              builder: (context,
+                                                                  snapshot) {
+                                                                if (!snapshot
+                                                                    .hasData) {
+                                                                  return CircularProgressIndicator();
+                                                                }
+
+                                                                final userEmails =
+                                                                    snapshot.data!;
+
+                                                                return Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .fromLTRB(
+                                                                          10,
+                                                                          0,
+                                                                          0,
+                                                                          0),
+                                                                  child:
+                                                                      DropdownButton<
+                                                                          String>(
+                                                                    dropdownColor:
+                                                                        AppColors
+                                                                            .primaryColor,
+                                                                    value:
+                                                                        selectedUserEmail,
+                                                                    hint: Text(
+                                                                      "Select Email to Assign",
+                                                                      style: TextStyle(
+                                                                          color: AppColors
+                                                                              .primaryColor),
+                                                                    ),
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .black),
+                                                                    items: userEmails.map<
+                                                                        DropdownMenuItem<
+                                                                            String>>((String
+                                                                        email) {
+                                                                      return DropdownMenuItem<
+                                                                          String>(
+                                                                        value:
+                                                                            email,
+                                                                        child: Text(
+                                                                          email,
+                                                                          style: TextStyle(
+                                                                              color:
+                                                                                  Colors.black),
+                                                                        ),
+                                                                      );
+                                                                    }).toList(),
+                                                                    onChanged: (String?
+                                                                        newValue) {
+                                                                      setState(() {
+                                                                        selectedUserEmail =
+                                                                            newValue;
+                                                                      });
+                                                                    },
+                                                                  ),
+                                                                );
+                                                              },
+                                                            ),
+                                                          ],
                                                         ),
-                                                      ],
-                                                    )
+                                                    ],
+                                                  )
                                                   : SizedBox(),
                                             ],
                                           ),
@@ -561,11 +671,13 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                             defaultStatus;
                                                         selectedUserEmail ??=
                                                             defaultEmail;
+                                                        selectedPriority ??= defaultPriority;
                                                         try {
                                                           grievanceDB.updateStatus(
                                                               widget.id!,
                                                               selectedUserEmail!,
-                                                              selectedStatus!);
+                                                              selectedStatus!,
+                                                              selectedPriority!);
                                                           print(
                                                               "${widget.id!}, ${selectedUserEmail!}, ${selectedStatus!}");
                                                           ScaffoldMessenger.of(

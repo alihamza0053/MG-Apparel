@@ -13,7 +13,7 @@ class GrievanceDB {
     await database.insert(newGrievance.toMap());
   }
 
-  // Read data from 'grievance' table and sort by ID
+  // Read data from 'grievance' table and sort by ID Descending
   final stream = Supabase.instance.client
       .from('grievance')
       .stream(primaryKey: ['id']).map((data) {
@@ -34,7 +34,7 @@ class GrievanceDB {
     }
   });
 
-  // Read data from 'grievance' table and sort by ID
+  // Read data from 'grievance' table and sort by ID Ascending
   final detailStream = Supabase.instance.client
       .from('grievance')
       .stream(primaryKey: ['id']).map((data) {
@@ -55,7 +55,37 @@ class GrievanceDB {
     }
   });
 
-  //update
+
+  Stream<List<dynamic>> statusStream (String status){
+    // Read data from 'grievance' table where status is 'pending' and sort by ID Ascending
+    final statusStream = Supabase.instance.client
+        .from('grievance')
+        .stream(primaryKey: ['id'])
+        .eq('status', status) // Filter grievances with status 'pending'
+        .map((data) {
+      try {
+        print("📡 Received Data from Supabase: $data"); // Debug log
+
+        // Convert to List<Grievance> and sort by ID
+        final grievances = data
+            .map((grievanceMap) => Grievance.fromMap(grievanceMap))
+            .toList()
+          ..sort((a, b) => a.id!.compareTo(b.id!)); // Sort by ID (ascending)
+
+        print("✅ Sorted Grievances: $grievances"); // Debug log
+        return grievances;
+      } catch (e) {
+        print("❌ Error processing grievance data: $e");
+        return [];
+      }
+    });
+    return statusStream;
+  }
+
+
+
+
+  //update whole grievance
   Future update(
       Grievance oldGrievancel,
       String title,
@@ -92,24 +122,25 @@ class GrievanceDB {
     }).eq('id', oldGrievancel.id!);
   }
 
-  //update
-  Future updateStatus(int id, String assignTo, String status) async {
+  //update grievance status and assign person
+  Future updateStatus(int id, String assignTo, String status, String priority) async {
+
+    //formating time
     TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
     DateTime now = DateTime.now();
     DateTime combinedDateTime = DateTime(
         now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
-
-// Send this `combinedDateTime.toIso8601String()` to Supabase
     String timestamp = combinedDateTime.toIso8601String();
 
     await database.update({
       'assignTo': assignTo,
       'status': status,
+      'priority': priority,
       'updateAt': timestamp,
     }).eq('id', id);
   }
 
-  //delete
+  //delete specific grievance
   Future delete(Grievance grievance) async {
     await database.delete().eq('id', grievance.id!);
   }

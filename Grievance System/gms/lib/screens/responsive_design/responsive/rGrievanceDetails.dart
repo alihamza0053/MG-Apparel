@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../credentials/login.dart';
 import 'package:gms/screens/responsive_design/desktop/login.dart';
 
 
-class ResponsiveLayout extends StatefulWidget {
-  const ResponsiveLayout({super.key});
+class rGrievanceDetails extends StatefulWidget {
+  const rGrievanceDetails({super.key});
 
   @override
-  State<ResponsiveLayout> createState() => _ResponsiveLayoutState();
+  State<rGrievanceDetails> createState() => _rGrievanceDetailsState();
 }
 
-class _ResponsiveLayoutState extends State<ResponsiveLayout> {
+class _rGrievanceDetailsState extends State<rGrievanceDetails> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint){

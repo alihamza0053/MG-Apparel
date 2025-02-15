@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 
-import '../credentials/login.dart';
 import 'package:gms/screens/responsive_design/desktop/login.dart';
+import 'package:gms/screens/responsive_design/mobile/login.dart';
 
 
-class ResponsiveLayout extends StatefulWidget {
-  const ResponsiveLayout({super.key});
+class rLogin extends StatefulWidget {
+  const rLogin({super.key});
 
   @override
-  State<ResponsiveLayout> createState() => _ResponsiveLayoutState();
+  State<rLogin> createState() => _rLoginState();
 }
 
-class _ResponsiveLayoutState extends State<ResponsiveLayout> {
+class _rLoginState extends State<rLogin> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint){
       if(constraint.maxWidth < 600){
-        return Text("data");
+        return mobileLogin();
       }else{
         return desktopLogin();
       }

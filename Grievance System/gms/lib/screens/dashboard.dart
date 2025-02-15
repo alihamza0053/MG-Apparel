@@ -21,7 +21,9 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   final grievanceDB = GrievanceDB();
   final usersDB = UserDatabase();
-  Color statusColor = Colors.orangeAccent;
+  Color statusColor = Colors.red;
+  Color priorityColor = Colors.orange;
+  String priority = "Low";
   String status = "Pending";
   AuthService authService = AuthService();
   String role = "hr";
@@ -136,6 +138,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     if(grievance.status == 'Closed'){
                       statusColor = Colors.green;
                     }
+                    if(grievance.priority == 'Low'){
+                      priorityColor = Colors.orange;
+                    }
+                    if(grievance.priority == 'High'){
+                      priorityColor = Colors.red;
+                    }
                     return Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: Column(
@@ -170,11 +178,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           ),
                                         ],
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                        color: statusColor,
-                                        child: Text(grievance.status,style: TextStyle(color: Colors.white),),
-                                      )
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                            color: priorityColor,
+                                            child: Text(grievance.priority,style: TextStyle(color: Colors.white),),
+                                          ),
+                                          SizedBox(width: 10,),
+                                          Container(
+                                            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                            color: statusColor,
+                                            child: Text(grievance.status,style: TextStyle(color: Colors.white),),
+                                          ),
+                                        ],
+                                      ),
+
                                     ],
                                   ),
                                   SizedBox(

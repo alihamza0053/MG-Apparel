@@ -15,6 +15,7 @@ class Grievance {
   String imgUrl;
   String assignTo;
   String status;
+  String priority;
   String updateAt;
   String? submittedBy;
 
@@ -33,6 +34,7 @@ class Grievance {
       required this.imgUrl,
       required this.assignTo,
       required this.status,
+      required this.priority,
       required this.updateAt,
       required this.submittedBy,
       });
@@ -55,6 +57,7 @@ class Grievance {
       imgUrl: map['imgUrl'] as String,
       assignTo: map['assignTo'] as String,
       status: map['status'] as String,
+      priority: map['priority'] as String,
       updateAt: map['updateAt'] as String,
       submittedBy: map['submittedBy'] as String,
     );
@@ -75,6 +78,7 @@ class Grievance {
       'imgUrl': imgUrl,
       'assignTo':assignTo,
       'status':status,
+      'priority':priority,
       'updateAt':updateAt,
       'submittedBy':submittedBy,
     };
