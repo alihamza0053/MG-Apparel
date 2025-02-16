@@ -33,7 +33,6 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
   String? userEmail = "";
   String fileName = "";
   html.File? fileObj;
-  String filePath = "";
 
   @override
   void initState() {
@@ -117,7 +116,7 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
       other: "",
       category: selectedCategory!,
       imgUrl: imgUrl,
-      assignTo: '',
+      assignTo: 'not assigned yet',
       status: 'Pending',
       priority: 'Low',
       updateAt: timestamp,
@@ -141,13 +140,8 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
-        ),
+        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+
         title: Text("New Grievance"),
       ),
       body: SingleChildScrollView(
@@ -248,14 +242,18 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
               FloatingActionButton.extended(
                 onPressed: () {
                   try {
-                    uploadFile(fileObj!);
+                    if(fileName.isEmpty){
+                      newGrievance();
+                    }else{
+                      uploadFile(fileObj!);
+                    }
                   } catch (e) {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text("Error: $e")));
                   }
                 },
-                icon: Icon(Icons.send),
-                label: Text("Submit"),
+                icon: Icon(Icons.send,color: Colors.white ,),
+                label: Text("Submit", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16),),
                 backgroundColor: AppColors.primaryColor,
               ),
             ],

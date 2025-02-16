@@ -2,16 +2,17 @@ import 'dart:html' as html;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:gms/theme/themeData.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pdf/widgets.dart' as pw;
 
-class GrievanceChart extends StatefulWidget {
+class mobileGrievanceChart extends StatefulWidget {
   @override
-  _GrievanceChartState createState() => _GrievanceChartState();
+  _mobileGrievanceChartState createState() => _mobileGrievanceChartState();
 }
 
-class _GrievanceChartState extends State<GrievanceChart> {
+class _mobileGrievanceChartState extends State<mobileGrievanceChart> {
   final SupabaseClient supabase = Supabase.instance.client;
 
   // Filters
@@ -155,9 +156,10 @@ class _GrievanceChartState extends State<GrievanceChart> {
               onPressed: () {
                 generateAndDownloadReport(grievanceCounts);
               },
-              icon: Icon(Icons.download),
-              label: Text("Download Report"),
+              icon: Icon(Icons.download,color: Colors.white,),
+              label: Text("Download Report",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),),
               style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               ),
             ),
@@ -271,7 +273,7 @@ class _GrievanceChartState extends State<GrievanceChart> {
                               padding: EdgeInsets.only(top: 6),
                               child: Text(
                                 grievanceCounts.keys.elementAt(index),
-                                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             );
                           }

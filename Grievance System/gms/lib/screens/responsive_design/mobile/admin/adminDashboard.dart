@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gms/screens/chart/GrievanceChart.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/credentials/login.dart';
-import 'package:gms/screens/credentials/userData.dart';
-import 'package:gms/screens/credentials/users/userDatabase.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
 import 'package:gms/screens/grievanceDetails.dart';
-import 'package:gms/screens/newGrievance.dart';
 import 'package:gms/screens/responsive_design/responsive/rNewGrievance.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../theme/themeData.dart';
+import '../../../chart/mobileChart.dart';
+import '../../responsive/rGrievanceDetails.dart';
 import '../../responsive/rLogin.dart';
 import '../../responsive/rUsers.dart';
-
 
 class mobileAdminDashboard extends StatefulWidget {
   const mobileAdminDashboard({super.key});
@@ -24,16 +22,12 @@ class mobileAdminDashboard extends StatefulWidget {
 
 class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
   final grievanceDB = GrievanceDB();
-  final usersDB = UserDatabase();
   Color statusColor = Colors.red;
   Color priorityColor = Colors.orange;
-  String priority = "Low";
-  String status = "Pending";
   AuthService authService = AuthService();
   String role = "hr";
 
-
-  @override
+  @override 
   void initState() {
     super.initState();
     fetchUserRole(); // Fetch user role when dashboard loads
@@ -64,203 +58,234 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => rNewGrievance()));
-          },
-          backgroundColor: Colors.blueAccent,
-          child: Text("Add",style: TextStyle(color: Colors.white),)
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => rNewGrievance()));
+        },
+        icon: Icon(Icons.add, color: Colors.white),
+        label: Text("Add", style: TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.primaryColor,
       ),
       appBar: AppBar(
-        title: Text("Dashboard", style: TextStyle(fontSize: 25),),
+        title: Text("Dashboard", style: TextStyle(fontSize: 20)),
         actions: [
-          IconButton(onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=> rUsers()));
-          }, icon: Icon(Icons.supervised_user_circle_outlined, color: Colors.white, size: 30,)),
-          GestureDetector(
-            onTap: (){
-              authService.signOut();
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>rLogin()));
-            },
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: Row(
-                children: [
-                  Text("Logout", style: TextStyle(color: Colors.white),),
-                  Icon(Icons.logout,color: Colors.white),
-
-                ],
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                authService.signOut();
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => rLogin()));
+              },
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
             ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(50),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Expanded(child: GrievanceChart()),
-            SizedBox(height: 10,),
-            Row(
-              children: [
-                SizedBox(width: 20,),
-                Text("Grievances",style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
-              ],
+            // Grievance Chart
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Text(
+                      "Grievance Overview",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      height: 200,
+                      child: mobileGrievanceChart(),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            Expanded(
-              child: StreamBuilder(stream: grievanceDB.stream, builder: (context, snapshot){
-                print("connection");
-                print(snapshot.error);
-                //loading
-                if(!snapshot.hasData){
-                  return Center(child: CircularProgressIndicator(),);
+            SizedBox(height: 20),
+
+            // Grievances List
+            Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              color: AppColors.primaryColor,
+              child: Center(
+                child: Text(
+                  "Grievances",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            StreamBuilder(
+              stream: grievanceDB.stream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: CircularProgressIndicator());
                 }
 
-                final  grievances = snapshot.data!;
-                print(grievances);
-
+                final grievances = snapshot.data!;
                 return ListView.builder(
-                    itemCount: grievances.length,
-                    itemBuilder: (context,index){
-                      final grievance = grievances[index];
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: grievances.length,
+                  itemBuilder: (context, index) {
+                    final grievance = grievances[index];
 
-                      if(grievance.status == 'Pending'){
-                        statusColor = Colors.red;
-                      }
-                      if(grievance.status == 'In Progress'){
-                        statusColor = Colors.blue;
-                      }
-                      if(grievance.status == 'Resolved'){
-                        statusColor = Colors.green;
-                      }
-                      if(grievance.status == 'Closed'){
-                        statusColor = Colors.green;
-                      }
-                      if(grievance.priority == 'Low'){
-                        priorityColor = Colors.orange;
-                      }
-                      if(grievance.priority == 'High'){
-                        priorityColor = Colors.red;
-                      }
-                      return Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: Column(
-                          children: [
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>Grievancedetails(id:grievance.id,role:'admin')));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                    border: Border.all(width: 1, color: AppColors.primaryColor),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              grievance.title,
-                                              style: TextStyle(
-                                                  fontSize: 18, fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            Text(
-                                              grievance.category,
-                                              style: TextStyle(
-                                                  fontSize: 12,color: AppColors.secondaryColor),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                              color: priorityColor,
-                                              child: Text(grievance.priority,style: TextStyle(color: Colors.white),),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            Container(
-                                              padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                              color: statusColor,
-                                              child: Text(grievance.status,style: TextStyle(color: Colors.white),),
-                                            ),
-                                          ],
-                                        ),
+                    // Set status and priority colors
+                    statusColor = _getStatusColor(grievance.status);
+                    priorityColor = _getPriorityColor(grievance.priority);
 
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      grievance.description,
+
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => rGrievanceDetails(
+                                      id: grievance.id, role: 'admin')));
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      grievance.title,
                                       style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w100,
-                                          color: Color(0xffb8b8b8)),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              "Assigned to: ",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                              ),
-                                            ),
-                                            Text(
-                                              grievance.assignTo,
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                  ),
 
-                                        TextButton(
-                                            style: ButtonStyle(
-                                              backgroundColor: MaterialStateProperty.all(Colors.black54),
-
-                                            ),
-                                            onPressed: (){
-                                              Navigator.push(context, MaterialPageRoute(builder: (context)=>Grievancedetails(id:grievance.id,role:'admin')));
-                                              print("grievance.id");
-                                              print(grievance.id);
-                                            }, child: Text("View Details",style: TextStyle(color: Colors.white,fontSize: 12),)),
-                                      ],
-
-                                    )
-                                  ],
+                                ],
+                              ),
+                              Text(grievance.category, style: TextStyle(color: AppColors.secondaryColor)),
+                              SizedBox(height: 5),
+                              Text(
+                                grievance.description,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
                                 ),
                               ),
-                            ),
-                          ],
+                              SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: priorityColor,
+                                          borderRadius:
+                                          BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          grievance.priority,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: statusColor,
+                                          borderRadius:
+                                          BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          grievance.status,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  rGrievanceDetails(
+                                                      id: grievance.id,
+                                                      role: 'admin')));
+                                    },
+                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black54)),
+                                    child: Text("View Details", style: TextStyle(color: Colors.white, fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    });
-              }),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),
       ),
     );
+  }
+
+  // Helper function to get status color
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Pending':
+        return Colors.red;
+      case 'In Progress':
+        return Colors.blue;
+      case 'Resolved':
+      case 'Closed':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Helper function to get priority color
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'Low':
+        return Colors.orange;
+      case 'High':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

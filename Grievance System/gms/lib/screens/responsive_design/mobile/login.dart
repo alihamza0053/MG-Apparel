@@ -176,7 +176,7 @@ class _mobileLoginState extends State<mobileLogin> {
                 SizedBox(
                   height: 10,
                 ),
-                Text("MLogin", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
+                Text("Login", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
                 SizedBox(
                   height: 20,
                 ),

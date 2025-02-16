@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
-import 'package:gms/screens/responsive_design/desktop/login.dart';
+import 'package:gms/screens/responsive_design/mobile/login.dart';
+import 'package:gms/screens/responsive_design/responsive/rGrievanceDetails.dart';
 import 'package:gms/screens/responsive_design/responsive/rLogin.dart';
 import 'package:gms/screens/responsive_design/responsive/rNewGrievance.dart';
 import 'package:gms/theme/themeData.dart';
@@ -8,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../database/grievance.dart';
-
 import '../../../grievanceDetails.dart';
 import '../../../newGrievance.dart';
 import '../grievanceDetails.dart';
@@ -53,6 +53,7 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
     super.initState();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -65,164 +66,129 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
         child: Text("Add",style: TextStyle(color: Colors.white),),
       ),
       appBar: AppBar(
-        title: const Text("Dashboard",style: TextStyle(fontSize: 25),),
+        title: const Text("Dashboard",style: TextStyle(fontSize: 20),),
         actions: [
-          GestureDetector(
-            onTap: () {
-              authService.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => rLogin()));
-            },
-
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: const Row(
-                children: [Text("Logout", style: TextStyle(color: Colors.white),), Icon(Icons.logout,color: Colors.white,)],
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                authService.signOut();
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => rLogin()));
+              },
+              icon: const Icon(Icons.logout, color: Colors.white),
+              label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
             ),
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(200, 20, 200, 20),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            int crossAxisCount = constraints.maxWidth > 900 ? 2 : 1; // Responsive columns
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          children: [
+            Text("All Grievances", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            SizedBox(height: 20),
+            Expanded(
+              child: StreamBuilder(
+                  stream: filterStream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-            return Column(
-              children: [
-                Text("All Grievances",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
-                SizedBox(height: 50,),
-                Expanded(
-                  child: StreamBuilder(
-                      stream: filterStream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(child: CircularProgressIndicator());
+                    final grievances = snapshot.data!;
+
+                    return ListView.builder(
+                      itemCount: grievances.length,
+                      itemBuilder: (context, index) {
+                        final grievance = grievances[index];
+
+                        switch (grievance.status) {
+                          case 'Pending':
+                            statusColor = Colors.red;
+                            break;
+                          case 'In Progress':
+                            statusColor = Colors.blue;
+                            break;
+                          case 'Resolved':
+                          case 'Closed':
+                            statusColor = Colors.green;
+                            break;
                         }
 
-                        final grievances = snapshot.data!;
+                        String formatDate(String isoString) {
+                          DateTime dateTime = DateTime.parse(isoString);
+                          return DateFormat('yyyy-MM-dd').format(dateTime);
+                        }
 
-                        return GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 30,
-                            mainAxisSpacing: 30,
-                            childAspectRatio: 3.0, // Adjust card size
-                          ),
-                          itemCount: grievances.length,
-                          itemBuilder: (context, index) {
-                            final grievance = grievances[index];
+                        String formattedDate = formatDate(grievance.updateAt);
 
-                            switch (grievance.status) {
-                              case 'pending':
-                                statusColor = Colors.orange;
-                                break;
-                              case 'in progress':
-                                statusColor = Colors.blue;
-                                break;
-                              case 'resolved':
-                                statusColor = Colors.green;
-                                break;
-                              case 'closed':
-                                statusColor = Colors.red;
-                                break;
-                            }
-                            String formatDate(String isoString) {
-                              DateTime dateTime = DateTime.parse(isoString); // Parse ISO string
-                              return DateFormat('yyyy-MM-dd').format(dateTime); // Format as YYYY-MM-DD
-                            }
-                            String formattedDate = formatDate(grievance.updateAt);
-
-
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Grievancedetails(
-                                            id: grievance.id, role: 'employee')));
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    border: Border.all(width: 1, color: AppColors.primaryColor),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              grievance.title,
-                                              style: TextStyle(
-                                                  fontSize: 18, fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            Text(
-                                              grievance.category,
-                                              style: TextStyle(
-                                                  fontSize: 12,color: AppColors.secondaryColor),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          color: statusColor,
-                                          child: Text(
-                                            grievance.status,
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      grievance.description,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w100,
-                                          color: Color(0xffb8b8b8)),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Text("Assigned to: ", style: TextStyle(fontSize: 14)),
-                                            SizedBox(width: 10,),
-                                            Text(grievance.assignTo, style: const TextStyle(fontSize: 12,color: AppColors.secondaryColor))
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Text("Updated at: ", style: TextStyle(fontSize: 14)),
-                                            SizedBox(width: 10,),
-                                            Text(formattedDate, style: const TextStyle(fontSize: 12,color: AppColors.secondaryColor))
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(),
-                                  ],
-                                ),
-                              ),
-                            );
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => rGrievanceDetails(
+                                        id: grievance.id, role: 'employee')));
                           },
+                          child: Card(
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            elevation: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          grievance.title,
+                                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: statusColor,
+                                          borderRadius: BorderRadius.circular(5),
+                                        ),
+                                        child: Text(
+                                          grievance.status,
+                                          style: const TextStyle(color: Colors.white, fontSize: 12),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    grievance.description,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text("Assigned to: ${grievance.assignTo}", style: TextStyle(fontSize: 12)),
+                                      Text("Updated at: $formattedDate", style: TextStyle(fontSize: 12))
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         );
-                      }),
-                ),
-              ],
-            );
-          },
+                      },
+                    );
+                  }),
+            ),
+          ],
         ),
       ),
     );

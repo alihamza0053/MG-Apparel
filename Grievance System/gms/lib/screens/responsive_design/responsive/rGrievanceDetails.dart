@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:gms/screens/responsive_design/desktop/grievanceDetails.dart';
 
 import 'package:gms/screens/responsive_design/desktop/login.dart';
+import 'package:gms/screens/responsive_design/mobile/grievanceDetails.dart';
 
 
 class rGrievanceDetails extends StatefulWidget {
-  const rGrievanceDetails({super.key});
+  int? id;
+  String? role;
+  rGrievanceDetails({super.key, required this.id, required this.role});
 
   @override
   State<rGrievanceDetails> createState() => _rGrievanceDetailsState();
@@ -15,9 +19,9 @@ class _rGrievanceDetailsState extends State<rGrievanceDetails> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint){
       if(constraint.maxWidth < 600){
-        return Text("data");
+        return mobileGrievanceDetails(id: widget.id, role: widget.role);
       }else{
-        return desktopLogin();
+        return desktopGrievanceDetails(id: widget.id, role: widget.role);
       }
     });
   }

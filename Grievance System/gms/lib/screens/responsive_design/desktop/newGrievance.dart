@@ -67,7 +67,8 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     reader.onLoadEnd.listen((event) async {
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse("https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
+        Uri.parse(
+            "https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
       );
 
       request.files.add(
@@ -99,7 +100,8 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
   Future<void> newGrievance() async {
     TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
     DateTime now = DateTime.now();
-    DateTime combinedDateTime = DateTime(now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
+    DateTime combinedDateTime = DateTime(
+        now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
 
     // Send this `combinedDateTime.toIso8601String()` to Supabase
     String timestamp = combinedDateTime.toIso8601String();
@@ -116,17 +118,18 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       other: "",
       category: selectedCategory!,
       imgUrl: imgUrl,
-      assignTo: '',
+      assignTo: 'not assigned yet',
       status: 'Pending',
       priority: 'Low',
       updateAt: timestamp,
       submittedBy: userEmail,
     );
 
+
     try {
       grievanceDB.createGrievance(newGrievance);
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Grievance Submitted")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Grievance Submitted")));
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -136,162 +139,195 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDesktop = MediaQuery.of(context).size.width > 600; // Check if the screen is desktop-sized
+    final bool isDesktop = MediaQuery.of(context).size.width >
+        600; // Check if the screen is desktop-sized
 
     return Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
+      appBar: AppBar(
+        leading: IconButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: Icon(Icons.arrow_back),),
-            title: Text("New Grievance"),
-          ),
-          body: Center(
-              child: Container(
-                width: isDesktop ? 800 : double.infinity, // Adjust width for desktop
-                padding: EdgeInsets.all(16),
-                child: SingleChildScrollView(
-                    child: Column(
-                        children: [
-                        Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Column(
-                              children: [
-                              Text(
-                              "Submit New Grievance",
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            _buildTextField(title, "Title", Icons.title),
-                            SizedBox(height: 20),
-                            _buildTextField(des, "Description", Icons.description, maxLines: 5),
-                            SizedBox(height: 20),
-                            Text(
-                              "Personal Info:",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: AppColors.primaryColor,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            if (isDesktop)
-                        Row(
-                    children: [
-                    Expanded(child: _buildTextField(my_name, "Name", Icons.person)),
-                SizedBox(width: 16),
-                Expanded(child: _buildTextField(my_id, "Employee ID", Icons.assignment_ind)),
-                ],
-              )
-              else
-              Column(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
+        title: Text("New Grievance"),
+      ),
+      body: Center(
+        child: Container(
+          width: isDesktop ? 800 : double.infinity, // Adjust width for desktop
+          padding: EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-              _buildTextField(my_name, "Name", Icons.person),
-          SizedBox(height: 10),
-          _buildTextField(my_id, "Employee ID", Icons.assignment_ind),
-          ],
-        ),
-        SizedBox(height: 10),
-        _buildTextField(my_depart, "Department", Icons.business),
-        SizedBox(height: 20),
-        Text(
-          "Complain Against:",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: AppColors.primaryColor,
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Submit New Grievance",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        _buildTextField(title, "Title", Icons.title),
+                        SizedBox(height: 20),
+                        _buildTextField(des, "Description", Icons.description,
+                            maxLines: 5),
+                        SizedBox(height: 20),
+                        Text(
+                          "Personal Info:",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        if (isDesktop)
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: _buildTextField(
+                                      my_name, "Name", Icons.person)),
+                              SizedBox(width: 16),
+                              Expanded(
+                                  child: _buildTextField(my_id, "Employee ID",
+                                      Icons.assignment_ind)),
+                            ],
+                          )
+                        else
+                          Column(
+                            children: [
+                              _buildTextField(my_name, "Name", Icons.person),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  my_id, "Employee ID", Icons.assignment_ind),
+                            ],
+                          ),
+                        SizedBox(height: 10),
+                        _buildTextField(
+                            my_depart, "Department", Icons.business),
+                        SizedBox(height: 20),
+                        Text(
+                          "Complain Against:",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: AppColors.primaryColor,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        if (isDesktop)
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: _buildTextField(complain_against_name,
+                                      "Name", Icons.person)),
+                              SizedBox(width: 16),
+                              Expanded(
+                                  child: _buildTextField(
+                                      complain_against_id,
+                                      "Employee ID (optional)",
+                                      Icons.assignment_ind)),
+                            ],
+                          )
+                        else
+                          Column(
+                            children: [
+                              _buildTextField(
+                                  complain_against_name, "Name", Icons.person),
+                              SizedBox(height: 10),
+                              _buildTextField(
+                                  complain_against_id,
+                                  "Employee ID (optional)",
+                                  Icons.assignment_ind),
+                            ],
+                          ),
+                        SizedBox(height: 10),
+                        _buildTextField(complain_against_depart, "Department",
+                            Icons.business),
+                        SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          value: selectedCategory,
+                          decoration: InputDecoration(
+                            labelText: "Select Category",
+                            prefixIcon: Icon(Icons.category),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: [
+                            'Discrimination',
+                            'Pay and Benefits',
+                            'Work Conditions',
+                            'Workplace Harassment',
+                          ].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedCategory = newValue;
+                            });
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        OutlinedButton(
+                          onPressed: pickAndUploadFile,
+                          child:
+                              Text(fileName == "" ? "Attach File" : fileName),
+                        ),
+                        SizedBox(height: 20),
+                        FloatingActionButton.extended(
+                          onPressed: () {
+                            try {
+                              if(fileName.isEmpty){
+                                newGrievance();
+                              }else{
+                                uploadFile(fileObj!);
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Error: $e")));
+                            }
+                          },
+                          icon: Icon(
+                            Icons.send,
+                            color: Colors.white,
+                          ),
+                          label: Text(
+                            "Submit",
+                            style: TextStyle(color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold),
+                          ),
+                          backgroundColor: AppColors.primaryColor,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        SizedBox(height: 10),
-        if (isDesktop)
-    Row(
-      children: [
-        Expanded(child: _buildTextField(complain_against_name, "Name", Icons.person)),
-        SizedBox(width: 16),
-        Expanded(child: _buildTextField(complain_against_id, "Employee ID (optional)", Icons.assignment_ind)),
-      ],
-    )
-    else
-    Column(
-    children: [
-    _buildTextField(complain_against_name, "Name", Icons.person),
-    SizedBox(height: 10),
-    _buildTextField(complain_against_id, "Employee ID (optional)", Icons.assignment_ind),
-    ],
-    ),
-    SizedBox(height: 10),
-    _buildTextField(complain_against_depart, "Department", Icons.business),
-    SizedBox(height: 20),
-    DropdownButtonFormField<String>(
-    value: selectedCategory,
-    decoration: InputDecoration(
-    labelText: "Select Category",
-    prefixIcon: Icon(Icons.category),
-    border: OutlineInputBorder(
-    borderRadius: BorderRadius.circular(10),
-    ),),
-    items: [
-    'Discrimination',
-    'Pay and Benefits',
-    'Work Conditions',
-    'Workplace Harassment',
-    'Others'
-    ].map((String value) {
-    return DropdownMenuItem<String>(
-    value: value,
-    child: Text(value),
-    );
-    }).toList(),
-    onChanged: (String? newValue) {
-    setState(() {
-    selectedCategory = newValue;
-    });
-    },
-    ),
-    SizedBox(height: 20),
-    OutlinedButton(
-    onPressed: pickAndUploadFile,
-    child: Text(fileName == "" ? "Attach File" : fileName),
-    ),
-    SizedBox(height: 20),
-    ElevatedButton(
-    onPressed: () {
-    try {
-    uploadFile(fileObj!);
-    } catch (e) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Error: $e")));
-    }
-    },
-    child: Text("Submit"),
-    style: ElevatedButton.styleFrom(
-    backgroundColor: AppColors.primaryColor,
-    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
+      ),
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, IconData icon, {int maxLines = 1}) {
+  Widget _buildTextField(
+      TextEditingController controller, String hintText, IconData icon,
+      {int maxLines = 1}) {
     return TextField(
       controller: controller,
       maxLines: maxLines,

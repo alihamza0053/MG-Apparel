@@ -5,6 +5,7 @@ import 'package:gms/screens/credentials/users/user.dart';
 import 'package:gms/screens/credentials/users/userDatabase.dart';
 import 'package:gms/screens/dashboard.dart';
 import 'package:gms/screens/employee/employee.dart';
+import 'package:gms/screens/responsive_design/responsive/rLogin.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -48,12 +49,17 @@ void createUser() async{
 
 
 
+  final newUser;
+  if(email.text == "ceo@mgapparel.com"){
+    newUser = Users(email: email.text, role: "ceo");
 
-    final newUser = Users(email: email.text, role: "employee");
+  }else{
+    newUser = Users(email: email.text, role: "employee");
+  }
     try{
       users.createUser(newUser);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Account Created")));
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Employee()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>rLogin()));
     }catch(e){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error $e")));
     }

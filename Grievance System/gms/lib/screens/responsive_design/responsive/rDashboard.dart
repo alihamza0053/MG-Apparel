@@ -28,6 +28,10 @@ class _rDashboardState extends State<rDashboard> {
       if(constraint.maxWidth < 600){
         Widget screen = mobileEmployeeDashboard();
 
+        if(widget.role == 'ceo'){
+          screen = mobileCeoDashboard();
+        }
+
         if(widget.role == 'employee'){
           screen =  mobileEmployeeDashboard();
         }
@@ -38,16 +42,19 @@ class _rDashboardState extends State<rDashboard> {
           screen = mobileAdminDashboard();
         }
 
-        if(widget.email == "ceo@mgapparel.com"){
-          screen = mobileCeoDashboard();
-        }
+
 
 
 
         return screen;
+
       }else{
 
         Widget screen = desktopEmployeeDashboard();
+
+        if(widget.role == 'ceo'){
+          screen = desktopCeoDashboard();
+        }
 
         if(widget.role == 'employee'){
           screen =  desktopEmployeeDashboard();
@@ -59,9 +66,8 @@ class _rDashboardState extends State<rDashboard> {
           screen = desktopAdminDashboard();
         }
 
-        if(widget.email == "ceo@mgapparel.com"){
-          screen = desktopCeoDashboard();
-        }
+
+
 
         return screen;
       }

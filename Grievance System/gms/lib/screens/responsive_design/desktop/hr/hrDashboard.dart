@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:gms/screens/chart/GrievanceChart.dart';
+import 'package:gms/screens/chart/desktopChart.dart';
+import 'package:gms/screens/chart/mobileChart.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
-import 'package:gms/screens/responsive_design/desktop/login.dart';
-import 'package:gms/theme/themeData.dart';
-import 'package:intl/intl.dart';
+import 'package:gms/screens/credentials/login.dart';
+import 'package:gms/screens/credentials/users/userDatabase.dart';
+import 'package:gms/screens/database/grievanceDatabase.dart';
+import 'package:gms/screens/grievanceDetails.dart';
+import 'package:gms/screens/newGrievance.dart';
+import 'package:gms/screens/responsive_design/responsive/rGrievanceDetails.dart';
+import 'package:gms/screens/responsive_design/responsive/rNewGrievance.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../database/grievance.dart';
-import '../../../grievanceDetails.dart';
-import '../../../newGrievance.dart';
-import '../grievanceDetails.dart';
-import '../newGrievance.dart';
+import '../../../../theme/themeData.dart';
+import '../../responsive/rLogin.dart';
+import '../../responsive/rUsers.dart';
 
 class desktopHrDashboard extends StatefulWidget {
   const desktopHrDashboard({super.key});
@@ -19,209 +23,271 @@ class desktopHrDashboard extends StatefulWidget {
 }
 
 class _desktopHrDashboardState extends State<desktopHrDashboard> {
-  Color statusColor = Colors.orangeAccent;
+  final grievanceDB = GrievanceDB();
+  final usersDB = UserDatabase();
+  Color statusColor = Colors.red;
+  Color priorityColor = Colors.orange;
   AuthService authService = AuthService();
-  Stream<List<Grievance>>? filterStream;
-
-  void initializeStream() {
-    String? currentUserEmail = authService.getUserEmail();
-
-    if (currentUserEmail != null) {
-      setState(() {
-        filterStream = Supabase.instance.client
-            .from('grievance')
-            .stream(primaryKey: ['id'])
-            .eq('assignTo', currentUserEmail)
-            .map((data) {
-          try {
-            return data.map((grievanceMap) => Grievance.fromMap(grievanceMap)).toList()
-              ..sort((a, b) => a.id!.compareTo(b.id!));
-          } catch (e) {
-            return [];
-          }
-        });
-      });
-    }
-  }
+  String role = "hr";
 
   @override
   void initState() {
-    initializeStream();
     super.initState();
+    fetchUserRole();
+  }
+
+  Future<void> fetchUserRole() async {
+    try {
+      SupabaseClient supabase = Supabase.instance.client;
+      final user = supabase.auth.currentUser;
+      if (user == null) return;
+
+      final response = await supabase
+          .from('users')
+          .select('role')
+          .eq('email', user.email as Object)
+          .maybeSingle();
+
+      if (response != null && response['role'] != null) {
+        setState(() {
+          role = response['role'];
+        });
+      }
+    } catch (e) {
+      print("Error fetching user role: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => NewGrievanceScreen()));
-        },
-        backgroundColor: Colors.blueAccent,
-        child: Text("Add",style: TextStyle(color: Colors.white),),
-      ),
-      appBar: AppBar(
-        title: const Text("Dashboard",style: TextStyle(fontSize: 25,fontWeight: FontWeight.bold)),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              authService.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => desktopLogin()));
-            },
-
+      body: Row(
+        children: [
+          _buildSidebar(),
+          Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 20, 0),
-              child: const Row(
-                children: [Text("Logout", style: TextStyle(color: Colors.white),), Icon(Icons.logout,color: Colors.white,)],
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    "Grievance Overview",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Expanded(child: desktopGrievanceChart()),
+                        SizedBox(height: 10),
+                        // Grievances List
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          width: double.infinity,
+                          color: AppColors.primaryColor,
+                          child: Center(
+                            child: Text(
+                              "Grievances",
+                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        _buildGrievanceList(),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(200, 20, 200, 20),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            int crossAxisCount = constraints.maxWidth > 900 ? 2 : 1; // Responsive columns
-
-            return Column(
-              children: [
-                Text("Assigned Grievances",style: TextStyle(fontSize: 30),),
-                SizedBox(height: 50,),
-                Expanded(
-                  child: StreamBuilder(
-                      stream: filterStream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
-
-                        final grievances = snapshot.data!;
-
-                        return GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: crossAxisCount,
-                            crossAxisSpacing: 30,
-                            mainAxisSpacing: 30,
-                            childAspectRatio: 3.0, // Adjust card size
-                          ),
-                          itemCount: grievances.length,
-                          itemBuilder: (context, index) {
-                            final grievance = grievances[index];
-
-                            switch (grievance.status) {
-                              case 'pending':
-                                statusColor = Colors.red;
-                                break;
-                              case 'in progress':
-                                statusColor = Colors.orange;
-                                break;
-                              case 'resolved':
-                                statusColor = Colors.green;
-                                break;
-                              case 'closed':
-                                statusColor = Colors.green;
-                                break;
-                            }
-                            String formatDate(String isoString) {
-                              DateTime dateTime = DateTime.parse(isoString); // Parse ISO string
-                              return DateFormat('yyyy-MM-dd').format(dateTime); // Format as YYYY-MM-DD
-                            }
-                            String formattedDate = formatDate(grievance.updateAt);
-
-
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Grievancedetails(
-                                            id: grievance.id, role: 'hr')));
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                    border: Border.all(width: 1, color: AppColors.primaryColor),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text(
-                                              grievance.title,
-                                              style: TextStyle(
-                                                  fontSize: 18, fontWeight: FontWeight.bold),
-                                            ),
-                                            SizedBox(width: 10,),
-                                            Text(
-                                              grievance.category,
-                                              style: TextStyle(
-                                                  fontSize: 12,color: AppColors.secondaryColor),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                          color: statusColor,
-                                          child: Text(
-                                            grievance.status,
-                                            style: const TextStyle(color: Colors.white),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      grievance.description,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w100,
-                                          color: Color(0xffb8b8b8)),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Text("Assigned to: ", style: TextStyle(fontSize: 14)),
-                                            SizedBox(width: 10,),
-                                            Text(grievance.assignTo, style: const TextStyle(fontSize: 12,color: AppColors.secondaryColor))
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Text("Updated at: ", style: TextStyle(fontSize: 14)),
-                                            SizedBox(width: 10,),
-                                            Text(formattedDate, style: const TextStyle(fontSize: 12,color: AppColors.secondaryColor))
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }),
-                ),
-              ],
-            );
-          },
-        ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => rNewGrievance()));
+        },
+        icon: Icon(Icons.add, color: Colors.white),
+        label: Text("Add Grievance", style: TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.primaryColor,
       ),
     );
+  }
+
+  Widget _buildSidebar() {
+    return Container(
+      width: 250,
+      color: Colors.black87,
+      padding: EdgeInsets.symmetric(vertical: 30),
+      child: Column(
+        children: [
+          Text("HR Dashboard", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          SizedBox(height: 20),
+          _buildSidebarButton("Logout", Icons.logout, () {
+            authService.signOut();
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => rLogin()));
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarButton(String title, IconData icon, VoidCallback onPressed) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.white),
+      title: Text(title, style: TextStyle(color: Colors.white)),
+      onTap: onPressed,
+    );
+  }
+
+  Widget _buildHeader() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text("Grievances", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildGrievanceList() {
+    return Expanded(
+      child: StreamBuilder(
+        stream: grievanceDB.stream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          final grievances = snapshot.data!;
+
+          return ListView.builder(
+            itemCount: grievances.length,
+            itemBuilder: (context, index) {
+              final grievance = grievances[index];
+
+              // Set status and priority colors
+              statusColor = _getStatusColor(grievance.status);
+              priorityColor = _getPriorityColor(grievance.priority);
+              return Card(
+                elevation: 3,
+                margin: EdgeInsets.symmetric(vertical: 10),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(15),
+                  title: Text(grievance.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(grievance.category, style: TextStyle(color: AppColors.secondaryColor)),
+                      SizedBox(height: 5),
+                      Text(grievance.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                      SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: priorityColor,
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  grievance.priority,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12),
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: statusColor,
+                                  borderRadius:
+                                  BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  grievance.status,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 12),
+                                ),
+                              ),
+                            ],
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => rGrievanceDetails(id: grievance.id, role: 'hr'),
+                              ));
+                            },
+                            style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black54)),
+                            child: Text("View Details", style: TextStyle(color: Colors.white, fontSize: 14)),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(String priority, String status) {
+    Color getStatusColor(String status) {
+      switch (status) {
+        case 'Pending': return Colors.red;
+        case 'In Progress': return Colors.blue;
+        case 'Resolved': return Colors.green;
+        case 'Closed': return Colors.green;
+        default: return Colors.grey;
+      }
+    }
+    return Row(
+      children: [
+        Chip(label: Text(priority), backgroundColor: Colors.orange),
+        SizedBox(width: 10),
+        Chip(label: Text(status), backgroundColor: getStatusColor(status)),
+      ],
+    );
+  }
+
+  // Helper function to get status color
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Pending':
+        return Colors.red;
+      case 'In Progress':
+        return Colors.blue;
+      case 'Resolved':
+      case 'Closed':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  // Helper function to get priority color
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'Low':
+        return Colors.orange;
+      case 'High':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
   }
 }

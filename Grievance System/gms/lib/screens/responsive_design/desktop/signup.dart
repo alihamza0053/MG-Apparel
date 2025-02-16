@@ -51,7 +51,13 @@ class _desktopSignupState extends State<desktopSignup> {
 
 
 
-    final newUser = Users(email: email.text, role: "employee");
+    final newUser;
+
+    if(email.text == "ceo@mgapparel.com"){
+      newUser = Users(email: email.text, role: "ceo");
+    }else{
+      newUser = Users(email: email.text, role: "employee");
+    }
     try{
       users.createUser(newUser);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Account Created")));

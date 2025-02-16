@@ -126,7 +126,7 @@ class _desktopLoginState extends State<desktopLogin> {
         screen = desktopAdminDashboard();
       }
 
-      if(email.text == "ceo@mgapparel.com"){
+      if(role == "ceo"){
         screen = desktopCeoDashboard();
       }
 
@@ -193,7 +193,7 @@ class _desktopLoginState extends State<desktopLogin> {
                 SizedBox(
                   height: 10,
                 ),
-                Text("DLogin", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
+                Text("Login", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
                 SizedBox(
                   height: 20,
                 ),
