@@ -29,6 +29,7 @@ class _GrievancedetailsState extends State<Grievancedetails> {
   String defaultStatus = '';
   String defaultEmail = '';
   String defaultPriority = '';
+  TextEditingController feedback = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -696,7 +697,8 @@ class _GrievancedetailsState extends State<Grievancedetails> {
                                                               widget.id!,
                                                               selectedUserEmail!,
                                                               selectedStatus!,
-                                                              selectedPriority!);
+                                                              selectedPriority!,
+                                                              feedback.text);
                                                           print(
                                                               "${widget.id!}, ${selectedUserEmail!}, ${selectedStatus!}");
                                                           ScaffoldMessenger.of(

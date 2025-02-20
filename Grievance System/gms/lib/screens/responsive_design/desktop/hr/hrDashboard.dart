@@ -125,6 +125,7 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
       padding: EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
+          Image(image: AssetImage("assets/images/logo.png"),width: 150,),
           Text("HR Dashboard", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           SizedBox(height: 20),
           _buildSidebarButton("Logout", Icons.logout, () {

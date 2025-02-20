@@ -179,7 +179,7 @@ class _desktopLoginState extends State<desktopLogin> {
           padding: const EdgeInsets.all(18.0),
           child: Container(
             width:400,
-            height: 350,
+            height: 400,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
                 border:Border.all(width: 2, color: AppColors.primaryColor),

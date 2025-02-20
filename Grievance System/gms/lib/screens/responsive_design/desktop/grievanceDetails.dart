@@ -30,6 +30,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
   String defaultStatus = '';
   String defaultEmail = '';
   String defaultPriority = '';
+  TextEditingController feedback = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -132,13 +134,22 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                                 SizedBox(height: 20),
                                 _buildSectionTitle("Assigned to:"),
                                 _buildAssignedTo(grievance),
+                                SizedBox(height: 20),
+                                _buildSectionTitle("Feedback:"),
+                                _buildFeedback(grievance),
                                 SizedBox(height: 30),
                                 if (widget.role == "admin" || widget.role == "hr")
                                   _buildUpdateSection(grievance),
                                 SizedBox(height: 20),
+
+                                _buildTextField(feedback, "Feedback", Icons.feedback,
+                                    maxLines: 5),
+                                SizedBox(height: 20),
+
                                 if (widget.role == "admin" || widget.role == "hr")
                                   _buildUpdateButton(),
                               ],
+
                             ),
                           ),
                         );
@@ -147,6 +158,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                   },
                 ),
               ),
+
             ],
           ),
         ),
@@ -241,6 +253,19 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
       padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
       child: Text(
         grievance.assignTo,
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeedback(Grievance grievance) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
+      child: Text(
+        grievance.feedback,
         style: TextStyle(
           fontSize: 16,
           color: Colors.black87,
@@ -348,6 +373,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
               selectedUserEmail!,
               selectedStatus!,
               selectedPriority!,
+              feedback.text,
             );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Grievance Updated")),
@@ -378,5 +404,21 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
     final response = await Supabase.instance.client.from('users').select('email');
     if (response.isEmpty) return [];
     return response.map<String>((row) => row['email'] as String).toList();
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String hintText, IconData icon,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hintText,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 }

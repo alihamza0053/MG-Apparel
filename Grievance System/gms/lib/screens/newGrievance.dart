@@ -124,6 +124,7 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
       assignTo: '',
       status: 'Pending',
       priority: 'Low',
+      feedback: 'Pending',
       updateAt: timestamp,
       submittedBy: userEmail,
     );

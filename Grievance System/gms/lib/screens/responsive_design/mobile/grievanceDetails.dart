@@ -30,6 +30,8 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
   String defaultStatus = '';
   String defaultEmail = '';
   String defaultPriority = '';
+  TextEditingController feedback = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -129,11 +131,21 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
                 _buildAssignedTo(grievance),
                 SizedBox(height: 20),
 
+                // Feedback Section
+                _buildSectionTitle("Feedback:"),
+                _buildFeedback(grievance),
+                SizedBox(height: 20),
+
+
                 // Update Section (for admin/hr)
                 if (widget.role == "admin" || widget.role == "hr")
                   _buildUpdateSection(grievance),
                 SizedBox(height: 20),
 
+                _buildTextField(feedback, "Feedback", Icons.feedback,
+                    maxLines: 5),
+
+                SizedBox(height: 20),
                 // Update Button (for admin/hr)
                 if (widget.role == "admin" || widget.role == "hr")
                   _buildUpdateButton(),
@@ -234,6 +246,19 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
       padding: const EdgeInsets.fromLTRB(10, 8, 0, 0),
       child: Text(
         grievance.assignTo,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeedback(Grievance grievance) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 8, 0, 0),
+      child: Text(
+        grievance.feedback,
         style: TextStyle(
           fontSize: 14,
           color: Colors.black87,
@@ -344,6 +369,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
               selectedUserEmail!,
               selectedStatus!,
               selectedPriority!,
+              feedback.text,
             );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Grievance Updated")),
@@ -374,5 +400,21 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
     final response = await Supabase.instance.client.from('users').select('email');
     if (response.isEmpty) return [];
     return response.map<String>((row) => row['email'] as String).toList();
+  }
+
+  Widget _buildTextField(
+      TextEditingController controller, String hintText, IconData icon,
+      {int maxLines = 1}) {
+    return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      decoration: InputDecoration(
+        hintText: hintText,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 }

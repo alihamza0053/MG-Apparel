@@ -123,7 +123,7 @@ class GrievanceDB {
   }
 
   //update grievance status and assign person
-  Future updateStatus(int id, String assignTo, String status, String priority) async {
+  Future updateStatus(int id, String assignTo, String status, String priority,String feedback) async {
 
     //formating time
     TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
@@ -136,6 +136,7 @@ class GrievanceDB {
       'assignTo': assignTo,
       'status': status,
       'priority': priority,
+      'feedback':feedback,
       'updateAt': timestamp,
     }).eq('id', id);
   }

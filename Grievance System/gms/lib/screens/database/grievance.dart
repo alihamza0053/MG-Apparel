@@ -16,6 +16,7 @@ class Grievance {
   String assignTo;
   String status;
   String priority;
+  String feedback;
   String updateAt;
   String? submittedBy;
 
@@ -35,6 +36,7 @@ class Grievance {
       required this.assignTo,
       required this.status,
       required this.priority,
+      required this.feedback,
       required this.updateAt,
       required this.submittedBy,
       });
@@ -58,6 +60,7 @@ class Grievance {
       assignTo: map['assignTo'] as String,
       status: map['status'] as String,
       priority: map['priority'] as String,
+      feedback: map['feedback'] as String,
       updateAt: map['updateAt'] as String,
       submittedBy: map['submittedBy'] as String,
     );
@@ -79,6 +82,7 @@ class Grievance {
       'assignTo':assignTo,
       'status':status,
       'priority':priority,
+      'feedback':feedback,
       'updateAt':updateAt,
       'submittedBy':submittedBy,
     };

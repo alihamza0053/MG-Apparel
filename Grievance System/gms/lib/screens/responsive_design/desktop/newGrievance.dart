@@ -121,6 +121,7 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       assignTo: 'not assigned yet',
       status: 'Pending',
       priority: 'Low',
+      feedback: 'Pending',
       updateAt: timestamp,
       submittedBy: userEmail,
     );

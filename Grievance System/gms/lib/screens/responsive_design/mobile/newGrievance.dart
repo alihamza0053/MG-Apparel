@@ -119,6 +119,7 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
       assignTo: 'not assigned yet',
       status: 'Pending',
       priority: 'Low',
+      feedback: 'Pending',
       updateAt: timestamp,
       submittedBy: userEmail,
     );

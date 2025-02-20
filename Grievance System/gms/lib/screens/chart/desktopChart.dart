@@ -163,7 +163,7 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                   boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
                 ),              child: Padding(
                   padding: EdgeInsets.all(16),
-                  child: Column(
+                  child: ListView(
                     children: [
                       // Month Filter
                       _buildDropdown(
@@ -186,7 +186,7 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                         icon: Icons.calendar_today,
                       ),
                       SizedBox(height: 10),
-        
+
                       // Category Filter
                       _buildDropdown(
                         hint: "All Categories",
@@ -206,7 +206,7 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                         icon: Icons.category,
                       ),
                       SizedBox(height: 10),
-        
+
                       // Department Filter
                       _buildDropdown(
                         hint: "All Departments",

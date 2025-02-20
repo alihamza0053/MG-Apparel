@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gms/screens/chart/GrievanceChart.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
-import 'package:gms/screens/credentials/login.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
-import 'package:gms/screens/grievanceDetails.dart';
 import 'package:gms/screens/responsive_design/responsive/rNewGrievance.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -75,15 +72,25 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                authService.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => rLogin()));
-              },
-              icon: const Icon(Icons.logout, color: Colors.white),
-              label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => rUsers()));
+                  },
+                  child: Icon(Icons.supervised_user_circle_outlined, color: Colors.white,),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    authService.signOut();
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (context) => rLogin()));
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
+                ),
+              ],
             ),
           ),
         ],
