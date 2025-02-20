@@ -9,6 +9,7 @@ import 'package:gms/screens/responsive_design/mobile/login.dart';
 import 'package:gms/screens/responsive_design/responsive/rLogin.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 
 class mobileSignup extends StatefulWidget {
@@ -28,7 +29,13 @@ class _mobileSignupState extends State<mobileSignup> {
   void signUp() async{
 
     if(email.text.isEmpty || password.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields."),backgroundColor: Colors.red,));
+      Toastification().show(
+        context: context,
+        title: Text("Fill all the fields."),
+        type: ToastificationType.error,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
     }else{
       setState(() {
         progressBar= true;
@@ -40,7 +47,13 @@ class _mobileSignupState extends State<mobileSignup> {
         setState(() {
           progressBar = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}"),backgroundColor: Colors.red,));
+        Toastification().show(
+          context: context,
+          title: Text("Error ${e.message}"),
+          type: ToastificationType.error,
+          style: ToastificationStyle.flatColored,
+          autoCloseDuration: const Duration(seconds: 5),
+        );
       }
     }
 
@@ -58,12 +71,25 @@ class _mobileSignupState extends State<mobileSignup> {
 
     try{
       users.createUser(newUser);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Account Created")));
+      Toastification().show(
+        context: context,
+        title: Text("Account Created."),
+        type: ToastificationType.success,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>rLogin()));
     }catch(e){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error $e")));
+      Toastification().show(
+        context: context,
+        title: Text("Error $e"),
+        type: ToastificationType.error,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
     }
   }
+
 
 
   @override
@@ -84,7 +110,7 @@ class _mobileSignupState extends State<mobileSignup> {
           padding: const EdgeInsets.all(18.0),
           child: Container(
             width:400,
-            height: 350,
+            height: 400,
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
                 border:Border.all(width: 2, color: AppColors.primaryColor),

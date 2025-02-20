@@ -16,6 +16,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
+import 'package:toastification/toastification.dart';
 import 'dart:html' as html;
 
 import '../responsive/rDashboard.dart';
@@ -145,7 +146,13 @@ class _desktopLoginState extends State<desktopLogin> {
   void login() async{
 
     if(email.text.isEmpty || password.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields."),backgroundColor: Colors.red,));
+      Toastification().show(
+        context: context,
+        title: Text("Fill all the fields."),
+        type: ToastificationType.error,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
     }else{
       setState(() {
         progressBar = true;
@@ -158,7 +165,13 @@ class _desktopLoginState extends State<desktopLogin> {
         setState(() {
           progressBar = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}"),backgroundColor: Colors.red,));
+        Toastification().show(
+          context: context,
+          title: Text("Error ${e.message}"),
+          type: ToastificationType.error,
+          style: ToastificationStyle.flatColored,
+          autoCloseDuration: const Duration(seconds: 5),
+        );
       }
     }
 

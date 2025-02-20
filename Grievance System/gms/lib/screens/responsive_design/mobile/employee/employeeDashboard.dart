@@ -66,6 +66,7 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
         child: Text("Add",style: TextStyle(color: Colors.white),),
       ),
       appBar: AppBar(
+        leading: SizedBox(),
         title: const Text("Dashboard",style: TextStyle(fontSize: 20),),
         actions: [
           Padding(

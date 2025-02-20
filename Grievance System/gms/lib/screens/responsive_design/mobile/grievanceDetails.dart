@@ -3,6 +3,7 @@ import 'package:gms/screens/credentials/users/userDatabase.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../database/grievance.dart';
 
@@ -374,18 +375,33 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
                 selectedPriority!,
                 feedback.text,
               );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Grievance Updated")),
+              Toastification().show(
+                context: context,
+                title: Text("Grievance Updated"),
+                type: ToastificationType.success,
+                style: ToastificationStyle.flatColored,
+                autoCloseDuration: const Duration(seconds: 5),
               );
+
               Navigator.pop(context);
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error: $e")),
+              Toastification().show(
+                context: context,
+                title: Text("Error: $e"),
+                type: ToastificationType.error,
+                style: ToastificationStyle.flatColored,
+                autoCloseDuration: const Duration(seconds: 5),
               );
             }
           } else {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("Add Feedback")));
+            Toastification().show(
+              context: context,
+              title: Text("Add Feedback!!"),
+              type: ToastificationType.warning,
+              style: ToastificationStyle.flatColored,
+              autoCloseDuration: const Duration(seconds: 5),
+            );
+
           }
         },
         style: ElevatedButton.styleFrom(

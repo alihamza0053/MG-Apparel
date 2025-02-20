@@ -65,6 +65,7 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
         child: const Icon(Icons.add, color: Colors.white),
       ),
       appBar: AppBar(
+        leading: SizedBox(),
         title: const Text("Dashboard", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
         actions: [
           Padding(

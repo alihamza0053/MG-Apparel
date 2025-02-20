@@ -8,6 +8,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
+import 'package:toastification/toastification.dart';
+
 class desktopNewGrievance extends StatefulWidget {
   const desktopNewGrievance({super.key});
 
@@ -129,12 +131,25 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
 
     try {
       grievanceDB.createGrievance(newGrievance);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Grievance Submitted")));
+      Toastification().show(
+        context: context,
+        title: Text("Grievance Submitted"),
+        type: ToastificationType.success,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
+
       Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
+
+      Toastification().show(
+        context: context,
+        title: Text("Error: $e"),
+        type: ToastificationType.error,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
+
     }
   }
 
@@ -300,8 +315,14 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                                 uploadFile(fileObj!);
                               }
                             } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Error: $e")));
+
+                              Toastification().show(
+                                context: context,
+                                title: Text("Error: $e"),
+                                type: ToastificationType.error,
+                                style: ToastificationStyle.flatColored,
+                                autoCloseDuration: const Duration(seconds: 5),
+                              );
                             }
                           },
                           icon: Icon(

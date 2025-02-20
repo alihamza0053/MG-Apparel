@@ -20,6 +20,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'dart:html' as html;
 
+import 'package:toastification/toastification.dart';
+
 class mobileLogin extends StatefulWidget {
   const mobileLogin({super.key});
 
@@ -128,7 +130,13 @@ class _mobileLoginState extends State<mobileLogin> {
   void login() async{
 
     if(email.text.isEmpty || password.text.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Fill all the fields."),backgroundColor: Colors.red,));
+      Toastification().show(
+        context: context,
+        title: Text("Fill all the fields."),
+        type: ToastificationType.error,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: const Duration(seconds: 5),
+      );
     }else{
       setState(() {
         progressBar = true;
@@ -141,7 +149,13 @@ class _mobileLoginState extends State<mobileLogin> {
         setState(() {
           progressBar = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error ${e.message}"),backgroundColor: Colors.red,));
+        Toastification().show(
+            context: context,
+            title: Text("Error ${e.message}"),
+            type: ToastificationType.error,
+            style: ToastificationStyle.flatColored,
+            autoCloseDuration: const Duration(seconds: 5)
+        );
       }
     }
 

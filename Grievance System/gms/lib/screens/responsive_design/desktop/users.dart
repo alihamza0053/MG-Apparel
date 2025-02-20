@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/users/userDatabase.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../theme/themeData.dart';
 
@@ -110,12 +111,24 @@ class _desktopUserDataState extends State<desktopUserData> {
                                         String updatedRole = selectedRoles[singleUser.id] ?? singleUser.role;
                                         try {
                                           usersDB.update(singleUser, updatedRole);
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User Role Updated")));
+                                          Toastification().show(
+                                            context: context,
+                                            title: Text("User Role Updated."),
+                                            type: ToastificationType.success,
+                                            style: ToastificationStyle.flatColored,
+                                            autoCloseDuration: const Duration(seconds: 5),
+                                          );
                                           setState(() {
                                             selectedRoles.remove(singleUser.id);
                                           });
                                         } catch (e) {
-                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+                                          Toastification().show(
+                                            context: context,
+                                            title: Text("Error: $e"),
+                                            type: ToastificationType.error,
+                                            style: ToastificationStyle.flatColored,
+                                            autoCloseDuration: const Duration(seconds: 5),
+                                          );
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
