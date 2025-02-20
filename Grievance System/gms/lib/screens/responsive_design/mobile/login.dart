@@ -135,7 +135,7 @@ class _mobileLoginState extends State<mobileLogin> {
       });
 
       try{
-        await authService.login(email.text, password.text);
+        await authService.login(email.text.toLowerCase().trim(), password.text.toLowerCase().trim());
         fetchUserRole(); // Fetch user role when dashboard loads
       }on AuthException catch(e){
         setState(() {

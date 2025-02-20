@@ -117,7 +117,7 @@ class _desktopCeoDashboardState extends State<desktopCeoDashboard> {
       padding: EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
-          Image(image: AssetImage("assets/images/logo.png"),width: 150,),
+          Image(image: AssetImage("assets/images/logo.png"),width: 100,),
           Text("CEO Dashboard", style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
           SizedBox(height: 20),
           _buildSidebarButton("Users", Icons.supervised_user_circle_outlined, () {

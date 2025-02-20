@@ -93,6 +93,7 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
             // Grievance Chart
             Card(
               elevation: 4,

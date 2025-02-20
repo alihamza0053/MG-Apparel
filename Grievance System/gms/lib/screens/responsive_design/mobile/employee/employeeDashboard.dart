@@ -87,6 +87,7 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
         padding: const EdgeInsets.all(15),
         child: Column(
           children: [
+            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
             Text("All Grievances", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
             SizedBox(height: 20),
             Expanded(

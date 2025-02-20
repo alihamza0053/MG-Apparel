@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../database/grievance.dart';
 
-
 class desktopGrievanceDetails extends StatefulWidget {
   int? id;
   String? role;
@@ -14,7 +13,8 @@ class desktopGrievanceDetails extends StatefulWidget {
   desktopGrievanceDetails({super.key, required this.id, required this.role});
 
   @override
-  State<desktopGrievanceDetails> createState() => _desktopGrievanceDetailsState();
+  State<desktopGrievanceDetails> createState() =>
+      _desktopGrievanceDetailsState();
 }
 
 class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
@@ -32,12 +32,18 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
   String defaultPriority = '';
   TextEditingController feedback = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
         title: Text("Grievance Details", style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
@@ -63,7 +69,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
 
                     // Find grievance by ID safely
                     final grievance = grievances.firstWhere(
-                          (g) => g.id == widget.id,
+                      (g) => g.id == widget.id,
                     );
 
                     if (grievance == null) {
@@ -76,7 +82,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                       statusColor = Colors.red;
                     } else if (grievance.status == 'In Progress') {
                       statusColor = Colors.blue;
-                    } else if (grievance.status == 'Resolved' || grievance.status == 'Closed') {
+                    } else if (grievance.status == 'Resolved' ||
+                        grievance.status == 'Closed') {
                       statusColor = Colors.green;
                     }
                     if (grievance.priority == 'Low') {
@@ -103,7 +110,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       grievance.title,
@@ -115,9 +123,11 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                                     ),
                                     Row(
                                       children: [
-                                        _buildStatusChip(grievance.priority, priorityColor),
+                                        _buildStatusChip(
+                                            grievance.priority, priorityColor),
                                         SizedBox(width: 10),
-                                        _buildStatusChip(grievance.status, statusColor),
+                                        _buildStatusChip(
+                                            grievance.status, statusColor),
                                       ],
                                     ),
                                   ],
@@ -138,18 +148,18 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                                 _buildSectionTitle("Feedback:"),
                                 _buildFeedback(grievance),
                                 SizedBox(height: 30),
-                                if (widget.role == "admin" || widget.role == "hr")
+                                if (widget.role == "admin" ||
+                                    widget.role == "hr")
                                   _buildUpdateSection(grievance),
                                 SizedBox(height: 20),
-
-                                _buildTextField(feedback, "Feedback", Icons.feedback,
+                                _buildTextField(
+                                    feedback, "Feedback", Icons.feedback,
                                     maxLines: 5),
                                 SizedBox(height: 20),
-
-                                if (widget.role == "admin" || widget.role == "hr")
+                                if (widget.role == "admin" ||
+                                    widget.role == "hr")
                                   _buildUpdateButton(),
                               ],
-
                             ),
                           ),
                         );
@@ -158,7 +168,6 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                   },
                 ),
               ),
-
             ],
           ),
         ),
@@ -283,7 +292,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
             "Update Status",
             selectedStatus,
             ['Pending', 'In Progress', 'Resolved', 'Closed'],
-                (newValue) {
+            (newValue) {
               setState(() {
                 selectedStatus = newValue;
               });
@@ -294,7 +303,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
             "Update Priority",
             selectedPriority,
             ['Low', 'High'],
-                (newValue) {
+            (newValue) {
               setState(() {
                 selectedPriority = newValue;
               });
@@ -312,7 +321,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                 "Update Assign Person",
                 selectedUserEmail,
                 userEmails,
-                    (newValue) {
+                (newValue) {
                   setState(() {
                     selectedUserEmail = newValue;
                   });
@@ -324,17 +333,17 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
     );
   }
 
-  Widget _buildDropdownSection(String title, String? value, List<String> items, Function(String?) onChanged) {
+  Widget _buildDropdownSection(String title, String? value, List<String> items,
+      Function(String?) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: TextStyle(
-            fontSize: 22,
-            color: AppColors.secondaryColor,
-            fontWeight: FontWeight.bold
-          ),
+              fontSize: 22,
+              color: AppColors.secondaryColor,
+              fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
         DropdownButton<String>(
@@ -367,22 +376,28 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
           selectedStatus ??= defaultStatus;
           selectedUserEmail ??= defaultEmail;
           selectedPriority ??= defaultPriority;
-          try {
-            grievanceDB.updateStatus(
-              widget.id!,
-              selectedUserEmail!,
-              selectedStatus!,
-              selectedPriority!,
-              feedback.text,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Grievance Updated")),
-            );
-            Navigator.pop(context);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: $e")),
-            );
+
+          if (feedback.text.isNotEmpty) {
+            try {
+              grievanceDB.updateStatus(
+                widget.id!,
+                selectedUserEmail!.trim(),
+                selectedStatus!.trim(),
+                selectedPriority!.trim(),
+                feedback.text.trim(),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Grievance Updated")),
+              );
+              Navigator.pop(context);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error: $e")),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Add Feedback")));
           }
         },
         child: Text(
@@ -401,7 +416,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
   }
 
   Future<List<String>> fetchUsersEmails() async {
-    final response = await Supabase.instance.client.from('users').select('email');
+    final response =
+        await Supabase.instance.client.from('users').select('email');
     if (response.isEmpty) return [];
     return response.map<String>((row) => row['email'] as String).toList();
   }

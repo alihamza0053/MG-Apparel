@@ -24,7 +24,7 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
   AuthService authService = AuthService();
   String role = "hr";
 
-  @override 
+  @override
   void initState() {
     super.initState();
     fetchUserRole(); // Fetch user role when dashboard loads
@@ -60,35 +60,37 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => rNewGrievance()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => rNewGrievance()));
         },
         icon: Icon(Icons.add, color: Colors.white),
         label: Text("Add", style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primaryColor,
       ),
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => rUsers()));
+            },
+            icon: Icon(Icons.supervised_user_circle_sharp,color: Colors.white,)),
         title: Text("Dashboard", style: TextStyle(fontSize: 20)),
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               children: [
-                GestureDetector(
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => rUsers()));
-                  },
-                  child: Icon(Icons.supervised_user_circle_outlined, color: Colors.white,),
-                ),
                 ElevatedButton.icon(
                   onPressed: () {
                     authService.signOut();
-                    Navigator.pushReplacement(
-                        context, MaterialPageRoute(builder: (context) => rLogin()));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => rLogin()));
                   },
                   icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
+                  label: const Text("Logout",
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor),
                 ),
               ],
             ),
@@ -99,6 +101,8 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
+
             // Grievance Chart
             Card(
               elevation: 4,
@@ -132,7 +136,10 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
               child: Center(
                 child: Text(
                   "Grievances",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -156,7 +163,6 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                     statusColor = _getStatusColor(grievance.status);
                     priorityColor = _getPriorityColor(grievance.priority);
 
-
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
                       child: InkWell(
@@ -174,7 +180,7 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
@@ -185,10 +191,11 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                       ),
                                     ),
                                   ),
-
                                 ],
                               ),
-                              Text(grievance.category, style: TextStyle(color: AppColors.secondaryColor)),
+                              Text(grievance.category,
+                                  style: TextStyle(
+                                      color: AppColors.secondaryColor)),
                               SizedBox(height: 5),
                               Text(
                                 grievance.description,
@@ -202,7 +209,7 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                               SizedBox(height: 8),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -212,7 +219,7 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                         decoration: BoxDecoration(
                                           color: priorityColor,
                                           borderRadius:
-                                          BorderRadius.circular(4),
+                                              BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           grievance.priority,
@@ -228,7 +235,7 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                         decoration: BoxDecoration(
                                           color: statusColor,
                                           borderRadius:
-                                          BorderRadius.circular(4),
+                                              BorderRadius.circular(4),
                                         ),
                                         child: Text(
                                           grievance.status,
@@ -249,8 +256,13 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                                       id: grievance.id,
                                                       role: 'admin')));
                                     },
-                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black54)),
-                                    child: Text("View Details", style: TextStyle(color: Colors.white, fontSize: 12)),
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.black54)),
+                                    child: Text("View Details",
+                                        style: TextStyle(
+                                            color: Colors.white, fontSize: 12)),
                                   ),
                                 ],
                               ),

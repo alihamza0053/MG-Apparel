@@ -6,7 +6,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../database/grievance.dart';
 
-
 class mobileGrievanceDetails extends StatefulWidget {
   int? id;
   String? role;
@@ -32,12 +31,18 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
   String defaultPriority = '';
   TextEditingController feedback = TextEditingController();
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            )),
         title: Text("Grievance Details", style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primaryColor,
         elevation: 0,
@@ -57,7 +62,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
 
             // Find grievance by ID safely
             final grievance = grievances.firstWhere(
-                  (g) => g.id == widget.id,
+              (g) => g.id == widget.id,
             );
 
             if (grievance == null) {
@@ -70,7 +75,8 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
               statusColor = Colors.red;
             } else if (grievance.status == 'In Progress') {
               statusColor = Colors.blue;
-            } else if (grievance.status == 'Resolved' || grievance.status == 'Closed') {
+            } else if (grievance.status == 'Resolved' ||
+                grievance.status == 'Closed') {
               statusColor = Colors.green;
             }
             if (grievance.priority == 'Low') {
@@ -135,7 +141,6 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
                 _buildSectionTitle("Feedback:"),
                 _buildFeedback(grievance),
                 SizedBox(height: 20),
-
 
                 // Update Section (for admin/hr)
                 if (widget.role == "admin" || widget.role == "hr")
@@ -276,7 +281,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
             "Update Status:",
             selectedStatus,
             ['Pending', 'In Progress', 'Resolved', 'Closed'],
-                (newValue) {
+            (newValue) {
               setState(() {
                 selectedStatus = newValue;
               });
@@ -287,7 +292,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
             "Update Priority:",
             selectedPriority,
             ['Low', 'High'],
-                (newValue) {
+            (newValue) {
               setState(() {
                 selectedPriority = newValue;
               });
@@ -305,7 +310,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
                 "Update Assign Person:",
                 selectedUserEmail,
                 userEmails,
-                    (newValue) {
+                (newValue) {
                   setState(() {
                     selectedUserEmail = newValue;
                   });
@@ -317,7 +322,8 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
     );
   }
 
-  Widget _buildDropdownSection(String title, String? value, List<String> items, Function(String?) onChanged) {
+  Widget _buildDropdownSection(String title, String? value, List<String> items,
+      Function(String?) onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(
@@ -325,11 +331,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
         children: [
           Text(
             title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold
-
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 8),
           DropdownButton<String>(
@@ -363,28 +365,29 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
           selectedStatus ??= defaultStatus;
           selectedUserEmail ??= defaultEmail;
           selectedPriority ??= defaultPriority;
-          try {
-            grievanceDB.updateStatus(
-              widget.id!,
-              selectedUserEmail!,
-              selectedStatus!,
-              selectedPriority!,
-              feedback.text,
-            );
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Grievance Updated")),
-            );
-            Navigator.pop(context);
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: $e")),
-            );
+          if (feedback.text.isNotEmpty) {
+            try {
+              grievanceDB.updateStatus(
+                widget.id!,
+                selectedUserEmail!,
+                selectedStatus!,
+                selectedPriority!,
+                feedback.text,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Grievance Updated")),
+              );
+              Navigator.pop(context);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Error: $e")),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text("Add Feedback")));
           }
         },
-        child: Text(
-          "Update",
-          style: TextStyle(color: Colors.white),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
@@ -392,12 +395,17 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
+        child: Text(
+          "Update",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
 
   Future<List<String>> fetchUsersEmails() async {
-    final response = await Supabase.instance.client.from('users').select('email');
+    final response =
+        await Supabase.instance.client.from('users').select('email');
     if (response.isEmpty) return [];
     return response.map<String>((row) => row['email'] as String).toList();
   }

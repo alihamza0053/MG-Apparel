@@ -63,6 +63,12 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
     return Scaffold(
 
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => rUsers()));
+            },
+            icon: Icon(Icons.supervised_user_circle_sharp,color: Colors.white,)),
         title: Text("CEO Dashboard", style: TextStyle(fontSize: 20)),
         actions: [
           Padding(
@@ -84,6 +90,7 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
+            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
             // Grievance Chart
             Card(
               elevation: 4,

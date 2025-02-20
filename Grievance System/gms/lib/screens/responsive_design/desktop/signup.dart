@@ -34,7 +34,7 @@ class _desktopSignupState extends State<desktopSignup> {
         progressBar= true;
       });
       try{
-        await authService.signUp(email.text, password.text);
+        await authService.signUp(email.text.toLowerCase().trim(), password.text.toLowerCase().trim());
         createUser();
       }on AuthException catch(e){
         setState(() {
@@ -54,9 +54,9 @@ class _desktopSignupState extends State<desktopSignup> {
     final newUser;
 
     if(email.text == "ceo@mgapparel.com"){
-      newUser = Users(email: email.text, role: "ceo");
+      newUser = Users(email: email.text.toLowerCase().trim(), role: "ceo");
     }else{
-      newUser = Users(email: email.text, role: "employee");
+      newUser = Users(email: email.text.toLowerCase().trim(), role: "employee");
     }
     try{
       users.createUser(newUser);

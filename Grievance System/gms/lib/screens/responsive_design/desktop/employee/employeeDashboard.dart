@@ -87,6 +87,7 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(child: Image(image: AssetImage("assets/images/logo.png"),width: 100,)),
             const Text("All Grievances", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
             const SizedBox(height: 20),
             Expanded(
