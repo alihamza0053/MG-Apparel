@@ -5,6 +5,7 @@ import 'package:gms/screens/dashboard.dart';
 import 'package:gms/screens/grievanceDetails.dart';
 import 'package:gms/screens/newGrievance.dart';
 import 'package:gms/screens/splash.dart';
+import 'package:gms/smtp/mailer.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,7 +27,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      home: SplashScreen(),
+      home: Scaffold(
+        body: Center(
+          child: ElevatedButton(onPressed: sendEmail, child: Text("Send")),
+        ),
+      ),
     );
   }
 }
