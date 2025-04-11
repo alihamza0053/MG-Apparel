@@ -28,9 +28,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: themeData,
       home: Scaffold(
-        body: Center(
-          child: ElevatedButton(onPressed: sendEmail, child: Text("Send")),
-        ),
+        body: SplashScreen(),
       ),
     );
   }
