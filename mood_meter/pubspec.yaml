@@ -40,7 +40,7 @@ dependencies:
   path_provider: ^2.1.1  # For file operations
   fl_chart: ^0.63.0  # For beautiful charts
   share_plus: ^7.0.2  # For sharing files
-
+  supabase_flutter: ^2.8.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
