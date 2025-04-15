@@ -10,6 +10,8 @@ import 'dart:html' as html;
 
 import 'package:toastification/toastification.dart';
 
+import '../../../smtp/mailer.dart';
+
 class mobileNewGrievance extends StatefulWidget {
   const mobileNewGrievance({super.key});
 
@@ -128,6 +130,9 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
 
     try {
       grievanceDB.createGrievance(newGrievance);
+      // email, subject, description
+      sendEmail("alihamza00053@gmail.com", "New Grievance Submitted", "Hello,\nA new grievance has been submitted. \n\nTitle: ${des.text}\nSubmitted by: ${userEmail!} \nDate: ${timestamp}\nCategory: ${selectedCategory}\n\nThank you,\nMG Apparel Grievance");
+
       Toastification().show(
         context: context,
         title: Text("Grievance Submitted."),

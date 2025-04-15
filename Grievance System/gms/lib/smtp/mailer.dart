@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<void> sendEmail() async {
+Future<void> sendEmail(String email, String subject, String message) async {
   final url = Uri.parse("https://gms.mgapparel.com/send_email.php");
 
   try {
@@ -10,10 +10,11 @@ Future<void> sendEmail() async {
       headers: {
         "Content-Type": "application/json",
       },
+
       body: jsonEncode({
-        "email": "ali.hamza@mgapparel.com",
-        "subject": "Flutter Test Email",
-        "message": "This is a test email from Flutter web.",
+        "email": email,
+        "subject": subject,
+        "message": message,
       }),
     );
 

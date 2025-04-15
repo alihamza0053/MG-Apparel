@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/users/userDatabase.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../../smtp/mailer.dart';
 import '../../../theme/themeData.dart';
 
 class desktopUserData extends StatefulWidget {
@@ -111,6 +112,8 @@ class _desktopUserDataState extends State<desktopUserData> {
                                         String updatedRole = selectedRoles[singleUser.id] ?? singleUser.role;
                                         try {
                                           usersDB.update(singleUser, updatedRole);
+                                          // email, subject, description
+                                          sendEmail(singleUser.email, "Role Update", "Hello,\nWe wanted to inform you that your role in the Grievance System has been updated.\n\nUPDATED ROLE: ${singleUser.role}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
                                           Toastification().show(
                                             context: context,
                                             title: Text("User Role Updated."),

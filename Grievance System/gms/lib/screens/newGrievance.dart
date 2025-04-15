@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
 import 'package:gms/screens/database/grievance.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
+import 'package:gms/smtp/mailer.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -131,6 +132,8 @@ class _NewGrievanceScreenState extends State<NewGrievanceScreen> {
 
     try{
       grievanceDB.createGrievance(newGrievance);
+      
+      sendEmail(userEmail!, "New Grievance Submitted", "Submitted by: ${userEmail!} \nTitle: ${des.text} \nDescription: ${des.text}");
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Grievance Submitted")));
       Navigator.pop(context);
