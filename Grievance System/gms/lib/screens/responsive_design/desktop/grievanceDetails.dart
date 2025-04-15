@@ -5,6 +5,7 @@ import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../../smtp/mailer.dart';
 import '../../database/grievance.dart';
 
 class desktopGrievanceDetails extends StatefulWidget {
@@ -159,7 +160,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                                 SizedBox(height: 20),
                                 if (widget.role == "admin" ||
                                     widget.role == "hr")
-                                  _buildUpdateButton(),
+                                  _buildUpdateButton(grievance),
                               ],
                             ),
                           ),
@@ -370,7 +371,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
     );
   }
 
-  Widget _buildUpdateButton() {
+  Widget _buildUpdateButton(Grievance grievance) {
     return Center(
       child: ElevatedButton(
         onPressed: () {
@@ -387,6 +388,10 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                 selectedPriority!.trim(),
                 feedback.text.trim(),
               );
+
+              print("check error: ${selectedPriority} ${selectedStatus} ${selectedUserEmail}");
+              sendEmail(grievance.submittedBy!,"Grievance Update","Hello,\nYour grievance titled '${grievance.title}' has been updated with following details.\n\nAssigned to: ${selectedUserEmail!}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+
 
               Toastification().show(
                 context: context,
