@@ -360,6 +360,7 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
     );
   }
 
+
   Widget _buildUpdateButton(Grievance grievance) {
     return Center(
       child: ElevatedButton(
@@ -377,7 +378,13 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
                 feedback.text,
               );
 
-              sendEmail(grievance.submittedBy!,"Grievance Update","Hello,\nYour grievance titled '${grievance.title}' has been updated with following details.\n\nAssigned to: ${selectedUserEmail!}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+              //send email to employee
+              sendEmail(grievance.submittedBy!,"Grievance Update","Hello,\nYour grievance titled '${grievance.title}' has been updated with following details.\n\nAssigned to: ${grievance.assignTo!}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+
+
+              //send email to assign person
+              sendEmail(grievance.assignTo,"Grievance Assigned","Hello,\nA new grievance titled '${grievance.title}' has been assigned to you with following details.\n\nSubmitted by: ${selectedUserEmail}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this assign was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+
 
               Toastification().show(
                 context: context,
