@@ -22,6 +22,8 @@ import 'dart:html' as html;
 
 import 'package:toastification/toastification.dart';
 
+import '../../../login session/device_info.dart';
+
 class mobileLogin extends StatefulWidget {
   const mobileLogin({super.key});
 
@@ -42,9 +44,16 @@ class _mobileLoginState extends State<mobileLogin> {
   void initState() {
     super.initState();
     fetchUserRole(); // Fetch user role when dashboard loads
+    sendLoginEmail();
   }
 
+Future<void> sendLoginEmail() async{
+  final info = await getLoginInfo();
+  print("""📍 IP Address: ${info['ip']}
+🌐 Browser: ${info['browser']}
+📌 Location: ${info['location']}""");
 
+}
 
   //upload file
   void pickAndUploadFile() async {

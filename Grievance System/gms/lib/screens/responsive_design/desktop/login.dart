@@ -19,6 +19,7 @@ import 'package:mime/mime.dart';
 import 'package:toastification/toastification.dart';
 import 'dart:html' as html;
 
+import '../../../login session/device_info.dart';
 import '../responsive/rDashboard.dart';
 
 
@@ -43,9 +44,16 @@ class _desktopLoginState extends State<desktopLogin> {
   void initState() {
     super.initState();
     fetchUserRole(); // Fetch user role when dashboard loads
+    sendLoginEmail();
   }
 
+  Future<void> sendLoginEmail() async{
+    final info = await getLoginInfo();
+    print("""📍 IP Address: ${info['ip']}
+🌐 Browser: ${info['browser']}
+📌 Location: ${info['location']}""");
 
+  }
 
   //upload file
   void pickAndUploadFile() async {
