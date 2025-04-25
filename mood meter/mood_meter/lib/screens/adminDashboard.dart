@@ -14,6 +14,8 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
+  final double maxContentWidth = 1200.0;
+
   final supabase = Supabase.instance.client;
   bool _isLoading = true;
   String _selectedTimeFrame = 'This Week';
@@ -595,173 +597,184 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       body: _isLoading
           ? _buildShimmerLoading()
-          : RefreshIndicator(
-        onRefresh: _loadDashboardData,
-        color: const Color(0xFF2AABE2),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Filter Bar
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_today, size: 16),
-                      label: Text(_selectedTimeFrame),
-                      onPressed: _showDateFilterModal,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF2AABE2),
-                        side: const BorderSide(color: Color(0xFF2AABE2)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.business, size: 16),
-                      label: Text(
-                        _selectedDepartment,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onPressed: _showDepartmentFilterModal,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: const Color(0xFF2AABE2),
-                        side: const BorderSide(color: Color(0xFF2AABE2)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  IconButton(
-                    icon: const Icon(Icons.file_download),
-                    onPressed: _showExportOptionsModal,
-                    style: IconButton.styleFrom(
-                      foregroundColor: const Color(0xFF2AABE2),
-                    ),
-                    tooltip: 'Export Data',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
+          : Center(
 
-              // Summary Cards
-              Row(
-                children: [
-                  _buildSummaryCard(
-                    'Total Submissions',
-                    _dashboardData['totalSubmissions'].toString(),
-                    Icons.how_to_vote,
-                  ),
-                  const SizedBox(width: 10),
-                  _buildSummaryCard(
-                    'Happiness Score',
-                    _calculateHappinessScore().toStringAsFixed(1),
-                    Icons.sentiment_satisfied_alt,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  _buildSummaryCard(
-                    'Top Mood',
-                    _dashboardData['highestMood'] ?? 'None',
-                    Icons.star,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(), // Empty container to maintain layout
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Mood Distribution Chart
-              const Text(
-                'Mood Distribution',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 220,
+            child: ConstrainedBox(
+                    constraints: BoxConstraints(
+            maxWidth: maxContentWidth,
+                    ),
+              child: ScrollConfiguration(
+                behavior: const ScrollBehavior().copyWith(scrollbars: false),
+                child: RefreshIndicator(
+                        onRefresh: _loadDashboardData,
+                        color: const Color(0xFF2AABE2),
+                        child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Filter Bar
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.calendar_today, size: 16),
+                            label: Text(_selectedTimeFrame),
+                            onPressed: _showDateFilterModal,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF2AABE2),
+                              side: const BorderSide(color: Color(0xFF2AABE2)),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.business, size: 16),
+                            label: Text(
+                              _selectedDepartment,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onPressed: _showDepartmentFilterModal,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF2AABE2),
+                              side: const BorderSide(color: Color(0xFF2AABE2)),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        IconButton(
+                          icon: const Icon(Icons.file_download),
+                          onPressed: _showExportOptionsModal,
+                          style: IconButton.styleFrom(
+                            foregroundColor: const Color(0xFF2AABE2),
+                          ),
+                          tooltip: 'Export Data',
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 20),
+
+                    // Summary Cards
+                    Row(
+                      children: [
+                        _buildSummaryCard(
+                          'Total Submissions',
+                          _dashboardData['totalSubmissions'].toString(),
+                          Icons.how_to_vote,
+                        ),
+                        const SizedBox(width: 10),
+                        _buildSummaryCard(
+                          'Happiness Score',
+                          _calculateHappinessScore().toStringAsFixed(1),
+                          Icons.sentiment_satisfied_alt,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _buildSummaryCard(
+                          'Top Mood',
+                          _dashboardData['highestMood'] ?? 'None',
+                          Icons.star,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Container(), // Empty container to maintain layout
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Mood Distribution Chart
+                    const Text(
+                      'Mood Distribution',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: _buildMoodDistributionChart(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Daily Trend Chart
+                    const Text(
+                      'Daily Mood Trend',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: _buildDailyTrendChart(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Recent Comments
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Recent Comments',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/admin-comments');
+                          },
+                          child: const Text('View All'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    _buildRecentComments(),
+                    const SizedBox(height: 20),
                   ],
                 ),
-                child: _buildMoodDistributionChart(),
+                        ),
+                      ),
               ),
-              const SizedBox(height: 20),
-
-              // Daily Trend Chart
-              const Text(
-                'Daily Mood Trend',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 220,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: _buildDailyTrendChart(),
-              ),
-              const SizedBox(height: 20),
-
-              // Recent Comments
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Recent Comments',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed('/admin-comments');
-                    },
-                    child: const Text('View All'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              _buildRecentComments(),
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 

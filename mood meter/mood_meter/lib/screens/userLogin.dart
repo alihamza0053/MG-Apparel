@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mood_meter/screens/adminLogin.dart';
+import 'package:mood_meter/screens/forgotPassword.dart';
+import 'package:mood_meter/screens/passwordUpdate.dart';
 import 'package:mood_meter/screens/userDashboard.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:email_validator/email_validator.dart';
@@ -287,16 +289,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
 
-                              // Forgot Password Link
+                              /*// Forgot Password Link
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
                                   onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Password reset functionality will be implemented here'),
-                                      ),
-                                    );
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ForgotPasswordScreen()));
                                   },
                                   child: Text(
                                     'Forgot Password?',
@@ -304,8 +302,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              */
 
+                              const SizedBox(height: 24),
                               // Sign In and Sign Up Buttons (Inline)
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

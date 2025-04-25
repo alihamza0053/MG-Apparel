@@ -50,11 +50,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
 
       // Check if the authenticated user has admin privileges
       final userId = authResponse.user!.id;
-      final adminResponse = await supabase
-          .from('admins')
-          .select()
-          .eq('user_id', userId)
-          .single();
+      final adminResponse =
+          await supabase.from('admins').select().eq('user_id', userId).single();
 
       if (adminResponse == null) {
         // User is not an admin, log them out
@@ -104,10 +101,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  primaryColor.withOpacity(0.7),
-                  Colors.white,
-                ],
+                colors: [primaryColor.withOpacity(0.7), Colors.white],
               ),
             ),
             child: Center(
@@ -145,7 +139,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                       decoration: BoxDecoration(
                                         color: primaryColor,
                                         shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.white, width: 2),
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 2,
+                                        ),
                                       ),
                                       child: const Icon(
                                         Icons.security,
@@ -184,13 +181,19 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 decoration: InputDecoration(
                                   labelText: 'Admin Email',
                                   hintText: 'admin@mgapparel.com',
-                                  prefixIcon: Icon(Icons.email, color: primaryColor),
+                                  prefixIcon: Icon(
+                                    Icons.email,
+                                    color: primaryColor,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: primaryColor, width: 2),
+                                    borderSide: BorderSide(
+                                      color: primaryColor,
+                                      width: 2,
+                                    ),
                                   ),
                                 ),
                                 validator: (value) {
@@ -211,7 +214,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 obscureText: !_isPasswordVisible,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
-                                  prefixIcon: Icon(Icons.lock, color: primaryColor),
+                                  prefixIcon: Icon(
+                                    Icons.lock,
+                                    color: primaryColor,
+                                  ),
                                   suffixIcon: IconButton(
                                     icon: Icon(
                                       _isPasswordVisible
@@ -221,7 +227,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        _isPasswordVisible = !_isPasswordVisible;
+                                        _isPasswordVisible =
+                                            !_isPasswordVisible;
                                       });
                                     },
                                   ),
@@ -230,7 +237,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide(color: primaryColor, width: 2),
+                                    borderSide: BorderSide(
+                                      color: primaryColor,
+                                      width: 2,
+                                    ),
                                   ),
                                 ),
                                 validator: (value) {
@@ -254,7 +264,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                   ),
                                 ),
 
-                              // Forgot Password Link
+                              /*  // Forgot Password Link
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
@@ -267,7 +277,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                     style: TextStyle(color: primaryColor),
                                   ),
                                 ),
-                              ),
+                              ),*/
                               const SizedBox(height: 24),
 
                               // Login Button
@@ -275,7 +285,8 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 width: double.infinity,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: _isLoading ? null : _handleAdminLogin,
+                                  onPressed:
+                                      _isLoading ? null : _handleAdminLogin,
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
                                     shape: RoundedRectangleBorder(
@@ -283,16 +294,19 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                     ),
                                     elevation: 3,
                                   ),
-                                  child: _isLoading
-                                      ? const CircularProgressIndicator(color: Colors.white)
-                                      : const Text(
-                                    'Login as Admin',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                  child:
+                                      _isLoading
+                                          ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                          : const Text(
+                                            'Login as Admin',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -314,28 +328,29 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 child: TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginScreen(),
+                                      ),
                                     );
                                   },
                                   child: const Text(
                                     'Return to Employee Login',
-                                    style: TextStyle(
-                                      color: Colors.blueAccent,
-                                    ),
+                                    style: TextStyle(color: Colors.blueAccent),
                                   ),
-
                                 ),
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image.asset("assets/images/company_logo.png", width: 50,),
+                                  Image.asset(
+                                    "assets/images/company_logo.png",
+                                    width: 50,
+                                  ),
                                   Text(
                                     'Version 1.0',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                    ),
+                                    style: TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               ),
