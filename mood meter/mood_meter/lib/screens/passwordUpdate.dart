@@ -121,6 +121,7 @@ class _PasswordUpdateScreenState extends State<PasswordUpdateScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Password'),
+        centerTitle: true,
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,

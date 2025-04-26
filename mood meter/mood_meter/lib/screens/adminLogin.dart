@@ -349,7 +349,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                     width: 50,
                                   ),
                                   Text(
-                                    'Version 1.0',
+                                    'Version 1.0(beta)',
                                     style: TextStyle(color: Colors.grey),
                                   ),
                                 ],

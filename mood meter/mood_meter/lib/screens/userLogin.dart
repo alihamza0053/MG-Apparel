@@ -397,7 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   Image.asset("assets/images/company_logo.png", width: 50,),
                                   Text(
-                                    'Version 1.0',
+                                    'Version 1.0(beta)',
                                     style: TextStyle(
                                       color: Colors.grey,
                                     ),

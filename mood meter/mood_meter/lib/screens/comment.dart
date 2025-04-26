@@ -170,13 +170,10 @@ class _CommentScreenState extends State<CommentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Share Your Feedback'),
+        centerTitle: true,
         backgroundColor: angryColor,
         foregroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>UserDashboard())),
-        ),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),

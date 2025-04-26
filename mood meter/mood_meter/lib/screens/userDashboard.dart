@@ -324,6 +324,7 @@ class _UserDashboardState extends State<UserDashboard> with SingleTickerProvider
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mood Meter'),
+        centerTitle: true,
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,

@@ -580,6 +580,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Admin Dashboard'),
+        centerTitle: true,
         backgroundColor: const Color(0xFF2AABE2),
         foregroundColor: Colors.white,
         actions: [

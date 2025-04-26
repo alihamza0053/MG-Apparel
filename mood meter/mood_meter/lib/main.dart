@@ -19,6 +19,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Mood Meter',
       theme: ThemeData(fontFamily: "aptos",primaryColor: Color(0xFF2AABE2)),
       home: LoginScreen(),

@@ -68,6 +68,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reset Password'),
+        centerTitle: true,
         backgroundColor: primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,

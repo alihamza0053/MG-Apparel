@@ -88,6 +88,7 @@ class _DepartmentSelectionScreenState extends State<DepartmentSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Select Your Department'),
+        centerTitle: true,
         backgroundColor: primaryColor,
         elevation: 0,
       ),
