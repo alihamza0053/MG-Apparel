@@ -45,7 +45,7 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     super.initState();
   }
 
-  //upload file start
+//upload file start
   void pickAndUploadFile() async {
     html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
     uploadInput.accept = 'image/*,application/pdf'; // Allow images & PDFs
@@ -100,14 +100,14 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     });
   }
 
-  //submit data to supabase start
+//submit data to supabase start
   Future<void> newGrievance() async {
     TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
     DateTime now = DateTime.now();
     DateTime combinedDateTime = DateTime(
         now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
 
-    // Send this `combinedDateTime.toIso8601String()` to Supabase
+// Send this `combinedDateTime.toIso8601String()` to Supabase
     String timestamp = combinedDateTime.toIso8601String();
 
     final newGrievance = Grievance(
@@ -130,12 +130,12 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       submittedBy: userEmail,
     );
 
-
     try {
       grievanceDB.createGrievance(newGrievance);
 
-      // email, subject, description
-      sendEmail("alihamza00053@gmail.com", "New Grievance Submitted", "Hello,\nA new grievance has been submitted. \n\nTitle: ${des.text}\nSubmitted by: ${userEmail!} \nDate: ${timestamp}\nCategory: ${selectedCategory}\n\n Thank you,\nMG Apparel Grievance");
+// email, subject, description
+      sendEmail("alihamza00053@gmail.com", "New Grievance Submitted",
+          "Hello,\nA new grievance has been submitted. \n\nTitle: ${des.text}\nSubmitted by: ${userEmail!} \nDate: ${timestamp}\nCategory: ${selectedCategory}\n\n Thank you,\nMG Apparel Grievance");
 
       Toastification().show(
         context: context,
@@ -147,7 +147,6 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
 
       Navigator.pop(context);
     } catch (e) {
-
       Toastification().show(
         context: context,
         title: Text("Error: $e"),
@@ -155,7 +154,6 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
-
     }
   }
 
@@ -165,31 +163,50 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
         600; // Check if the screen is desktop-sized
 
     return Scaffold(
+      backgroundColor: Color(0xFFECEFF1),
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            )),
-        title: Text("New Grievance"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        title: Text(
+          "New Grievance",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor,
+          ),
+        ),
       ),
       body: Center(
         child: Container(
           width: isDesktop ? 800 : double.infinity, // Adjust width for desktop
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
                 Card(
-                  elevation: 4,
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.white, Colors.grey.shade50],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: EdgeInsets.all(20),
                     child: Column(
                       children: [
                         Text(
@@ -202,65 +219,69 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                         ),
                         SizedBox(height: 20),
                         _buildTextField(title, "Title", Icons.title),
-                        SizedBox(height: 20),
+                        SizedBox(height: 12),
                         _buildTextField(des, "Description", Icons.description,
                             maxLines: 5),
                         SizedBox(height: 20),
                         Text(
-                          "Personal Info:",
+                          "Personal Info",
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: 18,
+                            fontWeight: FontWeight.bold,
                             color: AppColors.primaryColor,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 12),
                         if (isDesktop)
                           Row(
                             children: [
                               Expanded(
-                                  child: _buildTextField(
-                                      my_name, "Name", Icons.person)),
+                                child: _buildTextField(
+                                    my_name, "Name", Icons.person),
+                              ),
                               SizedBox(width: 16),
                               Expanded(
-                                  child: _buildTextField(my_id, "Employee ID",
-                                      Icons.assignment_ind)),
+                                child: _buildTextField(
+                                    my_id, "Employee ID", Icons.assignment_ind),
+                              ),
                             ],
                           )
                         else
                           Column(
                             children: [
                               _buildTextField(my_name, "Name", Icons.person),
-                              SizedBox(height: 10),
+                              SizedBox(height: 12),
                               _buildTextField(
                                   my_id, "Employee ID", Icons.assignment_ind),
                             ],
                           ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 12),
                         _buildTextField(
                             my_depart, "Department", Icons.business),
                         SizedBox(height: 20),
                         Text(
-                          "Complain Against:",
+                          "Complain Against",
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
                             fontSize: 18,
+                            fontWeight: FontWeight.bold,
                             color: AppColors.primaryColor,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 12),
                         if (isDesktop)
                           Row(
                             children: [
                               Expanded(
-                                  child: _buildTextField(complain_against_name,
-                                      "Name", Icons.person)),
+                                child: _buildTextField(complain_against_name,
+                                    "Name", Icons.person),
+                              ),
                               SizedBox(width: 16),
                               Expanded(
-                                  child: _buildTextField(
-                                      complain_against_id,
-                                      "Employee ID (optional)",
-                                      Icons.assignment_ind)),
+                                child: _buildTextField(
+                                    complain_against_id,
+                                    "Employee ID (optional)",
+                                    Icons.assignment_ind),
+                              ),
                             ],
                           )
                         else
@@ -268,14 +289,14 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                             children: [
                               _buildTextField(
                                   complain_against_name, "Name", Icons.person),
-                              SizedBox(height: 10),
+                              SizedBox(height: 12),
                               _buildTextField(
                                   complain_against_id,
                                   "Employee ID (optional)",
                                   Icons.assignment_ind),
                             ],
                           ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 12),
                         _buildTextField(complain_against_depart, "Department",
                             Icons.business),
                         SizedBox(height: 20),
@@ -283,10 +304,31 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                           value: selectedCategory,
                           decoration: InputDecoration(
                             labelText: "Select Category",
-                            prefixIcon: Icon(Icons.category),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            labelStyle: TextStyle(color: Colors.grey[600]),
+                            prefixIcon: Icon(
+                              Icons.category,
+                              color: Colors.grey[600],
+                              size: 16,
                             ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide:
+                                  BorderSide(color: AppColors.primaryColor),
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[800],
                           ),
                           items: [
                             'Discrimination',
@@ -296,7 +338,10 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                           ].map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
-                              child: Text(value),
+                              child: Text(
+                                value,
+                                style: TextStyle(fontSize: 14),
+                              ),
                             );
                           }).toList(),
                           onChanged: (String? newValue) {
@@ -306,22 +351,47 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                           },
                         ),
                         SizedBox(height: 20),
-                        OutlinedButton(
-                          onPressed: pickAndUploadFile,
-                          child:
-                              Text(fileName == "" ? "Attach File" : fileName),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.secondaryColor),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: GestureDetector(
+                            onTap: pickAndUploadFile,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.attach_file,
+                                  color: AppColors.secondaryColor,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 5),
+                                Text(
+                                  fileName == "" ? "Attach File" : fileName,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.secondaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         SizedBox(height: 20),
-                        FloatingActionButton.extended(
+                        ElevatedButton(
                           onPressed: () {
                             try {
-                              if(fileName.isEmpty){
+                              if (fileName.isEmpty) {
                                 newGrievance();
-                              }else{
+                              } else {
                                 uploadFile(fileObj!);
                               }
                             } catch (e) {
-
                               Toastification().show(
                                 context: context,
                                 title: Text("Error: $e"),
@@ -331,15 +401,34 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                               );
                             }
                           },
-                          icon: Icon(
-                            Icons.send,
-                            color: Colors.white,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 40,
+                              vertical: 15,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
-                          label: Text(
-                            "Submit",
-                            style: TextStyle(color: Colors.white,fontSize: 22,fontWeight: FontWeight.bold),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.send,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                              SizedBox(width: 5),
+                              Text(
+                                "Submit",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                          backgroundColor: AppColors.primaryColor,
                         ),
                       ],
                     ),
@@ -359,11 +448,29 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     return TextField(
       controller: controller,
       maxLines: maxLines,
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.grey[800],
+      ),
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: Icon(icon),
+        hintStyle: TextStyle(color: Colors.grey[600]),
+        prefixIcon: Icon(
+          icon,
+          color: Colors.grey[600],
+          size: 16,
+        ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.primaryColor),
         ),
       ),
     );

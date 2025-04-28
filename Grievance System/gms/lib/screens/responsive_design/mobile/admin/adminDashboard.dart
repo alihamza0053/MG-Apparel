@@ -27,29 +27,28 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
   @override
   void initState() {
     super.initState();
-    fetchUserRole(); // Fetch user role when dashboard loads
+    fetchUserRole();
   }
 
-  // Function to fetch user role from Supabase
   Future<void> fetchUserRole() async {
     try {
       SupabaseClient supabase = Supabase.instance.client;
-      final user = supabase.auth.currentUser; // Get logged-in user
+      final user = supabase.auth.currentUser;
       if (user == null) return;
 
       final response = await supabase
-          .from('users') // Your users table
-          .select('role') // Fetch only the role column
-          .eq('email', user.email as Object) // Filter by user's email
-          .maybeSingle(); // Get single result
+          .from('users')
+          .select('role')
+          .eq('email', user.email as Object)
+          .maybeSingle();
 
       if (response != null && response['role'] != null) {
         setState(() {
-          role = response['role']; // Set user role
+          role = response['role'];
         });
       }
 
-      print("🔹 User Role: $role"); // Debug log
+      print("🔹 User Role: $role");
     } catch (e) {
       print("❌ Error fetching user role: $e");
     }
@@ -58,66 +57,122 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
+      backgroundColor: Color(0xFFECEFF1),
+      appBar: AppBar(
+        backgroundColor: AppColors.primaryColor,
+        elevation: 2,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => rUsers()));
+          },
+          icon: Icon(Icons.supervised_user_circle_sharp, color: Colors.white, size: 24),
+        ),
+        title: Text(
+          "Dashboard",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextButton(
+              onPressed: () {
+                authService.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => rLogin()));
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.logout, color: Colors.white, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Logout",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButton: ElevatedButton(
         onPressed: () {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => rNewGrievance()));
         },
-        icon: Icon(Icons.add, color: Colors.white),
-        label: Text("Add", style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primaryColor,
-      ),
-      appBar: AppBar(
-        leading: IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => rUsers()));
-            },
-            icon: Icon(Icons.supervised_user_circle_sharp,color: Colors.white,)),
-        title: Text("Dashboard", style: TextStyle(fontSize: 20)),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    authService.signOut();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => rLogin()));
-                  },
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  label: const Text("Logout",
-                      style: TextStyle(color: Colors.white, fontSize: 14)),
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor),
-                ),
-              ],
-            ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 16,
+            ),
+            SizedBox(width: 5),
+            Text(
+              "Add Grievance",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(
           children: [
-            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
-
+            Image(
+              image: AssetImage("assets/images/logo.png"),
+              width: 80,
+            ),
+            SizedBox(height: 20),
             // Grievance Chart
             Card(
-              elevation: 4,
-              child: Padding(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.white, Colors.grey.shade50],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 padding: EdgeInsets.all(16),
                 child: Column(
                   children: [
                     Text(
                       "Grievance Overview",
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 12),
                     Container(
                       height: 200,
                       child: mobileGrievanceChart(),
@@ -127,28 +182,57 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
               ),
             ),
             SizedBox(height: 20),
-
             // Grievances List
             Container(
               padding: EdgeInsets.all(10),
               width: double.infinity,
-              color: AppColors.primaryColor,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Center(
                 child: Text(
                   "Grievances",
                   style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 12),
             StreamBuilder(
               stream: grievanceDB.stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.hourglass_empty,
+                        size: 80,
+                        color: Colors.grey.shade600,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Loading Grievances",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Please wait...",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                    ],
+                  );
                 }
 
                 final grievances = snapshot.data!;
@@ -164,7 +248,11 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                     priorityColor = _getPriorityColor(grievance.priority);
 
                     return Card(
+                      elevation: 2,
                       margin: EdgeInsets.symmetric(vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
@@ -173,14 +261,22 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                   builder: (context) => rGrievanceDetails(
                                       id: grievance.id, role: 'admin')));
                         },
-                        child: Padding(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.white, Colors.grey.shade50],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           padding: EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
@@ -188,14 +284,20 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.grey[800],
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
-                              Text(grievance.category,
-                                  style: TextStyle(
-                                      color: AppColors.secondaryColor)),
+                              SizedBox(height: 5),
+                              Text(
+                                grievance.category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.secondaryColor,
+                                ),
+                              ),
                               SizedBox(height: 5),
                               Text(
                                 grievance.description,
@@ -203,45 +305,51 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[600],
+                                  color: Colors.grey[800],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              SizedBox(height: 12),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
                                       Container(
                                         padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: priorityColor,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          color: priorityColor.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                         child: Text(
                                           grievance.priority,
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12),
+                                            color: priorityColor,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                       ),
                                       SizedBox(width: 8),
                                       Container(
                                         padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                          horizontal: 12,
+                                          vertical: 6,
+                                        ),
                                         decoration: BoxDecoration(
-                                          color: statusColor,
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          color: statusColor.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                         child: Text(
                                           grievance.status,
                                           style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12),
+                                            color: statusColor,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -256,13 +364,21 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                                       id: grievance.id,
                                                       role: 'admin')));
                                     },
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.black54)),
-                                    child: Text("View Details",
-                                        style: TextStyle(
-                                            color: Colors.white, fontSize: 12)),
+                                    style: TextButton.styleFrom(
+                                      backgroundColor: AppColors.secondaryColor,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "View Details",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),

@@ -150,121 +150,211 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
-
     }
   }
-
   //submit data to end
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECEFF1), // Light gray background
       appBar: AppBar(
-        leading: IconButton(onPressed: (){Navigator.pop(context);}, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
 
-        title: Text("New Grievance"),
+            Icons.arrow_back,
+            color: AppColors.primaryColor,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          "New Grievance",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.close, color: AppColors.secondaryColor, size: 16),
+            label: Text(
+              "Close",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.secondaryColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: Column(
             children: [
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Submit New Grievance",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                      SizedBox(height: 20),
-                      _buildTextField(title, "Title", Icons.title),
-                      SizedBox(height: 20),
-                      _buildTextField(des, "Description", Icons.description, maxLines: 5),
-                      SizedBox(height: 20),
-                      Text(
-                        "Personal Info:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      _buildTextField(my_name, "Name", Icons.person),
-                      SizedBox(height: 10),
-                      _buildTextField(my_id, "Employee ID", Icons.assignment_ind),
-                      SizedBox(height: 10),
-                      _buildTextField(my_depart, "Department", Icons.business),
-                      SizedBox(height: 20),
-                      Text(
-                        "Complain Against:",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      _buildTextField(complain_against_name, "Name", Icons.person),
-                      SizedBox(height: 10),
-                      _buildTextField(complain_against_id, "Employee ID (optional)", Icons.assignment_ind),
-                      SizedBox(height: 10),
-                      _buildTextField(complain_against_depart, "Department", Icons.business),
-                      SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: selectedCategory,
-                        decoration: InputDecoration(
-                          labelText: "Select Category",
-                          prefixIcon: Icon(Icons.category),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        items: [
-                          'Discrimination',
-                          'Pay and Benefits',
-                          'Work Conditions',
-                          'Workplace Harassment',
-                          'Others'
-                        ].map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedCategory = newValue;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      OutlinedButton(
-                        onPressed: pickAndUploadFile,
-                        child: Text(fileName == "" ? "Attach File" : fileName),
-                      ),
-                      SizedBox(height: 20),
-                    ],
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.white, Colors.grey.shade50],
                   ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Submit New Grievance",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(title, "Title", Icons.title),
+                    const SizedBox(height: 12),
+                    _buildTextField(des, "Description", Icons.description, maxLines: 5),
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade200, thickness: 1),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Personal Info",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTextField(my_name, "Name", Icons.person),
+                    const SizedBox(height: 12),
+                    _buildTextField(my_id, "Employee ID", Icons.assignment_ind),
+                    const SizedBox(height: 12),
+                    _buildTextField(my_depart, "Department", Icons.business),
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade200, thickness: 1),
+                    const SizedBox(height: 20),
+                    Text(
+                      "Complain Against",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryColor,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    _buildTextField(complain_against_name, "Name", Icons.person),
+                    const SizedBox(height: 12),
+                    _buildTextField(complain_against_id, "Employee ID (optional)", Icons.assignment_ind),
+                    const SizedBox(height: 12),
+                    _buildTextField(complain_against_depart, "Department", Icons.business),
+                    const SizedBox(height: 20),
+                    Divider(color: Colors.grey.shade200, thickness: 1),
+                    const SizedBox(height: 20),
+                    DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      decoration: InputDecoration(
+                        hintText: "Select Category",
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                        ),
+                        prefixIcon: Icon(Icons.category, size: 16, color: Colors.grey[600]),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                      ),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[800],
+                      ),
+                      dropdownColor: Colors.white,
+                      items: [
+                        'Discrimination',
+                        'Pay and Benefits',
+                        'Work Conditions',
+                        'Workplace Harassment',
+                        'Others'
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCategory = newValue;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    OutlinedButton(
+                      onPressed: pickAndUploadFile,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                        side: BorderSide(color: AppColors.primaryColor, width: 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        textStyle: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.attach_file, size: 16, color: AppColors.primaryColor),
+                          const SizedBox(width: 5),
+                          Text(
+                            fileName == "" ? "Attach File" : fileName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               FloatingActionButton.extended(
                 onPressed: () {
                   try {
-                    if(fileName.isEmpty){
+                    if (fileName.isEmpty) {
                       newGrievance();
-                    }else{
+                    } else {
                       uploadFile(fileObj!);
                     }
                   } catch (e) {
@@ -275,12 +365,18 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
                       style: ToastificationStyle.flatColored,
                       autoCloseDuration: const Duration(seconds: 5),
                     );
-
                   }
                 },
-                icon: Icon(Icons.send,color: Colors.white ,),
-                label: Text("Submit", style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 16),),
                 backgroundColor: AppColors.primaryColor,
+                icon: const Icon(Icons.send, color: Colors.white, size: 16),
+                label: const Text(
+                  "Submit Grievance",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ],
           ),
@@ -295,10 +391,20 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hintText,
-        prefixIcon: Icon(icon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+        hintStyle: TextStyle(
+          fontSize: 14,
+          color: Colors.grey[600],
         ),
+        prefixIcon: Icon(icon, size: 16, color: Colors.grey[600]),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+      ),
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.grey[800],
       ),
     );
   }

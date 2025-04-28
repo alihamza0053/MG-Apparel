@@ -39,7 +39,6 @@ class _mobileLoginState extends State<mobileLogin> {
   bool progressBar = false;
 
 
-
   @override
   void initState() {
     super.initState();
@@ -47,13 +46,12 @@ class _mobileLoginState extends State<mobileLogin> {
     sendLoginEmail();
   }
 
-Future<void> sendLoginEmail() async{
-  final info = await getLoginInfo();
-  print("""📍 IP Address: ${info['ip']}
+  Future<void> sendLoginEmail() async {
+    final info = await getLoginInfo();
+    print("""📍 IP Address: ${info['ip']}
 🌐 Browser: ${info['browser']}
 📌 Location: ${info['location']}""");
-
-}
+  }
 
   //upload file
   void pickAndUploadFile() async {
@@ -77,7 +75,8 @@ Future<void> sendLoginEmail() async{
     reader.onLoadEnd.listen((event) async {
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse("https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
+        Uri.parse(
+            "https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
       );
 
       request.files.add(
@@ -102,8 +101,8 @@ Future<void> sendLoginEmail() async{
       }
     });
   }
-  // upload file
 
+  // upload file
 
 
   // Function to fetch user role from Supabase
@@ -126,8 +125,8 @@ Future<void> sendLoginEmail() async{
       }
 
 
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>rDashboard(role: role, email: email.text)));
-
+      Navigator.pushReplacement(context, MaterialPageRoute(
+          builder: (context) => rDashboard(role: role, email: email.text)));
 
 
       print("🔹 User Role: $role"); // Debug log
@@ -136,9 +135,8 @@ Future<void> sendLoginEmail() async{
     }
   }
 
-  void login() async{
-
-    if(email.text.isEmpty || password.text.isEmpty){
+  void login() async {
+    if (email.text.isEmpty || password.text.isEmpty) {
       Toastification().show(
         context: context,
         title: Text("Fill all the fields."),
@@ -146,15 +144,16 @@ Future<void> sendLoginEmail() async{
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
-    }else{
+    } else {
       setState(() {
         progressBar = true;
       });
 
-      try{
-        await authService.login(email.text.toLowerCase().trim(), password.text.toLowerCase().trim());
+      try {
+        await authService.login(email.text.toLowerCase().trim(),
+            password.text.toLowerCase().trim());
         fetchUserRole(); // Fetch user role when dashboard loads
-      }on AuthException catch(e){
+      } on AuthException catch (e) {
         setState(() {
           progressBar = false;
         });
@@ -167,80 +166,198 @@ Future<void> sendLoginEmail() async{
         );
       }
     }
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECEFF1), // Light gray background
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: Image.asset(
+            "assets/images/logo.png",
+            width: 40,
+          ),
+        ),
+        title: Text(
+          "Login",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const rSignup()));
+            },
+            icon: Icon(
+                Icons.person_add, color: AppColors.secondaryColor, size: 16),
+            label: Text(
+              "SignUp",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.secondaryColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Center(
-        child: progressBar ? Column(
+        child: progressBar
+            ? Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            CircularProgressIndicator(),
-            Text("Logging in....", style: TextStyle(fontSize: 18),)
+            CircularProgressIndicator(color: AppColors.primaryColor),
+            const SizedBox(height: 10),
+            Text(
+              "Logging in....",
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
-        ) : Padding(
-          padding: const EdgeInsets.all(18.0),
+        )
+            : Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
           child: Container(
-            width:400,
-            height: 400,
-            padding: EdgeInsets.all(8),
+            width: 400,
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-                border:Border.all(width: 2, color: AppColors.primaryColor),
-                borderRadius: BorderRadius.circular(10)
+              gradient: LinearGradient(
+                colors: [Colors.white, Colors.grey.shade50],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Image(image: AssetImage("assets/images/logo.png"),width: 100,),
-                SizedBox(
-                  height: 10,
+                Image.asset(
+                  "assets/images/logo.png",
+                  width: 100,
                 ),
-                Text("Login", style: TextStyle(fontSize: 30,fontWeight: FontWeight.w800),),
-                SizedBox(
-                  height: 20,
+                const SizedBox(height: 10),
+                Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryColor,
+                  ),
                 ),
-                //Text("Welcome Back", style: TextStyle(fontSize: 25),),
+                const SizedBox(height: 20),
                 TextField(
                   controller: email,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(hintText: "Email"),
+                  decoration: InputDecoration(
+                    hintText: "Email",
+                    hintStyle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                          color: Colors.grey.shade300, width: 1),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 12),
+                  ),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[800],
+                  ),
                 ),
+                const SizedBox(height: 12),
                 TextField(
                   controller: password,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: "Password",
-                    counterText: "", // ✅ Hides the default character counter
+                    hintStyle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                          color: Colors.grey.shade300, width: 1),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 12),
+                    counterText: "",
+                  ),
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[800],
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    TextButton(onPressed: login, child: Text("Login",style: TextStyle(color: Colors.white),)),
+                    ElevatedButton(
+                      onPressed: login,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        textStyle: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      child: const Text("Login"),
+                    ),
                     GestureDetector(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>rSignup()));
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (
+                                context) => const rSignup()));
                       },
                       child: Container(
-                        padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 12),
                         decoration: BoxDecoration(
-                          border: Border.all(width: 1, color: AppColors.primaryColor),
+                          border: Border.all(
+                              width: 1, color: AppColors.primaryColor),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           "SignUp",
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    )
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),

@@ -17,7 +17,7 @@ class _rSignupState extends State<rSignup> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint){
       if(constraint.maxWidth < 600){
-        return mobileSignup();
+        return desktopSignup();
       }else{
         return desktopSignup();
       }

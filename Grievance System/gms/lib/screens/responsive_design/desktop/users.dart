@@ -14,91 +14,263 @@ class desktopUserData extends StatefulWidget {
 
 class _desktopUserDataState extends State<desktopUserData> {
   final usersDB = UserDatabase();
-  Color roleColor = Colors.green;
   Map<int, String> selectedRoles = {};
+
+  Color getRoleColor(String role) {
+    switch (role) {
+      case 'hr':
+        return Colors.blue;
+      case 'admin':
+        return Colors.red;
+      default:
+        return Colors.green;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFECEFF1), // Light gray background
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(Icons.arrow_back),
-          color: Colors.white,
+          icon: Icon(
+            Icons.arrow_back,
+            color: AppColors.primaryColor,
+            size: 24,
+          ),
         ),
-        title: Text("All Users", style: TextStyle(fontSize: 25)),
+        title: Text(
+          "All Users",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.close, color: AppColors.secondaryColor, size: 16),
+            label: Text(
+              "Close",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.secondaryColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Container(
           width: 800,
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Users With Role:", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
+              Text(
+                "Users With Role",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryColor,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Divider(color: Colors.grey.shade200, thickness: 1),
+              const SizedBox(height: 20),
               Expanded(
                 child: StreamBuilder(
                   stream: usersDB.stream,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(child: CircularProgressIndicator());
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.hourglass_empty,
+                              size: 80,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "Loading Users...",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "Please wait while we fetch the data.",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
                     }
                     final users = snapshot.data!;
+                    if (users.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              size: 80,
+                              color: Colors.grey.shade600,
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              "No Users Found",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              "There are no registered users yet.",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      );
+                    }
                     return ListView.builder(
                       itemCount: users.length,
                       itemBuilder: (context, index) {
                         final singleUser = users[index];
-                        if (singleUser.role == 'employee') {
-                          roleColor = Colors.green;
-                        } else if (singleUser.role == 'hr') {
-                          roleColor = Colors.orange;
-                        } else if (singleUser.role == 'admin') {
-                          roleColor = Colors.red;
-                        }
-                        return Card(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          elevation: 4,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          child: Padding(
-                            padding: EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text("Email: ${singleUser.email}", style: TextStyle(fontSize: 16)),
-                                    Container(
-                                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                      decoration: BoxDecoration(
-                                        color: roleColor,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(singleUser.role, style: TextStyle(color: Colors.white)),
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.white, Colors.grey.shade50],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Email",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.grey[800],
+                                          ),
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          singleUser.email,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[800],
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    DropdownButton<String>(
-                                      dropdownColor: Colors.white,
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: getRoleColor(singleUser.role).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          singleUser.role == 'hr'
+                                              ? Icons.support_agent
+                                              : singleUser.role == 'admin'
+                                              ? Icons.admin_panel_settings
+                                              : Icons.person,
+                                          size: 16,
+                                          color: getRoleColor(singleUser.role),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          singleUser.role,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: getRoleColor(singleUser.role),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  DropdownButtonHideUnderline(
+                                    child: DropdownButton<String>(
                                       value: selectedRoles[singleUser.id] ?? singleUser.role,
                                       hint: Text(
                                         singleUser.role,
-                                        style: TextStyle(color: AppColors.primaryColor),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[600],
+                                        ),
                                       ),
-                                      style: TextStyle(color: AppColors.primaryColor),
-                                      items: ['employee', 'hr', 'admin']
-                                          .map((String status) => DropdownMenuItem<String>(
-                                        value: status,
-                                        child: Text(status, style: TextStyle(color: AppColors.primaryColor)),
-                                      ))
-                                          .toList(),
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                      dropdownColor: Colors.white,
+                                      items: ['employee', 'hr', 'admin'].map((String status) {
+                                        return DropdownMenuItem<String>(
+                                          value: status,
+                                          child: Text(
+                                            status,
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey[800],
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
                                       onChanged: (String? newValue) {
                                         if (newValue != null) {
                                           setState(() {
@@ -107,44 +279,65 @@ class _desktopUserDataState extends State<desktopUserData> {
                                         }
                                       },
                                     ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        String updatedRole = selectedRoles[singleUser.id] ?? singleUser.role;
-                                        try {
-                                          usersDB.update(singleUser, updatedRole);
-                                          // email, subject, description
-                                          sendEmail(singleUser.email, "Role Update", "Hello,\nWe wanted to inform you that your role in the Grievance System has been updated.\n\nUPDATED ROLE: ${singleUser.role}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
-                                          Toastification().show(
-                                            context: context,
-                                            title: Text("User Role Updated."),
-                                            type: ToastificationType.success,
-                                            style: ToastificationStyle.flatColored,
-                                            autoCloseDuration: const Duration(seconds: 5),
-                                          );
-                                          setState(() {
-                                            selectedRoles.remove(singleUser.id);
-                                          });
-                                        } catch (e) {
-                                          Toastification().show(
-                                            context: context,
-                                            title: Text("Error: $e"),
-                                            type: ToastificationType.error,
-                                            style: ToastificationStyle.flatColored,
-                                            autoCloseDuration: const Duration(seconds: 5),
-                                          );
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.primaryColor,
-                                        shape: RoundedRectangleBorder(),
-                                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      String updatedRole = selectedRoles[singleUser.id] ?? singleUser.role;
+                                      try {
+                                        usersDB.update(singleUser, updatedRole);
+                                        // email, subject, description
+                                        sendEmail(
+                                            singleUser.email,
+                                            "Role Update",
+                                            "Hello,\nWe wanted to inform you that your role in the Grievance System has been updated.\n\nUPDATED ROLE: ${updatedRole}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+                                        Toastification().show(
+                                          context: context,
+                                          title: Text("User Role Updated."),
+                                          type: ToastificationType.success,
+                                          style: ToastificationStyle.flatColored,
+                                          autoCloseDuration: const Duration(seconds: 5),
+                                        );
+                                        setState(() {
+                                          selectedRoles.remove(singleUser.id);
+                                        });
+                                      } catch (e) {
+                                        Toastification().show(
+                                          context: context,
+                                          title: Text("Error: $e"),
+                                          type: ToastificationType.error,
+                                          style: ToastificationStyle.flatColored,
+                                          autoCloseDuration: const Duration(seconds: 5),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primaryColor,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text("Update", style: TextStyle(fontSize: 16, color: Colors.white,fontWeight: FontWeight.bold)),
+                                      textStyle: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
-                                  ],
-                                )
-                              ],
-                            ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.update,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text("Update"),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         );
                       },

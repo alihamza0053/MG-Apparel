@@ -61,85 +61,163 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
+      backgroundColor: const Color(0xFFECEFF1), // Light gray background
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => rUsers()));
-            },
-            icon: Icon(Icons.supervised_user_circle_sharp,color: Colors.white,)),
-        title: Text("CEO Dashboard", style: TextStyle(fontSize: 20)),
+          onPressed: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => rUsers()));
+          },
+          icon: Icon(
+            Icons.supervised_user_circle_sharp,
+            color: AppColors.primaryColor,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          "CEO Dashboard",
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryColor,
+          ),
+        ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                authService.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => rLogin()));
-              },
-              icon: const Icon(Icons.logout, color: Colors.white),
-              label: const Text("Logout", style: TextStyle(color: Colors.white,fontSize: 14)),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondaryColor),
+          TextButton.icon(
+            onPressed: () {
+              authService.signOut();
+              Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (context) => rLogin()));
+            },
+            icon: Icon(Icons.logout, color: AppColors.secondaryColor, size: 16),
+            label: Text(
+              "Logout",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.secondaryColor,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image(image: AssetImage("assets/images/logo.png"),width: 80,),
-            // Grievance Chart
-            Card(
-              elevation: 4,
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    Text(
-                      "Grievance Overview",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      height: 200,
-                      child: mobileGrievanceChart(),
-                    ),
-                  ],
-                ),
+            Center(
+              child: Image.asset(
+                "assets/images/logo.png",
+                width: 80,
               ),
             ),
-            SizedBox(height: 20),
-
+            const SizedBox(height: 20),
+            // Grievance Chart
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.white, Colors.grey.shade50],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Grievance Overview",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 200,
+                    child: mobileGrievanceChart(),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Divider(color: Colors.grey.shade200, thickness: 1),
             // Grievances List
             Container(
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               width: double.infinity,
-              color: AppColors.primaryColor,
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor,
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: Center(
                 child: Text(
                   "Grievances",
-                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold,color: Colors.white),
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 20),
             StreamBuilder(
               stream: grievanceDB.stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.hourglass_empty,
+                          size: 80,
+                          color: Colors.grey.shade600,
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Loading Grievances...",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          "Please wait while we fetch the data.",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade500,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 final grievances = snapshot.data!;
-                return ListView.builder(
+                return GridView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 2.0,
+                  ),
                   itemCount: grievances.length,
                   itemBuilder: (context, index) {
                     final grievance = grievances[index];
@@ -148,9 +226,21 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                     statusColor = _getStatusColor(grievance.status);
                     priorityColor = _getPriorityColor(grievance.priority);
 
-
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 8),
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.grey.shade50],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
@@ -160,38 +250,48 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                                       id: grievance.id, role: 'admin')));
                         },
                         child: Padding(
-                          padding: EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(20),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 mainAxisAlignment:
                                 MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
                                     child: Text(
                                       grievance.title,
-                                      style: TextStyle(
-                                        fontSize: 16,
+                                      style: const TextStyle(
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.black,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-
                                 ],
                               ),
-                              Text(grievance.category, style: TextStyle(color: AppColors.secondaryColor)),
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
+                              Text(
+                                grievance.category,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              const SizedBox(height: 5),
                               Text(
                                 grievance.description,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[600],
+                                  color: Colors.grey[800],
                                 ),
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 12),
                               Row(
                                 mainAxisAlignment:
                                 MainAxisAlignment.spaceBetween,
@@ -199,34 +299,66 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: priorityColor,
+                                          color: priorityColor.withOpacity(0.1),
                                           borderRadius:
-                                          BorderRadius.circular(4),
+                                          BorderRadius.circular(20),
                                         ),
-                                        child: Text(
-                                          grievance.priority,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.priority_high,
+                                              size: 16,
+                                              color: priorityColor,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              grievance.priority,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: priorityColor,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      SizedBox(width: 8),
+                                      const SizedBox(width: 8),
                                       Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12, vertical: 6),
                                         decoration: BoxDecoration(
-                                          color: statusColor,
+                                          color: statusColor.withOpacity(0.1),
                                           borderRadius:
-                                          BorderRadius.circular(4),
+                                          BorderRadius.circular(20),
                                         ),
-                                        child: Text(
-                                          grievance.status,
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              grievance.status == 'Pending'
+                                                  ? Icons.hourglass_empty
+                                                  : grievance.status ==
+                                                  'In Progress'
+                                                  ? Icons.autorenew
+                                                  : grievance.status ==
+                                                  'Resolved'
+                                                  ? Icons.check_circle
+                                                  : Icons.archive,
+                                              size: 16,
+                                              color: statusColor,
+                                            ),
+                                            const SizedBox(width: 5),
+                                            Text(
+                                              grievance.status,
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w500,
+                                                color: statusColor,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -241,8 +373,23 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                                                       id: grievance.id,
                                                       role: 'admin')));
                                     },
-                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.black54)),
-                                    child: Text("View Details", style: TextStyle(color: Colors.white, fontSize: 12)),
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 12, vertical: 6),
+                                      backgroundColor:
+                                      AppColors.primaryColor.withOpacity(0.1),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "View Details",
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -265,12 +412,13 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pending':
-        return Colors.red;
+        return Colors.orange;
       case 'In Progress':
         return Colors.blue;
       case 'Resolved':
-      case 'Closed':
         return Colors.green;
+      case 'Closed':
+        return Colors.grey;
       default:
         return Colors.grey;
     }

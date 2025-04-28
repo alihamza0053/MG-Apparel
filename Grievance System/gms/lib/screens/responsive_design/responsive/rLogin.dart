@@ -16,8 +16,9 @@ class _rLoginState extends State<rLogin> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint){
       if(constraint.maxWidth < 600){
-        return mobileLogin();
+        return desktopLogin();
       }else{
+
         return desktopLogin();
       }
     });
