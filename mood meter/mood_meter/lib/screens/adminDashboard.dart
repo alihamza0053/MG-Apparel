@@ -1125,7 +1125,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    comment['user_email'],
+                    "",//user_email
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,
