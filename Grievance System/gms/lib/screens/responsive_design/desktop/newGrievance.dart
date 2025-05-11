@@ -27,9 +27,15 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
   TextEditingController my_name = TextEditingController();
   TextEditingController my_id = TextEditingController();
   TextEditingController my_depart = TextEditingController();
-  TextEditingController complain_against_name = TextEditingController();
-  TextEditingController complain_against_id = TextEditingController();
-  TextEditingController complain_against_depart = TextEditingController();
+  TextEditingController my_position = TextEditingController();
+  List<Map<String, TextEditingController>> accusedPersons = [
+    {
+      'name': TextEditingController(),
+      'id': TextEditingController(),
+      'depart': TextEditingController(),
+      'position': TextEditingController(),
+    }
+  ];
   TextEditingController other = TextEditingController();
   String imgUrl = "";
   String? selectedCategory;
@@ -45,10 +51,26 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     super.initState();
   }
 
-//upload file start
+  void addAccusedPerson() {
+    setState(() {
+      accusedPersons.add({
+        'name': TextEditingController(),
+        'id': TextEditingController(),
+        'depart': TextEditingController(),
+        'position': TextEditingController(),
+      });
+    });
+  }
+
+  void removeAccusedPerson(int index) {
+    setState(() {
+      accusedPersons.removeAt(index);
+    });
+  }
+
   void pickAndUploadFile() async {
     html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
-    uploadInput.accept = 'image/*,application/pdf'; // Allow images & PDFs
+    uploadInput.accept = 'image/*,application/pdf';
     uploadInput.click();
 
     uploadInput.onChange.listen((event) {
@@ -58,7 +80,6 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
         fileObj = file;
         setState(() {
           fileName = file.name;
-          print(file.name);
         });
       }
     });
@@ -71,13 +92,12 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     reader.onLoadEnd.listen((event) async {
       var request = http.MultipartRequest(
         "POST",
-        Uri.parse(
-            "https://groundup.pk/gms/upload_image.php"), // Change to your PHP API
+        Uri.parse("https://groundup.pk/gms/upload_image.php"),
       );
 
       request.files.add(
         http.MultipartFile.fromBytes(
-          'file', // Must match the PHP $_FILES['file'] key
+          'file',
           reader.result as List<int>,
           filename: file.name,
         ),
@@ -90,7 +110,6 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
         if (jsonResponse['success']) {
           imgUrl = "https://groundup.pk/gms/${jsonResponse['file_path']}";
           newGrievance();
-          print("File uploaded successfully: ${jsonResponse['file_path']}");
         } else {
           print("Upload failed: ${jsonResponse['message']}");
         }
@@ -100,14 +119,12 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     });
   }
 
-//submit data to supabase start
   Future<void> newGrievance() async {
     TimeOfDay selectedTime = TimeOfDay(hour: 11, minute: 11);
     DateTime now = DateTime.now();
     DateTime combinedDateTime = DateTime(
         now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
 
-// Send this `combinedDateTime.toIso8601String()` to Supabase
     String timestamp = combinedDateTime.toIso8601String();
 
     final newGrievance = Grievance(
@@ -116,9 +133,11 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       my_name: my_name.text,
       my_employee_id: my_id.text,
       my_depart: my_depart.text,
-      complain_against_name: complain_against_name.text,
-      complain_against_id: complain_against_id.text,
-      complain_against_depart: complain_against_depart.text,
+      my_position: my_position.text,
+      complain_against_name: accusedPersons.map((p) => p['name']!.text).join(';'),
+      complain_against_id: accusedPersons.map((p) => p['id']!.text).join(';'),
+      complain_against_depart: accusedPersons.map((p) => p['depart']!.text).join(';'),
+      complain_against_position: accusedPersons.map((p) => p['position']!.text).join(';'),
       other: "",
       category: selectedCategory!,
       imgUrl: imgUrl,
@@ -133,8 +152,9 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
     try {
       grievanceDB.createGrievance(newGrievance);
 
-// email, subject, description
-      sendEmail("alihamza00053@gmail.com", "New Grievance Submitted",
+      sendEmail(
+          "alihamza00053@gmail.com",
+          "New Grievance Submitted",
           "Hello,\nA new grievance has been submitted. \n\nTitle: ${des.text}\nSubmitted by: ${userEmail!} \nDate: ${timestamp}\nCategory: ${selectedCategory}\n\n Thank you,\nMG Apparel Grievance");
 
       Toastification().show(
@@ -159,8 +179,7 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDesktop = MediaQuery.of(context).size.width >
-        600; // Check if the screen is desktop-sized
+    final bool isDesktop = MediaQuery.of(context).size.width > 600;
 
     return Scaffold(
       backgroundColor: Color(0xFFECEFF1),
@@ -187,7 +206,7 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       ),
       body: Center(
         child: Container(
-          width: isDesktop ? 800 : double.infinity, // Adjust width for desktop
+          width: isDesktop ? 800 : double.infinity,
           padding: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
           child: SingleChildScrollView(
             child: Column(
@@ -256,8 +275,30 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                             ],
                           ),
                         SizedBox(height: 12),
-                        _buildTextField(
-                            my_depart, "Department", Icons.business),
+                        if (isDesktop)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _buildTextField(
+                                    my_depart, "Department", Icons.business),
+                              ),
+                              SizedBox(width: 16),
+                              Expanded(
+                                child: _buildTextField(
+                                    my_position, "Position Title", Icons.work),
+                              ),
+                            ],
+                          )
+                        else
+                          Column(
+                            children: [
+                              _buildTextField(
+                                  my_depart, "Department", Icons.business),
+                              SizedBox(height: 12),
+                              _buildTextField(
+                                  my_position, "Position Title", Icons.work),
+                            ],
+                          ),
                         SizedBox(height: 20),
                         Text(
                           "Complain Against",
@@ -268,37 +309,89 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                           ),
                         ),
                         SizedBox(height: 12),
-                        if (isDesktop)
-                          Row(
+                        ...accusedPersons.asMap().entries.map((entry) {
+                          int index = entry.key;
+                          var controllers = entry.value;
+                          return Column(
                             children: [
-                              Expanded(
-                                child: _buildTextField(complain_against_name,
-                                    "Name", Icons.person),
-                              ),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: _buildTextField(
-                                    complain_against_id,
-                                    "Employee ID (optional)",
-                                    Icons.assignment_ind),
-                              ),
-                            ],
-                          )
-                        else
-                          Column(
-                            children: [
-                              _buildTextField(
-                                  complain_against_name, "Name", Icons.person),
+                              if (isDesktop)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildTextField(
+                                          controllers['name']!,
+                                          "Name",
+                                          Icons.person),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: _buildTextField(
+                                          controllers['id']!,
+                                          "Employee ID (optional)",
+                                          Icons.assignment_ind),
+                                    ),
+                                  ],
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    _buildTextField(controllers['name']!,
+                                        "Name", Icons.person),
+                                    SizedBox(height: 12),
+                                    _buildTextField(
+                                        controllers['id']!,
+                                        "Employee ID (optional)",
+                                        Icons.assignment_ind),
+                                  ],
+                                ),
                               SizedBox(height: 12),
-                              _buildTextField(
-                                  complain_against_id,
-                                  "Employee ID (optional)",
-                                  Icons.assignment_ind),
+                              if (isDesktop)
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildTextField(
+                                          controllers['depart']!,
+                                          "Department",
+                                          Icons.business),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Expanded(
+                                      child: _buildTextField(
+                                          controllers['position']!,
+                                          "Position Title",
+                                          Icons.work),
+                                    ),
+                                  ],
+                                )
+                              else
+                                Column(
+                                  children: [
+                                    _buildTextField(controllers['depart']!,
+                                        "Department", Icons.business),
+                                    SizedBox(height: 12),
+                                    _buildTextField(controllers['position']!,
+                                        "Position Title", Icons.work),
+                                  ],
+                                ),
+                              if (accusedPersons.length > 1)
+                                TextButton(
+                                  onPressed: () => removeAccusedPerson(index),
+                                  child: Text(
+                                    "Remove Person",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              SizedBox(height: 12),
                             ],
+                          );
+                        }).toList(),
+                        TextButton(
+                          onPressed: addAccusedPerson,
+                          child: Text(
+                            "Add Another Person",
+                            style: TextStyle(color: AppColors.primaryColor),
                           ),
-                        SizedBox(height: 12),
-                        _buildTextField(complain_against_depart, "Department",
-                            Icons.business),
+                        ),
                         SizedBox(height: 20),
                         DropdownButtonFormField<String>(
                           value: selectedCategory,
@@ -313,17 +406,17 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
+                              BorderSide(color: Colors.grey.shade300),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide:
-                                  BorderSide(color: Colors.grey.shade300),
+                              BorderSide(color: Colors.grey.shade300),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide:
-                                  BorderSide(color: AppColors.primaryColor),
+                              BorderSide(color: AppColors.primaryColor),
                             ),
                           ),
                           style: TextStyle(
@@ -351,6 +444,14 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                           },
                         ),
                         SizedBox(height: 20),
+                        Text(
+                          "File Attachment: Please attach any relevant evidence or information to support your complaint.",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        SizedBox(height: 12),
                         Container(
                           padding: EdgeInsets.symmetric(
                             horizontal: 18,

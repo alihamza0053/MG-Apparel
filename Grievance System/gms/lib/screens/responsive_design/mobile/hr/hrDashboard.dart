@@ -30,29 +30,28 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
   @override
   void initState() {
     super.initState();
-    fetchUserRole(); // Fetch user role when dashboard loads
+    fetchUserRole();
   }
 
-  // Function to fetch user role from Supabase
   Future<void> fetchUserRole() async {
     try {
       SupabaseClient supabase = Supabase.instance.client;
-      final user = supabase.auth.currentUser; // Get logged-in user
+      final user = supabase.auth.currentUser;
       if (user == null) return;
 
       final response = await supabase
-          .from('users') // Your users table
-          .select('role') // Fetch only the role column
-          .eq('email', user.email as Object) // Filter by user's email
-          .maybeSingle(); // Get single result
+          .from('users')
+          .select('role')
+          .eq('email', user.email as Object)
+          .maybeSingle();
 
       if (response != null && response['role'] != null) {
         setState(() {
-          role = response['role']; // Set user role
+          role = response['role'];
         });
       }
 
-      print("🔹 User Role: $role"); // Debug log
+      print("🔹 User Role: $role");
     } catch (e) {
       print("❌ Error fetching user role: $e");
     }
@@ -61,7 +60,7 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECEFF1), // Light gray background
+      backgroundColor: const Color(0xFFECEFF1),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -120,7 +119,6 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
               ),
             ),
             const SizedBox(height: 20),
-            // Grievance Chart
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -157,7 +155,6 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
             ),
             const SizedBox(height: 20),
             Divider(color: Colors.grey.shade200, thickness: 1),
-            // Grievances List
             Container(
               padding: const EdgeInsets.all(10),
               width: double.infinity,
@@ -227,9 +224,14 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
                   itemBuilder: (context, index) {
                     final grievance = grievances[index];
 
-                    // Set status and priority colors
                     statusColor = _getStatusColor(grievance.status);
                     priorityColor = _getPriorityColor(grievance.priority);
+
+                    // Split semicolon-separated accused data
+                    final accusedNames = grievance.complain_against_name.split(';');
+                    final accusedDisplay = accusedNames.length > 1
+                        ? "${accusedNames[0]} +${accusedNames.length - 1} others"
+                        : accusedNames[0];
 
                     return Container(
                       decoration: BoxDecoration(
@@ -285,6 +287,26 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
                                   fontSize: 14,
                                   color: Colors.grey[600],
                                 ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Complainant: ${grievance.my_name} (${grievance.my_position})",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[800],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                "Against: $accusedDisplay",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[800],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 5),
                               Text(
@@ -413,7 +435,6 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
     );
   }
 
-  // Helper function to get status color
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pending':
@@ -429,7 +450,6 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
     }
   }
 
-  // Helper function to get priority color
   Color _getPriorityColor(String priority) {
     switch (priority) {
       case 'Low':

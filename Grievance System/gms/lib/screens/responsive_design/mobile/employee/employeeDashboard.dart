@@ -29,7 +29,6 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
   void initializeStream() {
     String? currentUserEmail = authService.getUserEmail();
 
-
     if (currentUserEmail != null) {
       setState(() {
         filterStream = Supabase.instance.client
@@ -57,7 +56,7 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECEFF1), // Light gray background
+      backgroundColor: const Color(0xFFECEFF1),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.push(
@@ -227,6 +226,12 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
 
                         String formattedDate = formatDate(grievance.updateAt);
 
+                        // Split semicolon-separated accused data
+                        final accusedNames = grievance.complain_against_name.split(';');
+                        final accusedDisplay = accusedNames.length > 1
+                            ? "${accusedNames[0]} +${accusedNames.length - 1} others"
+                            : accusedNames[0];
+
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -306,6 +311,24 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
+                                  "Complainant: ${grievance.my_name} (${grievance.my_position})",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[800],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "Against: $accusedDisplay",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[800],
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
                                   grievance.description,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -330,7 +353,7 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
                                           const SizedBox(width: 5),
                                           Expanded(
                                             child: Text(
-                                              "Assigned to: ${grievance.assignTo}",
+                                              "Assigned to: ${grievance.assignTo.isEmpty ? 'Unassigned' : grievance.assignTo}",
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.grey[700],

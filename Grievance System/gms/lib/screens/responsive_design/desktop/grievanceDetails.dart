@@ -56,7 +56,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
         actions: [
           TextButton.icon(
             onPressed: () {
-// Implement logout
+              // Implement logout
             },
             icon: Icon(Icons.logout, color: AppColors.secondaryColor),
             label: Text(
@@ -83,9 +83,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
 
                     final grievances = snapshot.data!;
 
-// Find grievance by ID safely
                     final grievance = grievances.firstWhere(
-                      (g) => g.id == widget.id,
+                          (g) => g.id == widget.id,
                     );
 
                     if (grievance == null) {
@@ -159,7 +158,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                               children: [
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Flexible(
                                       child: Text(
@@ -234,31 +233,31 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            label == 'Pending'
-                ? Icons.hourglass_empty
-                : label == 'In Progress'
-                    ? Icons.autorenew
-                    : label == 'Resolved'
-                        ? Icons.check_circle
-                        : Icons.archive,
+      child:Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          label == 'Pending'
+              ? Icons.hourglass_empty
+              : label == 'In Progress'
+              ? Icons.autorenew
+              : label == 'Resolved'
+              ? Icons.check_circle
+              : Icons.archive,
+          color: color,
+          size: 16,
+        ),
+        SizedBox(width: 5),
+        Text(
+          label,
+          style: TextStyle(
             color: color,
-            size: 16,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
           ),
-          SizedBox(width: 5),
-          Text(
-            label,
-            style: TextStyle(
-              color: color,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
+    ),
     );
   }
 
@@ -289,8 +288,8 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
   Widget _buildEmployeeDetails(Grievance grievance) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -313,7 +312,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
               ),
             ],
           ),
-          SizedBox(width: 40),
+          SizedBox(height: 10),
           Row(
             children: [
               Icon(Icons.badge, size: 16, color: Colors.grey[600]),
@@ -335,61 +334,178 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
               ),
             ],
           ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.work_outline, size: 16, color: Colors.grey[600]),
+              SizedBox(width: 5),
+              Text(
+                "Position: ",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+              Text(
+                grievance.my_position,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Icon(Icons.apartment, size: 16, color: Colors.grey[600]),
+              SizedBox(width: 5),
+              Text(
+                "Department: ",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[700],
+                ),
+              ),
+              Text(
+                grievance.my_depart,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[700],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 
   Widget _buildAccusedDetails(Grievance grievance) {
+    final accusedNames = grievance.complain_against_name.split(';');
+    final accusedIds = grievance.complain_against_id.split(';');
+    final accusedDeparts = grievance.complain_against_depart.split(';');
+    final accusedPositions = grievance.complain_against_position.split(';');
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 0, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: accusedNames.asMap().entries.map((entry) {
+          int index = entry.key;
+          String name = entry.value;
+          String id = index < accusedIds.length ? accusedIds[index] : '';
+          String depart = index < accusedDeparts.length ? accusedDeparts[index] : '';
+          String position = index < accusedPositions.length ? accusedPositions[index] : '';
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.person_outline, size: 16, color: Colors.grey[600]),
-              SizedBox(width: 5),
-              Text(
-                "Name: ",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
+              if (accusedNames.length > 1)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    "Person ${index + 1}:",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
                 ),
+              Row(
+                children: [
+                  Icon(Icons.person_outline, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 5),
+                  Text(
+                    "Name: ",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                grievance.complain_against_name,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[700],
-                ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.badge, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 5),
+                  Text(
+                    "Employee ID: ",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    id.isEmpty ? 'Not provided' : id,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.work_outline, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 5),
+                  Text(
+                    "Position: ",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    position.isEmpty ? 'Not provided' : position,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  Icon(Icons.apartment, size: 16, color: Colors.grey[600]),
+                  SizedBox(width: 5),
+                  Text(
+                    "Department: ",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    depart.isEmpty ? 'Not provided' : depart,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
             ],
-          ),
-          SizedBox(width: 40),
-          Row(
-            children: [
-              Icon(Icons.badge, size: 16, color: Colors.grey[600]),
-              SizedBox(width: 5),
-              Text(
-                "Employee ID: ",
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
-                ),
-              ),
-              Text(
-                grievance.complain_against_id,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[700],
-                ),
-              ),
-            ],
-          ),
-        ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -402,7 +518,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
           Icon(Icons.person_outline, size: 16, color: Colors.grey[600]),
           SizedBox(width: 5),
           Text(
-            grievance.assignTo,
+            grievance.assignTo.isEmpty ? 'Unassigned' : grievance.assignTo,
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[800],
@@ -451,7 +567,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
               "Update Status",
               selectedStatus,
               ['Pending', 'In Progress', 'Resolved', 'Closed'],
-              (newValue) {
+                  (newValue) {
                 setState(() {
                   selectedStatus = newValue;
                 });
@@ -462,7 +578,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
               "Update Priority",
               selectedPriority,
               ['Low', 'High'],
-              (newValue) {
+                  (newValue) {
                 setState(() {
                   selectedPriority = newValue;
                 });
@@ -480,7 +596,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                   "Update Assign Person",
                   selectedUserEmail,
                   userEmails,
-                  (newValue) {
+                      (newValue) {
                     setState(() {
                       selectedUserEmail = newValue;
                     });
@@ -556,16 +672,15 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
                 feedback.text.trim(),
               );
 
-              print(
-                  "check error: ${selectedPriority} ${selectedStatus} ${selectedUserEmail}");
-
-//send email to employee
+              // Send email to employee
               sendEmail(grievance.submittedBy!, "Grievance Update",
-                  "Hello,\nYour grievance titled '${grievance.title}' has been updated with following details.\n\nAssigned to: ${grievance.assignTo!}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+                  "Hello,\nYour grievance titled '${grievance.title}' has been updated with following details.\n\nAssigned to: ${selectedUserEmail}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this change was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
 
-//send email to assign person
-              sendEmail(grievance.assignTo, "Grievance Assigned",
-                  "Hello,\nA new grievance titled '${grievance.title}' has been assigned to you with following details.\n\nSubmitted by: ${selectedUserEmail}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this assign was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+              // Send email to assigned person
+              if (selectedUserEmail != grievance.assignTo) {
+                sendEmail(selectedUserEmail!, "Grievance Assigned",
+                    "Hello,\nA new grievance titled '${grievance.title}' has been assigned to you with following details.\n\nSubmitted by: ${grievance.submittedBy}\nStatus: ${selectedStatus!}\nPriority: ${selectedPriority!}\nFeedback: ${feedback.text}\n\nIf you believe this assignment was made in error, or if you have any questions, please contact the administrator.\n\nThank you,\nMG Apparel Grievance");
+              }
 
               Toastification().show(
                 context: context,
@@ -619,7 +734,7 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
 
   Future<List<String>> fetchUsersEmails() async {
     final response =
-        await Supabase.instance.client.from('users').select('email');
+    await Supabase.instance.client.from('users').select('email');
     if (response.isEmpty) return [];
     return response.map<String>((row) => row['email'] as String).toList();
   }

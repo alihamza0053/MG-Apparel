@@ -98,7 +98,10 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                   SizedBox(width: 5),
                   Text(
                     "Logout",
-                    style: TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
@@ -146,7 +149,6 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
               width: 80,
             ),
             SizedBox(height: 20),
-            // Grievance Chart
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -182,7 +184,6 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
               ),
             ),
             SizedBox(height: 20),
-            // Grievances List
             Container(
               padding: EdgeInsets.all(10),
               width: double.infinity,
@@ -243,9 +244,14 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                   itemBuilder: (context, index) {
                     final grievance = grievances[index];
 
-                    // Set status and priority colors
                     statusColor = _getStatusColor(grievance.status);
                     priorityColor = _getPriorityColor(grievance.priority);
+
+                    // Split semicolon-separated accused data
+                    final accusedNames = grievance.complain_against_name.split(';');
+                    final accusedDisplay = accusedNames.length > 1
+                        ? "${accusedNames[0]} +${accusedNames.length - 1} others"
+                        : accusedNames[0];
 
                     return Card(
                       elevation: 2,
@@ -296,6 +302,22 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.secondaryColor,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                "Complainant: ${grievance.my_name} (${grievance.my_position})",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[800],
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                "Against: $accusedDisplay",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[800],
                                 ),
                               ),
                               SizedBox(height: 5),
@@ -397,7 +419,6 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
     );
   }
 
-  // Helper function to get status color
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pending':
@@ -412,7 +433,6 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
     }
   }
 
-  // Helper function to get priority color
   Color _getPriorityColor(String priority) {
     switch (priority) {
       case 'Low':

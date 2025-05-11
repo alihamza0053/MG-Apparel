@@ -85,7 +85,6 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
                       children: [
                         Expanded(child: desktopGrievanceChart()),
                         SizedBox(height: 12),
-                        // Grievances List
                         Container(
                           padding: EdgeInsets.all(10),
                           width: double.infinity,
@@ -194,21 +193,6 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
     );
   }
 
-  Widget _buildHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          "Grievances",
-          style: TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildGrievanceList() {
     return Expanded(
       child: StreamBuilder(
@@ -251,9 +235,15 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
             itemBuilder: (context, index) {
               final grievance = grievances[index];
 
-              // Set status and priority colors
               statusColor = _getStatusColor(grievance.status);
               priorityColor = _getPriorityColor(grievance.priority);
+
+              // Split semicolon-separated accused data
+              final accusedNames = grievance.complain_against_name.split(';');
+              final accusedDisplay = accusedNames.length > 1
+                  ? "${accusedNames[0]} +${accusedNames.length - 1} others"
+                  : accusedNames[0];
+
               return Card(
                 elevation: 2,
                 margin: EdgeInsets.symmetric(vertical: 10),
@@ -287,6 +277,22 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.secondaryColor,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Complainant: ${grievance.my_name} (${grievance.my_position})",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Against: $accusedDisplay",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[800],
                         ),
                       ),
                       SizedBox(height: 5),
@@ -378,26 +384,6 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
     );
   }
 
-  Widget _buildStatusBadge(String priority, String status) {
-    Color getStatusColor(String status) {
-      switch (status) {
-        case 'Pending': return Colors.red;
-        case 'In Progress': return Colors.blue;
-        case 'Resolved': return Colors.green;
-        case 'Closed': return Colors.green;
-        default: return Colors.grey;
-      }
-    }
-    return Row(
-      children: [
-        Chip(label: Text(priority), backgroundColor: Colors.orange),
-        SizedBox(width: 10),
-        Chip(label: Text(status), backgroundColor: getStatusColor(status)),
-      ],
-    );
-  }
-
-  // Helper function to get status color
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pending':
@@ -412,7 +398,6 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
     }
   }
 
-  // Helper function to get priority color
   Color _getPriorityColor(String priority) {
     switch (priority) {
       case 'Low':

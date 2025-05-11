@@ -40,7 +40,7 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
             .map((data) {
           try {
             return data.map((grievanceMap) => Grievance.fromMap(grievanceMap)).toList()
-              ..sort((a, b) => b.updateAt.compareTo(a.updateAt)); // Sorting by date, newest first
+              ..sort((a, b) => b.updateAt.compareTo(a.updateAt));
           } catch (e) {
             return [];
           }
@@ -183,7 +183,6 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
 
                   List<Grievance> grievances = snapshot.data!;
 
-                  // Apply filter if needed
                   if (_selectedFilter != "All") {
                     grievances = grievances.where((g) => g.status == _selectedFilter).toList();
                   }
@@ -227,7 +226,6 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
                     itemBuilder: (context, index) {
                       final grievance = grievances[index];
 
-                      // Set status color and icon
                       IconData statusIcon;
                       switch (grievance.status) {
                         case 'Pending':
@@ -252,6 +250,12 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
                       }
 
                       String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.parse(grievance.updateAt));
+
+                      // Split semicolon-separated accused data
+                      final accusedNames = grievance.complain_against_name.split(';');
+                      final accusedDisplay = accusedNames.length > 1
+                          ? "${accusedNames[0]} +${accusedNames.length - 1} others"
+                          : accusedNames[0];
 
                       return GestureDetector(
                         onTap: () {
@@ -309,6 +313,16 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
+                                Text(
+                                  "Complainant: ${grievance.my_name} (${grievance.my_position})",
+                                  style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  "Against: $accusedDisplay",
+                                  style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                                ),
+                                const SizedBox(height: 5),
                                 Text(
                                   grievance.description,
                                   maxLines: 2,
