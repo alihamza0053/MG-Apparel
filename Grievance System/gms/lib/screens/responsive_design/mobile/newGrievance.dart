@@ -290,41 +290,91 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Person ${index + 1}",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.primaryColor,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildTextField(controllers['name']!, "Name", Icons.person),
-                          const SizedBox(height: 12),
-                          _buildTextField(controllers['id']!, "Employee ID (optional)", Icons.assignment_ind),
-                          const SizedBox(height: 12),
-                          _buildTextField(controllers['depart']!, "Department", Icons.business),
-                          const SizedBox(height: 12),
-                          _buildTextField(controllers['position']!, "Position Title", Icons.work),
-                          if (accusedPersons.length > 1) ...[
-                            const SizedBox(height: 12),
-                            TextButton(
-                              onPressed: () => removeAccusedPerson(index),
-                              child: Text(
-                                "Remove Person",
-                                style: TextStyle(color: Colors.red),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Person ${index + 1}",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.primaryColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _buildTextField(controllers['name']!, "Name", Icons.person),
+                                    const SizedBox(height: 12),
+                                    _buildTextField(controllers['id']!, "Employee ID (optional)", Icons.assignment_ind),
+                                    const SizedBox(height: 12),
+                                    _buildTextField(controllers['depart']!, "Department", Icons.business),
+                                    const SizedBox(height: 12),
+                                    _buildTextField(controllers['position']!, "Position Title", Icons.work),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                              if (accusedPersons.length > 1)
+                                Padding(
+                                  padding: EdgeInsets.only(left: 10, top: 30),
+                                  child: IconButton(
+                                    onPressed: () => removeAccusedPerson(index),
+                                    icon: Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    style: IconButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                      padding: EdgeInsets.all(8),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      shadowColor: Colors.grey.withOpacity(0.3),
+                                      elevation: 2,
+                                    ),
+                                    tooltip: "Remove Person",
+                                  ),
+                                ),
+                            ],
+                          ),
                           const SizedBox(height: 12),
                         ],
                       );
                     }).toList(),
-                    TextButton(
+                    ElevatedButton(
                       onPressed: addAccusedPerson,
-                      child: Text(
-                        "Add Another Person",
-                        style: TextStyle(color: AppColors.primaryColor),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 2,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            "Add Another Person",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 20),
