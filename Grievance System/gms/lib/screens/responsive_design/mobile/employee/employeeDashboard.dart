@@ -86,19 +86,33 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
           ),
         ),
         actions: [
-          TextButton.icon(
-            onPressed: () {
-              authService.signOut();
-              Navigator.pushReplacement(
-                  context, MaterialPageRoute(builder: (context) => rLogin()));
-            },
-            icon: Icon(Icons.logout, color: AppColors.secondaryColor, size: 16),
-            label: Text(
-              "Logout",
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.secondaryColor,
-                fontWeight: FontWeight.w500,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextButton(
+              onPressed: () {
+                authService.signOut();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => rLogin()));
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.logout, color: Colors.white, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Logout",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -309,33 +323,45 @@ class _mobileEmployeeDashboardState extends State<mobileEmployeeDashboard> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  "Complainant: ${grievance.my_name} (${grievance.my_position})",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[800],
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
                                 const SizedBox(height: 5),
-                                Text(
-                                  "Against: $accusedDisplay",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[800],
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Complainant: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    Text(
+                                      grievance.my_name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  grievance.description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[800],
-                                  ),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Description: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    Text(
+                                      grievance.description,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 12),
                                 Row(

@@ -58,22 +58,6 @@ class _mobileGrievanceDetailsState extends State<mobileGrievanceDetails> {
             color: AppColors.primaryColor,
           ),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.close, color: AppColors.secondaryColor, size: 16),
-            label: Text(
-              "Close",
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.secondaryColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),

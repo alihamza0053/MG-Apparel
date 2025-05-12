@@ -116,8 +116,8 @@ class _desktopAdminDashboardState extends State<desktopAdminDashboard> {
       ),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => rNewGrievance()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => rNewGrievance()));
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
@@ -169,19 +169,23 @@ class _desktopAdminDashboardState extends State<desktopAdminDashboard> {
             ),
           ),
           SizedBox(height: 20),
-          _buildSidebarButton("Users", Icons.supervised_user_circle_outlined, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => rUsers()));
+          _buildSidebarButton("Users", Icons.supervised_user_circle_outlined,
+              () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => rUsers()));
           }),
           _buildSidebarButton("Logout", Icons.logout, () {
             authService.signOut();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => rLogin()));
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => rLogin()));
           }),
         ],
       ),
     );
   }
 
-  Widget _buildSidebarButton(String title, IconData icon, VoidCallback onPressed) {
+  Widget _buildSidebarButton(
+      String title, IconData icon, VoidCallback onPressed) {
     return ListTile(
       leading: Icon(icon, color: Colors.white, size: 20),
       title: Text(
@@ -274,40 +278,55 @@ class _desktopAdminDashboardState extends State<desktopAdminDashboard> {
                           color: Colors.grey[800],
                         ),
                       ),
+                      // SizedBox(height: 5),
+                      // Text(
+                      //   grievance.category,
+                      //   style: TextStyle(
+                      //     fontSize: 14,
+                      //     color: AppColors.secondaryColor,
+                      //   ),
+                      // ),
                       SizedBox(height: 5),
-                      Text(
-                        grievance.category,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.secondaryColor,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            "Complainant: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          Text(
+                            grievance.my_name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 5),
-                      Text(
-                        "Complainant: ${grievance.my_name} (${grievance.my_position})",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            "Description: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          Text(
+                            grievance.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
                       ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Against: $accusedDisplay",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        grievance.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
-                      ),
+
                       SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -355,13 +374,17 @@ class _desktopAdminDashboardState extends State<desktopAdminDashboard> {
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => rGrievanceDetails(id: grievance.id, role: 'admin'),
-                              ));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => rGrievanceDetails(
+                                        id: grievance.id, role: 'admin'),
+                                  ));
                             },
                             style: TextButton.styleFrom(
                               backgroundColor: AppColors.secondaryColor,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),

@@ -272,38 +272,51 @@ class _desktopHrDashboardState extends State<desktopHrDashboard> {
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(
-                        grievance.category,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.secondaryColor,
-                        ),
+                      // Text(
+                      //   grievance.category,
+                      //   style: TextStyle(
+                      //     fontSize: 14,
+                      //     color: AppColors.secondaryColor,
+                      //   ),
+                      // ),
+                      Row(
+                        children: [
+                          Text(
+                            "Complainant: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          Text(
+                            grievance.my_name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 5),
-                      Text(
-                        "Complainant: ${grievance.my_name} (${grievance.my_position})",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "Against: $accusedDisplay",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        grievance.description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[800],
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            "Description: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          Text(
+                            grievance.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 12),
                       Row(

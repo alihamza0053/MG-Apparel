@@ -84,16 +84,33 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextButton.icon(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextButton(
               onPressed: () {
                 authService.signOut();
-                Navigator.pushReplacement(
-                    context, MaterialPageRoute(builder: (context) => rLogin()));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => rLogin()));
               },
-              icon: const Icon(Icons.logout, size: 20),
-              label: const Text("Logout", style: TextStyle(fontSize: 14)),
-              style: TextButton.styleFrom(foregroundColor: AppColors.secondaryColor),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor,
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.logout, color: Colors.white, size: 16),
+                  SizedBox(width: 5),
+                  Text(
+                    "Logout",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -313,21 +330,44 @@ class _desktopEmployeeDashboardState extends State<desktopEmployeeDashboard> {
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-                                Text(
-                                  "Complainant: ${grievance.my_name} (${grievance.my_position})",
-                                  style: TextStyle(fontSize: 14, color: Colors.grey[800]),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Complainant: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    Text(
+                                      grievance.my_name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  "Against: $accusedDisplay",
-                                  style: TextStyle(fontSize: 14, color: Colors.grey[800]),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  grievance.description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(fontSize: 14, color: Colors.grey[800], height: 1.3),
+                                SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Description: ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    Text(
+                                      grievance.description,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const Spacer(),
                                 Container(

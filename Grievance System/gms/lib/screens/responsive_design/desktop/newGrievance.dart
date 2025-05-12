@@ -139,7 +139,7 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
       complain_against_depart: accusedPersons.map((p) => p['depart']!.text).join(';'),
       complain_against_position: accusedPersons.map((p) => p['position']!.text).join(';'),
       other: "",
-      category: selectedCategory!,
+      category: "",
       imgUrl: imgUrl,
       assignTo: 'not assigned yet',
       status: 'Pending',
@@ -461,60 +461,60 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
                             ],
                           ),
                         ),
-                        SizedBox(height: 20),
-                        DropdownButtonFormField<String>(
-                          value: selectedCategory,
-                          decoration: InputDecoration(
-                            labelText: "Select Category",
-                            labelStyle: TextStyle(color: Colors.grey[600]),
-                            prefixIcon: Icon(
-                              Icons.category,
-                              color: Colors.grey[600],
-                              size: 16,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide:
-                              BorderSide(color: Colors.grey.shade300),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide:
-                              BorderSide(color: Colors.grey.shade300),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide:
-                              BorderSide(color: AppColors.primaryColor),
-                            ),
-                          ),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[800],
-                          ),
-                          items: [
-                            'Discrimination',
-                            'Pay and Benefits',
-                            'Work Conditions',
-                            'Workplace Harassment',
-                          ].map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              selectedCategory = newValue;
-                            });
-                          },
-                        ),
+                        // SizedBox(height: 20),
+                        // DropdownButtonFormField<String>(
+                        //   value: selectedCategory,
+                        //   decoration: InputDecoration(
+                        //     labelText: "Select Category",
+                        //     labelStyle: TextStyle(color: Colors.grey[600]),
+                        //     prefixIcon: Icon(
+                        //       Icons.category,
+                        //       color: Colors.grey[600],
+                        //       size: 16,
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       borderSide:
+                        //       BorderSide(color: Colors.grey.shade300),
+                        //     ),
+                        //     enabledBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       borderSide:
+                        //       BorderSide(color: Colors.grey.shade300),
+                        //     ),
+                        //     focusedBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(8),
+                        //       borderSide:
+                        //       BorderSide(color: AppColors.primaryColor),
+                        //     ),
+                        //   ),
+                        //   style: TextStyle(
+                        //     fontSize: 14,
+                        //     color: Colors.grey[800],
+                        //   ),
+                        //   items: [
+                        //     'Discrimination',
+                        //     'Pay and Benefits',
+                        //     'Work Conditions',
+                        //     'Workplace Harassment',
+                        //   ].map((String value) {
+                        //     return DropdownMenuItem<String>(
+                        //       value: value,
+                        //       child: Text(
+                        //         value,
+                        //         style: TextStyle(fontSize: 14),
+                        //       ),
+                        //     );
+                        //   }).toList(),
+                        //   onChanged: (String? newValue) {
+                        //     setState(() {
+                        //       selectedCategory = newValue;
+                        //     });
+                        //   },
+                        // ),
                         SizedBox(height: 20),
                         Text(
-                          "File Attachment: Please attach any relevant evidence or information to support your complaint.",
+                          "Please attach any relevant evidence or information to support your complaint.",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey[600],

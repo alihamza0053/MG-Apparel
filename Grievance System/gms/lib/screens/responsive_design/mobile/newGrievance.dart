@@ -138,7 +138,7 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
       complain_against_depart: accusedPersons.map((p) => p['depart']!.text).join(';'),
       complain_against_position: accusedPersons.map((p) => p['position']!.text).join(';'),
       other: "",
-      category: selectedCategory!,
+      category: "",
       imgUrl: imgUrl,
       assignTo: 'not assigned yet',
       status: 'Pending',
@@ -200,22 +200,6 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
             color: AppColors.primaryColor,
           ),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.close, color: AppColors.secondaryColor, size: 16),
-            label: Text(
-              "Close",
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.secondaryColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -379,54 +363,54 @@ class _mobileNewGrievanceState extends State<mobileNewGrievance> {
                     ),
                     const SizedBox(height: 20),
                     Divider(color: Colors.grey.shade200, thickness: 1),
-                    const SizedBox(height: 20),
-                    DropdownButtonFormField<String>(
-                      value: selectedCategory,
-                      decoration: InputDecoration(
-                        hintText: "Select Category",
-                        hintStyle: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
-                        prefixIcon: Icon(Icons.category, size: 16, color: Colors.grey[600]),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[800],
-                      ),
-                      dropdownColor: Colors.white,
-                      items: [
-                        'Discrimination',
-                        'Pay and Benefits',
-                        'Work Conditions',
-                        'Workplace Harassment',
-                        'Others'
-                      ].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(
-                            value,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedCategory = newValue;
-                        });
-                      },
-                    ),
+                    // const SizedBox(height: 20),
+                    // DropdownButtonFormField<String>(
+                    //   value: selectedCategory,
+                    //   decoration: InputDecoration(
+                    //     hintText: "Select Category",
+                    //     hintStyle: TextStyle(
+                    //       fontSize: 14,
+                    //       color: Colors.grey[600],
+                    //     ),
+                    //     prefixIcon: Icon(Icons.category, size: 16, color: Colors.grey[600]),
+                    //     border: OutlineInputBorder(
+                    //       borderRadius: BorderRadius.circular(8),
+                    //       borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                    //     ),
+                    //     contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                    //   ),
+                    //   style: TextStyle(
+                    //     fontSize: 14,
+                    //     color: Colors.grey[800],
+                    //   ),
+                    //   dropdownColor: Colors.white,
+                    //   items: [
+                    //     'Discrimination',
+                    //     'Pay and Benefits',
+                    //     'Work Conditions',
+                    //     'Workplace Harassment',
+                    //     'Others'
+                    //   ].map((String value) {
+                    //     return DropdownMenuItem<String>(
+                    //       value: value,
+                    //       child: Text(
+                    //         value,
+                    //         style: TextStyle(
+                    //           fontSize: 14,
+                    //           color: Colors.grey[800],
+                    //         ),
+                    //       ),
+                    //     );
+                    //   }).toList(),
+                    //   onChanged: (String? newValue) {
+                    //     setState(() {
+                    //       selectedCategory = newValue;
+                    //     });
+                    //   },
+                    // ),
                     const SizedBox(height: 20),
                     Text(
-                      "File Attachment: Please attach any relevant evidence or information to support your complaint.",
+                      "Please attach any relevant evidence or information to support your complaint.",
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],

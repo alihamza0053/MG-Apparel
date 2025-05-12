@@ -10,6 +10,7 @@ import 'package:gms/screens/responsive_design/desktop/employee/employeeDashboard
 import 'package:gms/screens/responsive_design/desktop/hr/hrDashboard.dart';
 import 'package:gms/screens/responsive_design/desktop/signup.dart';
 import 'package:gms/screens/responsive_design/responsive/rSignup.dart';
+import 'package:gms/smtp/mailer.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -36,6 +37,7 @@ class _desktopLoginState extends State<desktopLogin> {
   String role = "";
   Widget screen = desktopEmployeeDashboard();
   bool progressBar = false;
+  String ip = "";
 
   @override
   void initState() {
@@ -49,6 +51,7 @@ class _desktopLoginState extends State<desktopLogin> {
     print("""📍 IP Address: ${info['ip']}
 🌐 Browser: ${info['browser']}
 📌 Location: ${info['location']}""");
+    ip = info['ip']!;
   }
 
 //upload file
@@ -135,6 +138,7 @@ class _desktopLoginState extends State<desktopLogin> {
         screen = desktopCeoDashboard();
       }
 
+      sendEmail("${email.text}", "New login for GMS", "Hello,\n\nNew login has been tracked on ${ip} ip address. \nIf it's not you immediately contact admin.\n\nThank you,\nMG Apparel Grievance");
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(

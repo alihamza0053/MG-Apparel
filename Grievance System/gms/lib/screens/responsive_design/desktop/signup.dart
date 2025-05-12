@@ -11,6 +11,8 @@ import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../../smtp/mailer.dart';
+
 class desktopSignup extends StatefulWidget {
   const desktopSignup({super.key});
 
@@ -61,7 +63,7 @@ class _desktopSignupState extends State<desktopSignup> {
     final newUser;
 
     if (email.text == "ceo@mgapparel.com") {
-      newUser = Users(email: email.text.toLowerCase().trim(), role: "ceo");
+      newUser = Users(email: email.text.toLowerCase().trim(), role: "admin");
     } else {
       newUser = Users(email: email.text.toLowerCase().trim(), role: "employee");
     }
@@ -74,6 +76,8 @@ class _desktopSignupState extends State<desktopSignup> {
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
+      sendEmail("${email.text}", "Account Created for GMS", "Hello,\nYour account has been created. \n\nYour login credentials are as following:\nEmail: ${email.text}\nPassword: ${password.text} \nPlease remember your password.\n\nThank you,\nMG Apparel Grievance");
+
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => rLogin()));
     } catch (e) {

@@ -15,6 +15,7 @@ class desktopUserData extends StatefulWidget {
 class _desktopUserDataState extends State<desktopUserData> {
   final usersDB = UserDatabase();
   Map<int, String> selectedRoles = {};
+  String? selectedFilterRole;
 
   Color getRoleColor(String role) {
     switch (role) {
@@ -53,20 +54,6 @@ class _desktopUserDataState extends State<desktopUserData> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context),
-            icon: Icon(Icons.close, color: AppColors.secondaryColor, size: 16),
-            label: Text(
-              "Close",
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.secondaryColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ],
       ),
       body: Center(
         child: Container(
@@ -82,6 +69,52 @@ class _desktopUserDataState extends State<desktopUserData> {
                   fontWeight: FontWeight.bold,
                   color: AppColors.primaryColor,
                 ),
+              ),
+              const SizedBox(height: 20),
+              DropdownButtonFormField<String>(
+                value: selectedFilterRole,
+                decoration: InputDecoration(
+                  labelText: "Filter by Role",
+                  labelStyle: TextStyle(color: Colors.grey[600]),
+                  prefixIcon: Icon(
+                    Icons.filter_list,
+                    color: Colors.grey[600],
+                    size: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: AppColors.primaryColor),
+                  ),
+                ),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[800],
+                ),
+                items: [
+                  DropdownMenuItem<String>(
+                    value: null,
+                    child: Text("All"),
+                  ),
+                  ...['employee', 'hr', 'admin'].map((String role) {
+                    return DropdownMenuItem<String>(
+                      value: role,
+                      child: Text(role),
+                    );
+                  }).toList(),
+                ],
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedFilterRole = newValue;
+                  });
+                },
               ),
               const SizedBox(height: 20),
               Divider(color: Colors.grey.shade200, thickness: 1),
@@ -123,7 +156,10 @@ class _desktopUserDataState extends State<desktopUserData> {
                       );
                     }
                     final users = snapshot.data!;
-                    if (users.isEmpty) {
+                    final filteredUsers = selectedFilterRole == null
+                        ? users
+                        : users.where((user) => user.role == selectedFilterRole).toList();
+                    if (filteredUsers.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -135,7 +171,9 @@ class _desktopUserDataState extends State<desktopUserData> {
                             ),
                             const SizedBox(height: 10),
                             Text(
-                              "No Users Found",
+                              selectedFilterRole == null
+                                  ? "No Users Found"
+                                  : "No $selectedFilterRole Users Found",
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -144,7 +182,9 @@ class _desktopUserDataState extends State<desktopUserData> {
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              "There are no registered users yet.",
+                              selectedFilterRole == null
+                                  ? "There are no registered users yet."
+                                  : "There are no users with the role '$selectedFilterRole' yet.",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade500,
@@ -156,9 +196,9 @@ class _desktopUserDataState extends State<desktopUserData> {
                       );
                     }
                     return ListView.builder(
-                      itemCount: users.length,
+                      itemCount: filteredUsers.length,
                       itemBuilder: (context, index) {
-                        final singleUser = users[index];
+                        final singleUser = filteredUsers[index];
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 10),
                           padding: const EdgeInsets.all(20),
@@ -300,6 +340,7 @@ class _desktopUserDataState extends State<desktopUserData> {
                                         setState(() {
                                           selectedRoles.remove(singleUser.id);
                                         });
+                                        Navigator.pop(context);
                                       } catch (e) {
                                         Toastification().show(
                                           context: context,

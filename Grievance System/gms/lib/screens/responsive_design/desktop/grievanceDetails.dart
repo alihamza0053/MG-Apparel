@@ -53,18 +53,6 @@ class _desktopGrievanceDetailsState extends State<desktopGrievanceDetails> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        actions: [
-          TextButton.icon(
-            onPressed: () {
-              // Implement logout
-            },
-            icon: Icon(Icons.logout, color: AppColors.secondaryColor),
-            label: Text(
-              "Logout",
-              style: TextStyle(color: AppColors.secondaryColor),
-            ),
-          ),
-        ],
       ),
       body: Center(
         child: Container(

@@ -7,6 +7,7 @@ import 'package:gms/screens/dashboard.dart';
 import 'package:gms/screens/employee/employee.dart';
 import 'package:gms/screens/responsive_design/mobile/login.dart';
 import 'package:gms/screens/responsive_design/responsive/rLogin.dart';
+import 'package:gms/smtp/mailer.dart';
 import 'package:gms/theme/themeData.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
@@ -64,7 +65,7 @@ class _mobileSignupState extends State<mobileSignup> {
     final newUser;
 
     if(email.text == "ceo@mgapparel.com"){
-      newUser = Users(email: email.text.toLowerCase().trim(), role: "ceo");
+      newUser = Users(email: email.text.toLowerCase().trim(), role: "admin");
     }else{
       newUser = Users(email: email.text.toLowerCase().trim(), role: "employee");
     }
@@ -78,6 +79,7 @@ class _mobileSignupState extends State<mobileSignup> {
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
+      sendEmail("${email.text}", "Account Created for GMS", "Hello,\nYour account has been created. \n\nYour login credentials are as following:\nEmail: ${email.text}\nPassword: ${password.text} \nPlease remember your password.\n\nThank you,\nMG Apparel Grievance");
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>rLogin()));
     }catch(e){
       Toastification().show(

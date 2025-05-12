@@ -28,7 +28,7 @@ class _rDashboardState extends State<rDashboard> {
       if(constraint.maxWidth < 600){
         Widget screen = mobileEmployeeDashboard();
 
-        if(widget.role == 'ceo'){
+        if(widget.email == 'ceo@mgapparel.com'){
           screen = mobileCeoDashboard();
         }
 
@@ -42,17 +42,14 @@ class _rDashboardState extends State<rDashboard> {
           screen = mobileAdminDashboard();
         }
 
-
-
-
-
         return screen;
+
 
       }else{
 
         Widget screen = desktopEmployeeDashboard();
 
-        if(widget.role == 'ceo'){
+        if(widget.email == 'ceo@mgapparel.com'){
           screen = desktopCeoDashboard();
         }
 

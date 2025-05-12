@@ -23,6 +23,7 @@ import 'dart:html' as html;
 import 'package:toastification/toastification.dart';
 
 import '../../../login session/device_info.dart';
+import '../../../smtp/mailer.dart';
 
 class mobileLogin extends StatefulWidget {
   const mobileLogin({super.key});
@@ -37,7 +38,7 @@ class _mobileLoginState extends State<mobileLogin> {
   TextEditingController password = TextEditingController();
   String role = "";
   bool progressBar = false;
-
+  String ip = "";
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _mobileLoginState extends State<mobileLogin> {
     print("""📍 IP Address: ${info['ip']}
 🌐 Browser: ${info['browser']}
 📌 Location: ${info['location']}""");
+    ip = info['ip']!;
   }
 
   //upload file
@@ -123,8 +125,7 @@ class _mobileLoginState extends State<mobileLogin> {
           role = response['role']; // Set user role
         });
       }
-
-
+      sendEmail("${email.text}", "New login for GMS", "Hello,\n\nNew login has been tracked on ${ip} ip address. \nIf it's not you immediately contact admin.\n\nThank you,\nMG Apparel Grievance");
       Navigator.pushReplacement(context, MaterialPageRoute(
           builder: (context) => rDashboard(role: role, email: email.text)));
 
