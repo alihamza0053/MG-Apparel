@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gms/screens/chart/GrievanceChart.dart';
 import 'package:gms/screens/credentials/auth/authService.dart';
-import 'package:gms/screens/credentials/login.dart';
 import 'package:gms/screens/database/grievanceDatabase.dart';
-import 'package:gms/screens/grievanceDetails.dart';
 import 'package:gms/screens/responsive_design/responsive/rNewGrievance.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -60,27 +57,23 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECEFF1),
+      backgroundColor: Color(0xFFECEFF1),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => rUsers()));
-          },
-          icon: Icon(
-            Icons.supervised_user_circle_sharp,
-            color: AppColors.primaryColor,
-            size: 24,
-          ),
-        ),
+        backgroundColor: AppColors.primaryColor,
+        elevation: 2,
+        // leading: IconButton(
+        //   onPressed: () {
+        //     Navigator.push(
+        //         context, MaterialPageRoute(builder: (context) => rUsers()));
+        //   },
+        //   icon: Icon(Icons.supervised_user_circle_sharp, color: Colors.white, size: 24),
+        // ),
         title: Text(
           "CEO Dashboard",
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppColors.primaryColor,
+            color: Colors.white,
           ),
         ),
         actions: [
@@ -116,56 +109,74 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
           ),
         ],
       ),
+      // floatingActionButton: ElevatedButton(
+      //   onPressed: () {
+      //     Navigator.push(context,
+      //         MaterialPageRoute(builder: (context) => rNewGrievance()));
+      //   },
+      //   style: ElevatedButton.styleFrom(
+      //     backgroundColor: AppColors.primaryColor,
+      //     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(10),
+      //     ),
+      //   ),
+      //   child: Row(
+      //     mainAxisSize: MainAxisSize.min,
+      //     children: [
+      //       Icon(
+      //         Icons.add,
+      //         color: Colors.white,
+      //         size: 16,
+      //       ),
+      //       SizedBox(width: 5),
+      //       Text(
+      //         "Add Grievance",
+      //         style: TextStyle(
+      //           color: Colors.white,
+      //           fontSize: 14,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        padding: EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Image.asset(
-                "assets/images/logo.png",
-                width: 80,
-              ),
+            Image(
+              image: AssetImage("assets/images/logo.png"),
+              width: 80,
             ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.white, Colors.grey.shade50],
-                ),
+            SizedBox(height: 20),
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
               ),
-              child: Column(
-                children: [
-                  Text(
-                    "Grievance Overview",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.white, Colors.grey.shade50],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 250,
+                      child: mobileGrievanceChart(),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    height: 200,
-                    child: mobileGrievanceChart(),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            Divider(color: Colors.grey.shade200, thickness: 1),
+            SizedBox(height: 20),
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: AppColors.primaryColor,
@@ -174,48 +185,45 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
               child: Center(
                 child: Text(
                   "Grievances",
-                  style: const TextStyle(
-                    fontSize: 24,
+                  style: TextStyle(
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 12),
             StreamBuilder(
               stream: grievanceDB.stream,
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.hourglass_empty,
-                          size: 80,
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.hourglass_empty,
+                        size: 80,
+                        color: Colors.grey.shade600,
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Loading Grievances",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
                           color: Colors.grey.shade600,
                         ),
-                        const SizedBox(height: 10),
-                        Text(
-                          "Loading Grievances...",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
-                          ),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
+                        "Please wait...",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
                         ),
-                        const SizedBox(height: 5),
-                        Text(
-                          "Please wait while we fetch the data.",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 }
 
@@ -244,11 +252,11 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                       ),
                       child: InkWell(
                         onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => rGrievanceDetails(
-                                      id: grievance.id, role: 'admin')));
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => rGrievanceDetails(
+                          //             id: grievance.id, role: 'admin')));
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -372,32 +380,32 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
                                       ),
                                     ],
                                   ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  rGrievanceDetails(
-                                                      id: grievance.id,
-                                                      role: 'admin')));
-                                    },
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: AppColors.secondaryColor,
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 16, vertical: 8),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      "View Details",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
+                                  // TextButton(
+                                  //   onPressed: () {
+                                  //     Navigator.push(
+                                  //         context,
+                                  //         MaterialPageRoute(
+                                  //             builder: (context) =>
+                                  //                 rGrievanceDetails(
+                                  //                     id: grievance.id,
+                                  //                     role: 'admin')));
+                                  //   },
+                                  //   style: TextButton.styleFrom(
+                                  //     backgroundColor: AppColors.secondaryColor,
+                                  //     padding: EdgeInsets.symmetric(
+                                  //         horizontal: 16, vertical: 8),
+                                  //     shape: RoundedRectangleBorder(
+                                  //       borderRadius: BorderRadius.circular(8),
+                                  //     ),
+                                  //   ),
+                                  //   child: Text(
+                                  //     "View Details",
+                                  //     style: TextStyle(
+                                  //       color: Colors.white,
+                                  //       fontSize: 14,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ],
@@ -418,13 +426,12 @@ class _mobileCeoDashboardState extends State<mobileCeoDashboard> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'Pending':
-        return Colors.orange;
+        return Colors.red;
       case 'In Progress':
         return Colors.blue;
       case 'Resolved':
-        return Colors.green;
       case 'Closed':
-        return Colors.grey;
+        return Colors.green;
       default:
         return Colors.grey;
     }

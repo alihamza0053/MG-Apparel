@@ -12,7 +12,6 @@ class desktopGrievanceChart extends StatefulWidget {
   _desktopGrievanceChartState createState() => _desktopGrievanceChartState();
 }
 
-
 class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
   final SupabaseClient supabase = Supabase.instance.client;
 
@@ -149,113 +148,87 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
         leading: SizedBox(),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+        padding: const EdgeInsets.all(16),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Filters Section
+            // Filter and Download Buttons Section
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
-                ),              child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: ListView(
-                    children: [
-                      // Month Filter
-                      _buildDropdown(
-                        hint: "All Months",
-                        value: selectedDate,
-                        items: List.generate(12, (index) {
-                          DateTime date = DateTime(DateTime.now().year, index + 1, 1);
-                          return DropdownMenuItem(
-                            value: date,
-                            child: Text(
-                                "${date.year}-${date.month.toString().padLeft(2, '0')}"),
-                          );
-                        }),
-                        onChanged: (newDate) {
-                          setState(() {
-                            selectedDate = newDate;
-                            fetchGrievanceData();
-                          });
-                        },
-                        icon: Icons.calendar_today,
-                      ),
-                      SizedBox(height: 10),
-
-                      // Category Filter
-                      _buildDropdown(
-                        hint: "All Categories",
-                        value: selectedCategory,
-                        items: categories.map((category) {
-                          return DropdownMenuItem(
-                            value: category,
-                            child: Text(category),
-                          );
-                        }).toList(),
-                        onChanged: (newCategory) {
-                          setState(() {
-                            selectedCategory = newCategory;
-                            fetchGrievanceData();
-                          });
-                        },
-                        icon: Icons.category,
-                      ),
-                      SizedBox(height: 10),
-
-                      // Department Filter
-                      _buildDropdown(
-                        hint: "All Departments",
-                        value: selectedDepartment,
-                        items: departments.map((dept) {
-                          return DropdownMenuItem(
-                            value: dept,
-                            child: Text(dept),
-                          );
-                        }).toList(),
-                        onChanged: (newDept) {
-                          setState(() {
-                            selectedDepartment = newDept;
-                            fetchGrievanceData();
-                          });
-                        },
-                        icon: Icons.business,
-                      ),
-                      SizedBox(height: 30),
-
-                      // Download Report Button
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          generateAndDownloadReport(grievanceCounts);
-                        },
-                        icon: Icon(Icons.download,color: Colors.white,),
-                        label: Text("Download Report",style: TextStyle(color: Colors.white,fontSize: 20,fontWeight: FontWeight.bold),),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primaryColor,
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Filter Button
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _showFilterPopup(context);
+                      },
+                      icon: Icon(Icons.filter_list, color: Colors.white, size: 20),
+                      label: Text(
+                        "Filter",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
                         ),
                       ),
-                    ],
-                  ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    // Download Button
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        generateAndDownloadReport(grievanceCounts);
+                      },
+                      icon: Icon(Icons.download, color: Colors.white, size: 20),
+                      label: Text(
+                        "Download",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryColor,
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 2,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
             SizedBox(width: 20),
-        
-            // Bar Chart
+            // Chart Section
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
-                  ),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
+                ),
                 child: BarChart(
                   BarChartData(
                     gridData: FlGridData(show: false),
@@ -278,6 +251,9 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                           },
                         ),
                       ),
+                      rightTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false), // Disable right-axis titles
+                      ),
                       bottomTitles: AxisTitles(
                         sideTitles: SideTitles(
                           showTitles: true,
@@ -295,6 +271,9 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                             return SizedBox.shrink();
                           },
                         ),
+                      ),
+                      topTitles: AxisTitles(
+                        sideTitles: SideTitles(showTitles: false),
                       ),
                     ),
                     barGroups: grievanceCounts.entries.map((entry) {
@@ -317,6 +296,125 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
           ],
         ),
       ),
+    );
+  }
+
+  // Popup Dialog for Filters
+  void _showFilterPopup(BuildContext context) {
+    String? tempMonth = selectedDate != null ? DateFormat('MMMM').format(selectedDate!) : null;
+    String? tempDepartment = selectedDepartment;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Select Filters", style: TextStyle(fontWeight: FontWeight.bold)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Month Filter
+                _buildDropdown(
+                  hint: "All Months",
+                  value: tempMonth,
+                  items: [
+                    DropdownMenuItem(
+                      value: null,
+                      child: Text("All Months"),
+                    ),
+                    ...List.generate(12, (index) {
+                      DateTime date = DateTime(DateTime.now().year, index + 1, 1);
+                      String monthName = DateFormat('MMMM').format(date);
+                      return DropdownMenuItem(
+                        value: monthName,
+                        child: Text(monthName),
+                      );
+                    }),
+                  ],
+                  onChanged: (newMonth) {
+                    tempMonth = newMonth;
+                  },
+                  icon: Icons.calendar_today,
+                ),
+                SizedBox(height: 16),
+                // Department Filter
+                _buildDropdown(
+                  hint: "All Departments",
+                  value: tempDepartment,
+                  items: departments.map((dept) {
+                    return DropdownMenuItem(
+                      value: dept,
+                      child: Text(dept),
+                    );
+                  }).toList(),
+                  onChanged: (newDept) {
+                    tempDepartment = newDept;
+                  },
+                  icon: Icons.business,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            OutlinedButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close without applying
+              },
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                side: BorderSide(color: AppColors.primaryColor, width: 2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (tempMonth == null) {
+                    selectedDate = null;
+                  } else {
+                    int monthIndex = List.generate(
+                        12,
+                            (index) => DateFormat('MMMM')
+                            .format(DateTime(DateTime.now().year, index + 1, 1)))
+                        .indexOf(tempMonth!) +
+                        1;
+                    selectedDate = DateTime(DateTime.now().year, monthIndex, 1);
+                  }
+                  selectedDepartment = tempDepartment;
+                  fetchGrievanceData();
+                });
+                Navigator.of(context).pop(); // Close and apply
+              },
+              child: Text(
+                "Apply",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 2,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

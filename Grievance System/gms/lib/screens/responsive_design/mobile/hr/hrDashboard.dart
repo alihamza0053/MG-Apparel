@@ -151,17 +151,17 @@ class _mobileHrDashboardState extends State<mobileHrDashboard> {
               ),
               child: Column(
                 children: [
-                  Text(
-                    "Grievance Overview",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primaryColor,
-                    ),
-                  ),
+                  // Text(
+                  //   "Grievance Overview",
+                  //   style: TextStyle(
+                  //     fontSize: 24,
+                  //     fontWeight: FontWeight.bold,
+                  //     color: AppColors.primaryColor,
+                  //   ),
+                  // ),
                   const SizedBox(height: 10),
                   SizedBox(
-                    height: 200,
+                    height: 250,
                     child: mobileGrievanceChart(),
                   ),
                 ],

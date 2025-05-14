@@ -114,6 +114,37 @@ class _desktopCeoDashboardState extends State<desktopCeoDashboard> {
           ),
         ],
       ),
+      // floatingActionButton: ElevatedButton(
+      //   onPressed: () {
+      //     Navigator.push(context,
+      //         MaterialPageRoute(builder: (context) => rNewGrievance()));
+      //   },
+      //   style: ElevatedButton.styleFrom(
+      //     backgroundColor: AppColors.primaryColor,
+      //     padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+      //     shape: RoundedRectangleBorder(
+      //       borderRadius: BorderRadius.circular(10),
+      //     ),
+      //   ),
+      //   child: Row(
+      //     mainAxisSize: MainAxisSize.min,
+      //     children: [
+      //       Icon(
+      //         Icons.add,
+      //         color: Colors.white,
+      //         size: 16,
+      //       ),
+      //       SizedBox(width: 5),
+      //       Text(
+      //         "Add Grievance",
+      //         style: TextStyle(
+      //           color: Colors.white,
+      //           fontSize: 14,
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -138,19 +169,23 @@ class _desktopCeoDashboardState extends State<desktopCeoDashboard> {
             ),
           ),
           SizedBox(height: 20),
-          _buildSidebarButton("Users", Icons.supervised_user_circle_outlined, () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => rUsers()));
-          }),
+          // _buildSidebarButton("Users", Icons.supervised_user_circle_outlined,
+          //         () {
+          //       Navigator.push(
+          //           context, MaterialPageRoute(builder: (context) => rUsers()));
+          //     }),
           _buildSidebarButton("Logout", Icons.logout, () {
             authService.signOut();
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => rLogin()));
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => rLogin()));
           }),
         ],
       ),
     );
   }
 
-  Widget _buildSidebarButton(String title, IconData icon, VoidCallback onPressed) {
+  Widget _buildSidebarButton(
+      String title, IconData icon, VoidCallback onPressed) {
     return ListTile(
       leading: Icon(icon, color: Colors.white, size: 20),
       title: Text(
@@ -291,6 +326,7 @@ class _desktopCeoDashboardState extends State<desktopCeoDashboard> {
                           ),
                         ],
                       ),
+
                       SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -336,27 +372,32 @@ class _desktopCeoDashboardState extends State<desktopCeoDashboard> {
                               ),
                             ],
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) => rGrievanceDetails(id: grievance.id, role: 'admin'),
-                              ));
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: AppColors.secondaryColor,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Text(
-                              "View Details",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
+                          // TextButton(
+                          //   onPressed: () {
+                          //     Navigator.push(
+                          //         context,
+                          //         MaterialPageRoute(
+                          //           builder: (context) => rGrievanceDetails(
+                          //               id: grievance.id, role: 'admin'),
+                          //         ));
+                          //   },
+                          //   style: TextButton.styleFrom(
+                          //     backgroundColor: AppColors.secondaryColor,
+                          //     padding: EdgeInsets.symmetric(
+                          //         horizontal: 16, vertical: 8),
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(8),
+                          //     ),
+                          //   ),
+                          //   child: Text(
+                          //     "View Details",
+                          //     style: TextStyle(
+                          //       color: Colors.white,
+                          //       fontSize: 14,
+                          //     ),
+                          //   ),
+                          // ),
+
                         ],
                       ),
                     ],

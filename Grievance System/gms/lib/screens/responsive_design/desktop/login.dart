@@ -124,21 +124,24 @@ class _desktopLoginState extends State<desktopLogin> {
         });
       }
 
-      if (role == 'employee') {
-        screen = desktopEmployeeDashboard();
-      }
-      if (role == 'hr') {
-        screen = desktopHrDashboard();
-      }
-      if (role == 'admin') {
-        screen = desktopAdminDashboard();
-      }
-
       if (role == "ceo") {
         screen = desktopCeoDashboard();
+      } else{
+        if (role == 'employee') {
+          screen = desktopEmployeeDashboard();
+        }
+        if (role == 'hr') {
+          screen = desktopHrDashboard();
+        }
+        if (role == 'admin') {
+          screen = desktopAdminDashboard();
+        }
+        sendEmail("${email.text}", "New login for GMS", "Hello,\n\nNew login has been tracked on ${ip} ip address. \nIf it's not you immediately contact admin.\n\nThank you,\nMG Apparel Grievance");
       }
 
-      sendEmail("${email.text}", "New login for GMS", "Hello,\n\nNew login has been tracked on ${ip} ip address. \nIf it's not you immediately contact admin.\n\nThank you,\nMG Apparel Grievance");
+
+
+
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(

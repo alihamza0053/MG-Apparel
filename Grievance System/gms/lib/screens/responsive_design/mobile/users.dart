@@ -23,6 +23,8 @@ class _mobileUserDataState extends State<mobileUserData> {
         return Colors.blue;
       case 'admin':
         return Colors.red;
+      case 'ceo':
+        return Colors.purple;
       default:
         return Colors.green;
     }
@@ -31,7 +33,7 @@ class _mobileUserDataState extends State<mobileUserData> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFECEFF1), // Light gray background
+      backgroundColor: const Color(0xFFECEFF1),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -152,9 +154,11 @@ class _mobileUserDataState extends State<mobileUserData> {
                     );
                   }
                   final users = snapshot.data!;
-                  final filteredUsers = selectedFilterRole == null
+                  final filteredUsers = (selectedFilterRole == null
                       ? users
-                      : users.where((user) => user.role == selectedFilterRole).toList();
+                      : users.where((user) => user.role == selectedFilterRole).toList())
+                      .where((user) => user.role != 'ceo')
+                      .toList();
                   if (filteredUsers.isEmpty) {
                     return Center(
                       child: Column(
@@ -258,6 +262,8 @@ class _mobileUserDataState extends State<mobileUserData> {
                                               ? Icons.support_agent
                                               : singleUser.role == 'admin'
                                               ? Icons.admin_panel_settings
+                                              : singleUser.role == 'ceo'
+                                              ? Icons.business
                                               : Icons.person,
                                           size: 16,
                                           color: getRoleColor(singleUser.role),
@@ -295,7 +301,7 @@ class _mobileUserDataState extends State<mobileUserData> {
                                         color: Colors.grey[800],
                                       ),
                                       dropdownColor: Colors.white,
-                                      items: ['employee', 'hr', 'admin'].map((String status) {
+                                      items: ['employee', 'hr', 'admin', 'ceo'].map((String status) {
                                         return DropdownMenuItem<String>(
                                           value: status,
                                           child: Text(
@@ -322,7 +328,6 @@ class _mobileUserDataState extends State<mobileUserData> {
                                       try {
                                         usersDB.update(singleUser, updatedRole);
 
-                                        // email, subject, description
                                         sendEmail(
                                             singleUser.email,
                                             "Role Update",

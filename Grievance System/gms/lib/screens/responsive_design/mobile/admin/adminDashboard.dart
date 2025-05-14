@@ -166,17 +166,17 @@ class _mobileAdminDashboardState extends State<mobileAdminDashboard> {
                 padding: EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    Text(
-                      "Grievance Overview",
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryColor,
-                      ),
-                    ),
-                    SizedBox(height: 12),
+                    // Text(
+                    //   "Grievance Overview",
+                    //   style: TextStyle(
+                    //     fontSize: 22,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: AppColors.primaryColor,
+                    //   ),
+                    // ),
+                    // SizedBox(height: 12),
                     Container(
-                      height: 200,
+                      height: 250,
                       child: mobileGrievanceChart(),
                     ),
                   ],

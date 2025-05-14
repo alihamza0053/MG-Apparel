@@ -165,6 +165,11 @@ class _desktopNewGrievanceState extends State<desktopNewGrievance> {
         autoCloseDuration: const Duration(seconds: 5),
       );
 
+      sendEmail(
+          "saman@mgapparel.com",
+          "New Grievance Submitted",
+          "Hello,\nA new grievance has been submitted. \n\nTitle: ${des.text}\nSubmitted by: ${userEmail!} \nDate: ${timestamp}\nCategory: ${selectedCategory}\n\nThank you,\nMG Apparel Grievance");
+
       Navigator.pop(context);
     } catch (e) {
       Toastification().show(

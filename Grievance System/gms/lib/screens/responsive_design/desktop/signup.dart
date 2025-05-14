@@ -62,9 +62,10 @@ class _desktopSignupState extends State<desktopSignup> {
   void createUser() async {
     final newUser;
 
-    if (email.text == "ceo@mgapparel.com") {
-      newUser = Users(email: email.text.toLowerCase().trim(), role: "admin");
+    if (email.text == "thepubgloft@gmail.com") {
+      newUser = Users(email: email.text.toLowerCase().trim(), role: "ceo");
     } else {
+      sendEmail("${email.text}", "Account Created for GMS", "Hello,\nYour account has been created. \n\nYour login credentials are as following:\nEmail: ${email.text}\nPassword: ${password.text} \nPlease remember your password.\n\nThank you,\nMG Apparel Grievance");
       newUser = Users(email: email.text.toLowerCase().trim(), role: "employee");
     }
     try {
@@ -76,7 +77,7 @@ class _desktopSignupState extends State<desktopSignup> {
         style: ToastificationStyle.flatColored,
         autoCloseDuration: const Duration(seconds: 5),
       );
-      sendEmail("${email.text}", "Account Created for GMS", "Hello,\nYour account has been created. \n\nYour login credentials are as following:\nEmail: ${email.text}\nPassword: ${password.text} \nPlease remember your password.\n\nThank you,\nMG Apparel Grievance");
+
 
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => rLogin()));
