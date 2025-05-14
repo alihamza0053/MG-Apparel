@@ -151,7 +151,6 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
         padding: const EdgeInsets.all(16),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Filter and Download Buttons Section
             Expanded(
@@ -165,7 +164,6 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Filter Button
                     ElevatedButton.icon(
@@ -225,71 +223,160 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
               child: Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)],
-                ),
-                child: BarChart(
-                  BarChartData(
-                    gridData: FlGridData(show: false),
-                    borderData: FlBorderData(
-                      show: true,
-                      border: Border.symmetric(
-                        horizontal: BorderSide(color: Colors.grey.shade300, width: 1),
-                      ),
-                    ),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          reservedSize: 40,
-                          getTitlesWidget: (double value, TitleMeta meta) {
-                            return Text(
-                              value.toInt().toString(),
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                            );
-                          },
-                        ),
-                      ),
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false), // Disable right-axis titles
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (double value, TitleMeta meta) {
-                            int index = value.toInt();
-                            if (index >= 0 && index < grievanceCounts.length) {
-                              return Padding(
-                                padding: EdgeInsets.only(top: 6),
-                                child: Text(
-                                  grievanceCounts.keys.elementAt(index),
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                                ),
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
-                        ),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                    ),
-                    barGroups: grievanceCounts.entries.map((entry) {
-                      return BarChartGroupData(
-                        x: grievanceCounts.keys.toList().indexOf(entry.key),
-                        barRods: [
-                          BarChartRodData(
-                            toY: entry.value.toDouble(),
-                            color: _getColor(entry.key),
-                            width: 20,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                        ],
-                      );
-                    }).toList(),
+                  gradient: LinearGradient(
+                    colors: [Colors.grey.shade50, Colors.white],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black26, blurRadius: 8, offset: Offset(0, 2)),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Chart Title
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        "Grievance Status Overview",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primaryColor,
+                          shadows: [
+                            Shadow(
+                              color: Colors.black26,
+                              blurRadius: 2,
+                              offset: Offset(1, 1),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Bar Chart
+                    Expanded(
+                      child: BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          gridData: FlGridData(
+                            show: true,
+                            drawVerticalLine: false,
+                            horizontalInterval: 1,
+                            getDrawingHorizontalLine: (value) {
+                              return FlLine(
+                                color: Colors.grey.shade200,
+                                strokeWidth: 1,
+                              );
+                            },
+                          ),
+                          borderData: FlBorderData(
+                            show: true,
+                            border: Border(
+                              bottom: BorderSide(color: Colors.grey.shade300, width: 1),
+                              left: BorderSide(color: Colors.grey.shade300, width: 1),
+                            ),
+                          ),
+                          titlesData: FlTitlesData(
+                            leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                reservedSize: 40,
+                                getTitlesWidget: (double value, TitleMeta meta) {
+                                  return Text(
+                                    value.toInt().toString(),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey.shade700,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            rightTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (double value, TitleMeta meta) {
+                                  int index = value.toInt();
+                                  if (index >= 0 && index < grievanceCounts.length) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        grievanceCounts.keys.elementAt(index),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primaryColor,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  return SizedBox.shrink();
+                                },
+                              ),
+                            ),
+                            topTitles: AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+                          barTouchData: BarTouchData(
+                            enabled: true,
+                            touchTooltipData: BarTouchTooltipData(
+                              tooltipPadding: EdgeInsets.all(8),
+                              tooltipMargin: 8,
+
+                              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                String status = grievanceCounts.keys.elementAt(group.x.toInt());
+                                return BarTooltipItem(
+                                  '$status\n${rod.toY.toInt()}',
+                                  TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          barGroups: grievanceCounts.entries.map((entry) {
+                            double maxY = grievanceCounts.values.isNotEmpty
+                                ? grievanceCounts.values.reduce((a, b) => a > b ? a : b).toDouble() * 1.1
+                                : 10.0; // Fallback if empty
+                            return BarChartGroupData(
+                              x: grievanceCounts.keys.toList().indexOf(entry.key),
+                              barRods: [
+                                BarChartRodData(
+                                  toY: entry.value.toDouble(),
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      _getColor(entry.key).withOpacity(0.6),
+                                      _getColor(entry.key),
+                                    ],
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                  ),
+                                  width: 24,
+                                  borderRadius: BorderRadius.circular(8),
+                                  backDrawRodData: BackgroundBarChartRodData(
+                                    show: true,
+                                    toY: maxY,
+                                    color: Colors.grey.shade100,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                        swapAnimationDuration: Duration(milliseconds: 500),
+                        swapAnimationCurve: Curves.easeInOut,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -322,14 +409,14 @@ class _desktopGrievanceChartState extends State<desktopGrievanceChart> {
                       value: null,
                       child: Text("All Months"),
                     ),
-                    ...List.generate(12, (index) {
-                      DateTime date = DateTime(DateTime.now().year, index + 1, 1);
+                    ...dates.map((dateStr) {
+                      DateTime date = DateFormat('yyyy-MM').parse('$dateStr-01');
                       String monthName = DateFormat('MMMM').format(date);
                       return DropdownMenuItem(
                         value: monthName,
                         child: Text(monthName),
                       );
-                    }),
+                    }).toList(),
                   ],
                   onChanged: (newMonth) {
                     tempMonth = newMonth;
