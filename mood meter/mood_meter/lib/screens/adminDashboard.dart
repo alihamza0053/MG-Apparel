@@ -20,7 +20,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   bool _isLoading = true;
   String _selectedTimeFrame = 'This Week';
   String _selectedDepartment = 'All Departments';
-  Timer? _refreshTimer;
+  StreamSubscription<List<Map<String, dynamic>>>? _subscription; // Updated type
 
   // Dashboard data
   Map<String, dynamic> _dashboardData = {
@@ -42,17 +42,44 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     _loadDashboardData();
-    // Set up periodic refresh every 30 seconds
-    _refreshTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      _loadDashboardData();
-    });
+    // Set up real-time subscription for mood_submissions table
+    _setupRealtimeSubscription();
   }
 
   @override
   void dispose() {
-    // Cancel the refresh timer to prevent memory leaks
-    _refreshTimer?.cancel();
+    // Cancel the stream subscription to prevent memory leaks
+    _subscription?.cancel();
     super.dispose();
+  }
+
+  void _setupRealtimeSubscription() {
+    // Subscribe to changes in the mood_submissions table
+    _subscription = supabase
+        .from('mood_submissions')
+        .stream(primaryKey: ['id'])
+        .listen((List<Map<String, dynamic>> data) {
+      // Trigger data reload when changes occur
+      _loadDashboardData();
+    }, onError: (error) {
+      print('Realtime subscription error: $error');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Realtime update error: $error'),
+            backgroundColor: Colors.red,
+            action: SnackBarAction(
+              label: 'RETRY',
+              onPressed: () {
+                _subscription?.cancel();
+                _setupRealtimeSubscription();
+              },
+              textColor: Colors.white,
+            ),
+          ),
+        );
+      }
+    });
   }
 
   Future<void> _loadDashboardData() async {
@@ -365,12 +392,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Coming Soon")));
-
-                // Navigator.of(context).pushNamed('/admin-export', arguments: {
-                //   'format': 'excel',
-                //   'timeFrame': _selectedTimeFrame,
-                //   'department': _selectedDepartment,
-                // });
               },
             ),
             ListTile(
@@ -379,11 +400,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               onTap: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Coming Soon")));
-                // Navigator.of(context).pushNamed('/admin-export', arguments: {
-                //   'format': 'pdf',
-                //   'timeFrame': _selectedTimeFrame,
-                //   'department': _selectedDepartment,
-                // });
               },
             ),
           ],
@@ -599,17 +615,16 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       body: _isLoading
           ? _buildShimmerLoading()
           : Center(
-
-            child: ConstrainedBox(
-                    constraints: BoxConstraints(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
             maxWidth: maxContentWidth,
-                    ),
-              child: ScrollConfiguration(
-                behavior: const ScrollBehavior().copyWith(scrollbars: false),
-                child: RefreshIndicator(
-                        onRefresh: _loadDashboardData,
-                        color: const Color(0xFF2AABE2),
-                        child: SingleChildScrollView(
+          ),
+          child: ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(scrollbars: false),
+            child: RefreshIndicator(
+              onRefresh: _loadDashboardData,
+              color: const Color(0xFF2AABE2),
+              child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -771,11 +786,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     const SizedBox(height: 20),
                   ],
                 ),
-                        ),
-                      ),
               ),
             ),
           ),
+        ),
+      ),
     );
   }
 
@@ -1125,7 +1140,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "",//user_email
+                    "", // user_email
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 12,

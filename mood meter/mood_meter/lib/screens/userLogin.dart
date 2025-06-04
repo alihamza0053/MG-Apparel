@@ -26,10 +26,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final Color primaryColor = const Color(0xFF2AABE2);
 
   @override
+  void initState() {
+    super.initState();
+    // Check for existing session
+    _checkSession();
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Check if user is already logged in
+  Future<void> _checkSession() async {
+    final session = Supabase.instance.client.auth.currentSession;
+    if (session != null) {
+      // User is logged in, handle navigation
+      await _handlePostAuth(session.user.email ?? '');
+    }
   }
 
   // Domain validation function
@@ -289,7 +305,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
 
-                              /*// Forgot Password Link
+                              // Forgot Password Link (commented out, kept as-is)
+                              /*
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
@@ -395,7 +412,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image.asset("assets/images/company_logo.png", width: 50,),
+                                  Image.asset(
+                                    "assets/images/company_logo.png",
+                                    width: 50,
+                                  ),
                                   Text(
                                     'Version 1.0(beta)',
                                     style: TextStyle(
