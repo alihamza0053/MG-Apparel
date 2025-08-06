@@ -5,7 +5,6 @@ import 'package:mood_meter/screens/submissionConfirmation.dart';
 import 'package:mood_meter/screens/userLogin.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'departmentSelection.dart';
-import 'dart:math';
 
 class UserDashboard extends StatefulWidget {
   const UserDashboard({Key? key}) : super(key: key);
@@ -16,31 +15,20 @@ class UserDashboard extends StatefulWidget {
 
 class _UserDashboardState extends State<UserDashboard> {
   // Color theme
-  final Color primaryColor = const Color(0xFF2AABE2);
+  final Color primaryColor = const Color(0xFF2596BE);
+  final Color backgroundColor = const Color(0xFF2596BE);
 
   // Maximum width constraint for the content
   final double maxContentWidth = 800.0;
 
   bool _isLoading = true;
-  bool _hasSubmittedToday = false;
-  bool _isAfterNoon = false;
+  bool _hasSubmittedMorning = false;
+  bool _hasSubmittedAfternoon = false;
   String _userName = '';
   String? _userDepartment;
   String? _errorMessage;
-
-  // Random for background selection
-  final Random _random = Random();
-
-  // Background images
-  final List<String> _backgroundImages = [
-    'assets/images/emoji_bg1.png',
-    'assets/images/emoji_bg2.png',
-    'assets/images/emoji_bg3.png',
-    'assets/images/emoji_bg4.png',
-    'assets/images/emoji_bg5.png',
-    'assets/images/emoji_bg6.png',
-  ];
-  String _currentBackground = '';
+  bool _isMorningSubmissionWindow = false;
+  bool _isAfternoonSubmissionWindow = false;
 
   // List of mood options
   final List<Map<String, dynamic>> _moods = [
@@ -84,31 +72,17 @@ class _UserDashboardState extends State<UserDashboard> {
   @override
   void initState() {
     super.initState();
-    // Select random background
-    _selectRandomBackground();
-
-    // Fetch user data and check if they've submitted mood today
+    // Fetch user data and check submission status
     _loadUserData();
-
-    // Check if current time is after 12 PM
+    // Check submission time windows
     _checkTimeRestriction();
-  }
-
-  void _selectRandomBackground() {
-    setState(() {
-      _currentBackground = _backgroundImages[_random.nextInt(_backgroundImages.length)];
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _checkTimeRestriction() {
     final now = DateTime.now();
     setState(() {
-      _isAfterNoon = now.hour >= 12;
+      _isMorningSubmissionWindow = now.hour >= 9 && now.hour < 13;
+      _isAfternoonSubmissionWindow = now.hour >= 14 && now.hour < 17;
     });
   }
 
@@ -147,15 +121,15 @@ class _UserDashboardState extends State<UserDashboard> {
         }
       }
 
-      final hasSubmittedToday = await _checkMoodSubmissionToday(user.id);
+      final submissionStatus = await _checkMoodSubmissionsToday(user.id);
 
       if (!mounted) return;
       setState(() {
         _userName = userData['name'] ?? user.email?.split('@')[0] ?? 'User';
         _userDepartment = departmentId;
-        _hasSubmittedToday = hasSubmittedToday;
+        _hasSubmittedMorning = submissionStatus['morning']!;
+        _hasSubmittedAfternoon = submissionStatus['afternoon']!;
         _isLoading = false;
-        _selectRandomBackground(); // Randomize background on refresh
       });
 
       if (_userDepartment == null && mounted) {
@@ -173,38 +147,63 @@ class _UserDashboardState extends State<UserDashboard> {
     }
   }
 
-  Future<bool> _checkMoodSubmissionToday(String userId) async {
+  Future<Map<String, bool>> _checkMoodSubmissionsToday(String userId) async {
     try {
       final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-      final moodSubmission = await Supabase.instance.client
+      final submissions = await Supabase.instance.client
           .from('mood_submissions')
-          .select('id')
+          .select('created_at')
           .eq('user_id', userId)
           .gte('created_at', '$today 00:00:00')
-          .lt('created_at', '$today 23:59:59')
-          .maybeSingle();
-      return moodSubmission != null;
+          .lt('created_at', '$today 23:59:59');
+
+      bool hasMorningSubmission = false;
+      bool hasAfternoonSubmission = false;
+
+      for (var submission in submissions) {
+        final createdAt = DateTime.parse(submission['created_at']);
+        if (createdAt.hour >= 9 && createdAt.hour < 13) {
+          hasMorningSubmission = true;
+        } else if (createdAt.hour >= 14 && createdAt.hour < 17) {
+          hasAfternoonSubmission = true;
+        }
+      }
+
+      return {
+        'morning': hasMorningSubmission,
+        'afternoon': hasAfternoonSubmission,
+      };
     } catch (e) {
-      print('Error checking mood submission: $e');
-      return false;
+      print('Error checking mood submissions: $e');
+      return {'morning': false, 'afternoon': false};
     }
   }
 
   Future<void> _submitMood(String moodId) async {
-    if (!_isAfterNoon) {
+    if (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Mood submissions are only available after 12 PM'),
+          content: Text('Mood submissions are only available from 9 AM to 1 PM or 2 PM to 5 PM'),
           backgroundColor: Colors.orange,
         ),
       );
       return;
     }
 
-    if (_hasSubmittedToday) {
+    if (_isMorningSubmissionWindow && _hasSubmittedMorning) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('You have already submitted your mood for today'),
+          content: Text('You have already submitted your morning mood'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    if (_isAfternoonSubmissionWindow && _hasSubmittedAfternoon) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('You have already submitted your afternoon mood'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -235,7 +234,7 @@ class _UserDashboardState extends State<UserDashboard> {
     String? comment;
     if (moodId == 'angry') {
       if (!mounted) return;
-      final result = await Navigator.of(context).pushReplacement(
+      final result = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => CommentScreen(moodId: moodId),
         ),
@@ -269,7 +268,7 @@ class _UserDashboardState extends State<UserDashboard> {
       });
 
       if (!mounted) return;
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => SubmissionConfirmationScreen(moodType: moodId),
@@ -277,7 +276,11 @@ class _UserDashboardState extends State<UserDashboard> {
       );
       setState(() {
         _isLoading = false;
-        _hasSubmittedToday = true;
+        if (_isMorningSubmissionWindow) {
+          _hasSubmittedMorning = true;
+        } else if (_isAfternoonSubmissionWindow) {
+          _hasSubmittedAfternoon = true;
+        }
       });
     } catch (e) {
       print('Error submitting mood: $e');
@@ -335,24 +338,7 @@ class _UserDashboardState extends State<UserDashboard> {
         builder: (context, constraints) {
           return Container(
             width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.yellow[100]!.withOpacity(0.2),
-                  Colors.red[100]!.withOpacity(0.2),
-                  Colors.blue[100]!.withOpacity(0.2),
-                  Colors.green[100]!.withOpacity(0.2),
-                ],
-              ),
-              image: DecorationImage(
-                image: AssetImage(_currentBackground),
-                fit: BoxFit.cover,
-                opacity: 0.3,
-                repeat: ImageRepeat.repeat,
-              ),
-            ),
+            color: backgroundColor.withOpacity(0.1),
             child: SafeArea(
               child: Center(
                 child: ConstrainedBox(
@@ -390,8 +376,6 @@ class _UserDashboardState extends State<UserDashboard> {
                                     color: Colors.grey[600],
                                   ),
                                 ),
-
-
                                 const SizedBox(height: 8),
                                 Text(
                                   formattedDate,
@@ -405,7 +389,7 @@ class _UserDashboardState extends State<UserDashboard> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          if (!_isAfterNoon && !_hasSubmittedToday)
+                          if (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow)
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
@@ -438,7 +422,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Mood submissions are only available after 12 PM. Please check back later.',
+                                          'Mood submissions are available from 9 AM to 1 PM and 2 PM to 5 PM.',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[700],
@@ -450,7 +434,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                 ],
                               ),
                             ),
-                          if (_hasSubmittedToday)
+                          if (_isMorningSubmissionWindow && _hasSubmittedMorning)
                             Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
@@ -474,7 +458,7 @@ class _UserDashboardState extends State<UserDashboard> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Thank You!',
+                                          'Morning Submission Done',
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
@@ -483,7 +467,52 @@ class _UserDashboardState extends State<UserDashboard> {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'You have already submitted your mood for today.',
+                                          'You have submitted your morning mood.',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          if (_isAfternoonSubmissionWindow && _hasSubmittedAfternoon)
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.green,
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 28,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Afternoon Submission Done',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'You have submitted your afternoon mood.',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: Colors.grey[700],
@@ -497,8 +526,9 @@ class _UserDashboardState extends State<UserDashboard> {
                             ),
                           const SizedBox(height: 20),
                           Text(
-                            _hasSubmittedToday
-                                ? 'Your submission for today:'
+                            (_hasSubmittedMorning && _isMorningSubmissionWindow) ||
+                                (_hasSubmittedAfternoon && _isAfternoonSubmissionWindow)
+                                ? 'Your submission for this time slot:'
                                 : 'How are you feeling today?',
                             style: TextStyle(
                               fontSize: 20,
@@ -529,7 +559,9 @@ class _UserDashboardState extends State<UserDashboard> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: InkWell(
-                                  onTap: (_hasSubmittedToday || !_isAfterNoon)
+                                  onTap: ((_isMorningSubmissionWindow && _hasSubmittedMorning) ||
+                                      (_isAfternoonSubmissionWindow && _hasSubmittedAfternoon) ||
+                                      (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow))
                                       ? null
                                       : () => _submitMood(_moods[i]['id']),
                                   borderRadius: BorderRadius.circular(12),
@@ -571,7 +603,9 @@ class _UserDashboardState extends State<UserDashboard> {
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
-                                                  color: (_hasSubmittedToday || !_isAfterNoon)
+                                                  color: ((_isMorningSubmissionWindow && _hasSubmittedMorning) ||
+                                                      (_isAfternoonSubmissionWindow && _hasSubmittedAfternoon) ||
+                                                      (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow))
                                                       ? Colors.grey
                                                       : Colors.grey[800],
                                                 ),
@@ -581,7 +615,9 @@ class _UserDashboardState extends State<UserDashboard> {
                                                 _moods[i]['description'],
                                                 style: TextStyle(
                                                   fontSize: 14,
-                                                  color: (_hasSubmittedToday || !_isAfterNoon)
+                                                  color: ((_isMorningSubmissionWindow && _hasSubmittedMorning) ||
+                                                      (_isAfternoonSubmissionWindow && _hasSubmittedAfternoon) ||
+                                                      (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow))
                                                       ? Colors.grey
                                                       : Colors.grey[600],
                                                 ),
@@ -589,7 +625,8 @@ class _UserDashboardState extends State<UserDashboard> {
                                             ],
                                           ),
                                         ),
-                                        if (!_hasSubmittedToday && _isAfterNoon)
+                                        if (!_hasSubmittedMorning && _isMorningSubmissionWindow ||
+                                            !_hasSubmittedAfternoon && _isAfternoonSubmissionWindow)
                                           Icon(
                                             Icons.arrow_forward_ios,
                                             color: _moods[i]['color'],
@@ -602,7 +639,8 @@ class _UserDashboardState extends State<UserDashboard> {
                               ),
                             ),
                           const SizedBox(height: 16),
-                          if (!_hasSubmittedToday && _isAfterNoon)
+                          if (!_hasSubmittedMorning && _isMorningSubmissionWindow ||
+                              !_hasSubmittedAfternoon && _isAfternoonSubmissionWindow)
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
@@ -615,11 +653,11 @@ class _UserDashboardState extends State<UserDashboard> {
                                 textAlign: TextAlign.center,
                               ),
                             ),
-                          if (!_isAfterNoon && !_hasSubmittedToday)
+                          if (!_isMorningSubmissionWindow && !_isAfternoonSubmissionWindow)
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: Text(
-                                'Mood submission will be available after 12 PM. Pull down to refresh and check again later.',
+                                'Mood submission is available from 9 AM to 1 PM and 2 PM to 5 PM. Pull down to refresh and check again later.',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontStyle: FontStyle.italic,

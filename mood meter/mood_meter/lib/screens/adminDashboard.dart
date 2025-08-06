@@ -6,6 +6,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
+import 'admin_comments.dart';
+
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({Key? key}) : super(key: key);
 
@@ -20,13 +22,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   bool _isLoading = true;
   String _selectedTimeFrame = 'This Week';
   String _selectedDepartment = 'All Departments';
-  StreamSubscription<List<Map<String, dynamic>>>? _subscription; // Updated type
+  StreamSubscription<List<Map<String, dynamic>>>? _subscription;
 
   // Dashboard data
   Map<String, dynamic> _dashboardData = {
-    'totalSubmissions': 0,
+    'morningSubmissions': 0,
+    'afternoonSubmissions': 0,
     'departments': [],
-    'moodDistribution': {
+    'morningMoodDistribution': {
+      'Very Happy': 0,
+      'Happy': 0,
+      'Neutral': 0,
+      'Sad': 0,
+      'Angry': 0,
+    },
+    'afternoonMoodDistribution': {
       'Very Happy': 0,
       'Happy': 0,
       'Neutral': 0,
@@ -35,31 +45,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     },
     'recentComments': [],
     'dailyTrends': [],
-    'highestMood': 'None',
+    'morningHighestMood': 'None',
+    'afternoonHighestMood': 'None',
   };
 
   @override
   void initState() {
     super.initState();
     _loadDashboardData();
-    // Set up real-time subscription for mood_submissions table
     _setupRealtimeSubscription();
   }
 
   @override
   void dispose() {
-    // Cancel the stream subscription to prevent memory leaks
     _subscription?.cancel();
     super.dispose();
   }
 
   void _setupRealtimeSubscription() {
-    // Subscribe to changes in the mood_submissions table
     _subscription = supabase
         .from('mood_submissions')
         .stream(primaryKey: ['id'])
         .listen((List<Map<String, dynamic>> data) {
-      // Trigger data reload when changes occur
       _loadDashboardData();
     }, onError: (error) {
       print('Realtime subscription error: $error');
@@ -138,26 +145,52 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
       final submissions = await query;
 
-      // Process submissions
-      Map<String, int> moodCountMap = {
+      // Process submissions by time window
+      Map<String, int> morningMoodCountMap = {
         'Very Happy': 0,
         'Happy': 0,
         'Neutral': 0,
         'Sad': 0,
         'Angry': 0,
       };
+      Map<String, int> afternoonMoodCountMap = {
+        'Very Happy': 0,
+        'Happy': 0,
+        'Neutral': 0,
+        'Sad': 0,
+        'Angry': 0,
+      };
+      int morningSubmissions = 0;
+      int afternoonSubmissions = 0;
 
       for (var submission in submissions) {
         String mood = submission['mood'] as String? ?? 'Unknown';
-        moodCountMap[mood] = (moodCountMap[mood] ?? 0) + 1;
+        final createdAt = DateTime.parse(submission['created_at']);
+        if (createdAt.hour >= 9 && createdAt.hour < 13) {
+          morningMoodCountMap[mood] = (morningMoodCountMap[mood] ?? 0) + 1;
+          morningSubmissions++;
+        } else if (createdAt.hour >= 14 && createdAt.hour < 17) {
+          afternoonMoodCountMap[mood] = (afternoonMoodCountMap[mood] ?? 0) + 1;
+          afternoonSubmissions++;
+        }
       }
 
-      String highestMood = 'None';
-      int highestCount = 0;
-      moodCountMap.forEach((mood, count) {
-        if (count > highestCount) {
-          highestMood = mood;
-          highestCount = count;
+      // Determine highest moods
+      String morningHighestMood = 'None';
+      int morningHighestCount = 0;
+      morningMoodCountMap.forEach((mood, count) {
+        if (count > morningHighestCount) {
+          morningHighestMood = mood;
+          morningHighestCount = count;
+        }
+      });
+
+      String afternoonHighestMood = 'None';
+      int afternoonHighestCount = 0;
+      afternoonMoodCountMap.forEach((mood, count) {
+        if (count > afternoonHighestCount) {
+          afternoonHighestMood = mood;
+          afternoonHighestCount = count;
         }
       });
 
@@ -170,6 +203,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         'created_at': submission['created_at'],
         'department': submission['departments']['name'] ?? 'Unknown',
         'user_email': submission['users']['email'] ?? 'Anonymous',
+        'time_window': DateTime.parse(submission['created_at']).hour >= 9 &&
+            DateTime.parse(submission['created_at']).hour < 13
+            ? 'Morning'
+            : 'Afternoon',
       })
           .toList()
         ..sort((a, b) => DateTime.parse(b['created_at']).compareTo(DateTime.parse(a['created_at'])));
@@ -188,12 +225,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       if (mounted) {
         setState(() {
           _dashboardData = {
-            'totalSubmissions': submissions.length,
+            'morningSubmissions': morningSubmissions,
+            'afternoonSubmissions': afternoonSubmissions,
             'departments': ['All Departments', ...departments.map((e) => e['name'])],
-            'moodDistribution': moodCountMap,
+            'morningMoodDistribution': morningMoodCountMap,
+            'afternoonMoodDistribution': afternoonMoodCountMap,
             'recentComments': recentComments,
             'dailyTrends': dailyTrends ?? [],
-            'highestMood': highestMood,
+            'morningHighestMood': morningHighestMood,
+            'afternoonHighestMood': afternoonHighestMood,
           };
           _isLoading = false;
         });
@@ -490,6 +530,38 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: Container(
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 20),
           Shimmer.fromColors(
             baseColor: Colors.grey[300]!,
@@ -678,14 +750,30 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Row(
                       children: [
                         _buildSummaryCard(
-                          'Total Submissions',
-                          _dashboardData['totalSubmissions'].toString(),
+                          'Morning Submissions',
+                          _dashboardData['morningSubmissions'].toString(),
                           Icons.how_to_vote,
                         ),
                         const SizedBox(width: 10),
                         _buildSummaryCard(
-                          'Happiness Score',
-                          _calculateHappinessScore().toStringAsFixed(1),
+                          'Afternoon Submissions',
+                          _dashboardData['afternoonSubmissions'].toString(),
+                          Icons.how_to_vote,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        _buildSummaryCard(
+                          'Morning Happiness',
+                          _calculateHappinessScore(_dashboardData['morningMoodDistribution']).toStringAsFixed(1),
+                          Icons.sentiment_satisfied_alt,
+                        ),
+                        const SizedBox(width: 10),
+                        _buildSummaryCard(
+                          'Afternoon Happiness',
+                          _calculateHappinessScore(_dashboardData['afternoonMoodDistribution']).toStringAsFixed(1),
                           Icons.sentiment_satisfied_alt,
                         ),
                       ],
@@ -694,21 +782,23 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Row(
                       children: [
                         _buildSummaryCard(
-                          'Top Mood',
-                          _dashboardData['highestMood'] ?? 'None',
+                          'Morning Top Mood',
+                          _dashboardData['morningHighestMood'] ?? 'None',
                           Icons.star,
                         ),
                         const SizedBox(width: 10),
-                        Expanded(
-                          child: Container(), // Empty container to maintain layout
+                        _buildSummaryCard(
+                          'Afternoon Top Mood',
+                          _dashboardData['afternoonHighestMood'] ?? 'None',
+                          Icons.star,
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
 
-                    // Mood Distribution Chart
+                    // Morning Mood Distribution Chart
                     const Text(
-                      'Mood Distribution',
+                      'Morning Mood Distribution (9 AM - 1 PM)',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -730,7 +820,35 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                           ),
                         ],
                       ),
-                      child: _buildMoodDistributionChart(),
+                      child: _buildMoodDistributionChart(_dashboardData['morningMoodDistribution'], 'Morning'),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Afternoon Mood Distribution Chart
+                    const Text(
+                      'Afternoon Mood Distribution (2 PM - 5 PM)',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.1),
+                            spreadRadius: 1,
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: _buildMoodDistributionChart(_dashboardData['afternoonMoodDistribution'], 'Afternoon'),
                     ),
                     const SizedBox(height: 20),
 
@@ -775,7 +893,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pushNamed('/admin-comments');
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminCommentsScreen()));
                           },
                           child: const Text('View All'),
                         ),
@@ -844,8 +962,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildMoodDistributionChart() {
-    final data = _dashboardData['moodDistribution'];
+  Widget _buildMoodDistributionChart(Map<String, int> data, String timeWindow) {
     final colors = {
       'Very Happy': const Color(0xFF2ECC71),
       'Happy': const Color(0xFF3498DB),
@@ -863,7 +980,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               sections: data.entries.map<PieChartSectionData>((entry) {
                 return PieChartSectionData(
                   color: colors[entry.key] ?? Colors.grey,
-                  value: (entry.value ?? 0).toDouble(),
+                  value: (entry.value).toDouble(),
                   title: '',
                   radius: 50,
                 );
@@ -1112,7 +1229,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    comment['mood'],
+                    '${comment['mood']} (${comment['time_window']})',
                     style: TextStyle(
                       color: moodColor,
                       fontWeight: FontWeight.bold,
@@ -1162,8 +1279,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  double _calculateHappinessScore() {
-    final distribution = _dashboardData['moodDistribution'];
+  double _calculateHappinessScore(Map<String, int> distribution) {
     final weights = {
       'Very Happy': 5.0,
       'Happy': 4.0,
@@ -1176,7 +1292,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     double weightedSum = 0;
 
     distribution.forEach((mood, count) {
-      totalCount += count as int;
+      totalCount += count;
       weightedSum += (weights[mood] ?? 3.0) * count;
     });
 
