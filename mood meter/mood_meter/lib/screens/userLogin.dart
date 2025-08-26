@@ -417,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     width: 50,
                                   ),
                                   Text(
-                                    'Version 1.0(beta)',
+                                    'Version 1.3(beta)',
                                     style: TextStyle(
                                       color: Colors.grey,
                                     ),

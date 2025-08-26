@@ -270,6 +270,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return DateTime(now.year, now.month, 1);
       case 'Last 3 Months':
         return DateTime(now.year, now.month - 3, now.day);
+      case 'All Time':
+        return DateTime(now.year - 10, now.month, now.day);
       default:
         return now.subtract(Duration(days: 7));
     }
@@ -295,7 +297,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              ...['Today', 'This Week', 'This Month', 'Last 3 Months'].map((timeFrame) => ListTile(
+              ...['Today', 'This Week', 'This Month', 'Last 3 Months', 'All Time'].map((timeFrame) => ListTile(
                 title: Text(timeFrame),
                 leading: Radio<String>(
                   value: timeFrame,
@@ -454,211 +456,120 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Filter Bar Shimmer
+          _buildShimmerFilterBar(),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Shimmer.fromColors(
-                  baseColor: Colors.grey[300]!,
-                  highlightColor: Colors.grey[100]!,
-                  child: Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Morning Section Shimmer
+          _buildShimmerSection(),
           const SizedBox(height: 20),
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 18,
-              width: 150,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
+          // Afternoon Section Shimmer
+          _buildShimmerSection(),
           const SizedBox(height: 20),
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 18,
-              width: 150,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Container(
-              height: 220,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
+          // Daily Trend Shimmer
+          _buildShimmerContainer(height: 220),
           const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: 18,
-                  width: 150,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: 18,
-                  width: 70,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          for (int i = 0; i < 2; i++)
+          // Comments Shimmer
+          for (int i = 0; i < 3; i++)
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-              ),
+              child: _buildShimmerContainer(height: 120),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerFilterBar() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 600) {
+          // Mobile layout - stack vertically
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(child: _buildShimmerContainer(height: 48)),
+                  const SizedBox(width: 10),
+                  _buildShimmerContainer(width: 48, height: 48),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _buildShimmerContainer(height: 48),
+            ],
+          );
+        } else {
+          // Desktop layout - horizontal
+          return Row(
+            children: [
+              Expanded(child: _buildShimmerContainer(height: 48)),
+              const SizedBox(width: 10),
+              Expanded(child: _buildShimmerContainer(height: 48)),
+              const SizedBox(width: 10),
+              _buildShimmerContainer(width: 48, height: 48),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildShimmerSection() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 800) {
+          // Mobile layout - stack vertically
+          return Column(
+            children: [
+              _buildShimmerContainer(height: 18, width: 150),
+              const SizedBox(height: 10),
+              _buildShimmerContainer(height: 250),
+              const SizedBox(height: 10),
+              _buildShimmerStatsCards(),
+            ],
+          );
+        } else {
+          // Desktop layout - horizontal
+          return Column(
+            children: [
+              _buildShimmerContainer(height: 18, width: 150),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(flex: 2, child: _buildShimmerStatsCards()),
+                  const SizedBox(width: 10),
+                  Expanded(flex: 3, child: _buildShimmerContainer(height: 220)),
+                ],
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildShimmerStatsCards() {
+    return Column(
+      children: [
+        _buildShimmerContainer(height: 80),
+        const SizedBox(height: 10),
+        _buildShimmerContainer(height: 80),
+        const SizedBox(height: 10),
+        _buildShimmerContainer(height: 80),
+      ],
+    );
+  }
+
+  Widget _buildShimmerContainer({double? width, double? height}) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
       ),
     );
   }
@@ -691,219 +602,81 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           constraints: BoxConstraints(
             maxWidth: maxContentWidth,
           ),
-          child: ScrollConfiguration(
-            behavior: const ScrollBehavior().copyWith(scrollbars: false),
-            child: RefreshIndicator(
-              onRefresh: _loadDashboardData,
-              color: const Color(0xFF2AABE2),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Filter Bar
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.calendar_today, size: 16),
-                            label: Text(_selectedTimeFrame),
-                            onPressed: _showDateFilterModal,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF2AABE2),
-                              side: const BorderSide(color: Color(0xFF2AABE2)),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            icon: const Icon(Icons.business, size: 16),
-                            label: Text(
-                              _selectedDepartment,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onPressed: _showDepartmentFilterModal,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF2AABE2),
-                              side: const BorderSide(color: Color(0xFF2AABE2)),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        IconButton(
-                          icon: const Icon(Icons.file_download),
-                          onPressed: _showExportOptionsModal,
-                          style: IconButton.styleFrom(
-                            foregroundColor: const Color(0xFF2AABE2),
-                          ),
-                          tooltip: 'Export Data',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+          child: RefreshIndicator(
+            onRefresh: _loadDashboardData,
+            color: const Color(0xFF2AABE2),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Responsive Filter Bar
+                  _buildResponsiveFilterBar(),
+                  const SizedBox(height: 20),
 
-                    // Summary Cards
-                    Row(
-                      children: [
-                        _buildSummaryCard(
-                          'Morning Submissions',
-                          _dashboardData['morningSubmissions'].toString(),
-                          Icons.how_to_vote,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildSummaryCard(
-                          'Afternoon Submissions',
-                          _dashboardData['afternoonSubmissions'].toString(),
-                          Icons.how_to_vote,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        _buildSummaryCard(
-                          'Morning Happiness',
-                          _calculateHappinessScore(_dashboardData['morningMoodDistribution']).toStringAsFixed(1),
-                          Icons.sentiment_satisfied_alt,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildSummaryCard(
-                          'Afternoon Happiness',
-                          _calculateHappinessScore(_dashboardData['afternoonMoodDistribution']).toStringAsFixed(1),
-                          Icons.sentiment_satisfied_alt,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        _buildSummaryCard(
-                          'Morning Top Mood',
-                          _dashboardData['morningHighestMood'] ?? 'None',
-                          Icons.star,
-                        ),
-                        const SizedBox(width: 10),
-                        _buildSummaryCard(
-                          'Afternoon Top Mood',
-                          _dashboardData['afternoonHighestMood'] ?? 'None',
-                          Icons.star,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
+                  // Morning Section
+                  _buildResponsiveMoodSection(
+                    'Morning Mood Distribution (9 AM - 1 PM)',
+                    _dashboardData['morningMoodDistribution'],
+                    'Morning',
+                    _dashboardData['morningSubmissions'],
+                    _dashboardData['morningHighestMood'],
+                    isReversed: false,
+                  ),
+                  const SizedBox(height: 20),
 
-                    // Morning Mood Distribution Chart
-                    const Text(
-                      'Morning Mood Distribution (9 AM - 1 PM)',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 220,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: _buildMoodDistributionChart(_dashboardData['morningMoodDistribution'], 'Morning'),
-                    ),
-                    const SizedBox(height: 20),
+                  // Afternoon Section
+                  _buildResponsiveMoodSection(
+                    'Afternoon Mood Distribution (2 PM - 5 PM)',
+                    _dashboardData['afternoonMoodDistribution'],
+                    'Afternoon',
+                    _dashboardData['afternoonSubmissions'],
+                    _dashboardData['afternoonHighestMood'],
+                    isReversed: true,
+                  ),
+                  const SizedBox(height: 20),
 
-                    // Afternoon Mood Distribution Chart
-                    const Text(
-                      'Afternoon Mood Distribution (2 PM - 5 PM)',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  // Daily Trend Chart
+                  const Text(
+                    'Daily Mood Trend',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 220,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: _buildMoodDistributionChart(_dashboardData['afternoonMoodDistribution'], 'Afternoon'),
-                    ),
-                    const SizedBox(height: 20),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 220,
+                    padding: const EdgeInsets.all(16),
+                    decoration: _cardDecoration(),
+                    child: _buildDailyTrendChart(),
+                  ),
+                  const SizedBox(height: 20),
 
-                    // Daily Trend Chart
-                    const Text(
-                      'Daily Mood Trend',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      height: 220,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            spreadRadius: 1,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: _buildDailyTrendChart(),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Recent Comments
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Recent Comments',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  // Recent Comments
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Recent Comments',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>AdminCommentsScreen()));
-                          },
-                          child: const Text('View All'),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    _buildRecentComments(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => AdminCommentsScreen()));
+                        },
+                        child: const Text('View All'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _buildRecentComments(),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
           ),
@@ -912,52 +685,260 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildSummaryCard(String title, String value, IconData icon) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildResponsiveFilterBar() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 600) {
+          // Mobile layout - stack department filter below
+          return Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildFilterButton(
+                      icon: Icons.calendar_today,
+                      label: _selectedTimeFrame,
+                      onPressed: _showDateFilterModal,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  _buildExportButton(),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _buildFilterButton(
+                icon: Icons.business,
+                label: _selectedDepartment,
+                onPressed: _showDepartmentFilterModal,
+                expanded: true,
+              ),
+            ],
+          );
+        } else {
+          // Desktop layout - horizontal
+          return Row(
+            children: [
+              Expanded(
+                child: _buildFilterButton(
+                  icon: Icons.calendar_today,
+                  label: _selectedTimeFrame,
+                  onPressed: _showDateFilterModal,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _buildFilterButton(
+                  icon: Icons.business,
+                  label: _selectedDepartment,
+                  onPressed: _showDepartmentFilterModal,
+                ),
+              ),
+              const SizedBox(width: 10),
+              _buildExportButton(),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildFilterButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onPressed,
+    bool expanded = false,
+  }) {
+    final button = OutlinedButton.icon(
+      icon: Icon(icon, size: 16),
+      label: Text(
+        label,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 1,
+      ),
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: const Color(0xFF2AABE2),
+        side: const BorderSide(color: Color(0xFF2AABE2)),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        minimumSize: const Size(0, 48),
+      ),
+    );
+
+    return expanded ? SizedBox(width: double.infinity, child: button) : button;
+  }
+
+  Widget _buildExportButton() {
+    return IconButton(
+      icon: const Icon(Icons.file_download),
+      onPressed: _showExportOptionsModal,
+      style: IconButton.styleFrom(
+        foregroundColor: const Color(0xFF2AABE2),
+        minimumSize: const Size(48, 48),
+      ),
+      tooltip: 'Export Data',
+    );
+  }
+
+  Widget _buildResponsiveMoodSection(
+      String title,
+      Map<String, int> moodDistribution,
+      String timeWindow,
+      int submissions,
+      String highestMood, {
+        required bool isReversed,
+      }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
+            Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 10),
+            if (constraints.maxWidth < 800)
+            // Mobile layout - stack vertically
+              Column(
+                children: [
+                  Container(
+                    height: 250,
+                    padding: const EdgeInsets.all(16),
+                    decoration: _cardDecoration(),
+                    child: _buildMoodDistributionChart(moodDistribution, timeWindow),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildStatsCards(submissions, moodDistribution, highestMood, timeWindow),
+                ],
+              )
+            else
+            // Desktop layout - horizontal
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: isReversed
+                    ? [
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: _cardDecoration(),
+                      child: _buildMoodDistributionChart(moodDistribution, timeWindow),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 2,
+                    child: _buildStatsCards(submissions, moodDistribution, highestMood, timeWindow),
+                  ),
+                ]
+                    : [
+                  Expanded(
+                    flex: 2,
+                    child: _buildStatsCards(submissions, moodDistribution, highestMood, timeWindow),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 3,
+                    child: Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: _cardDecoration(),
+                      child: _buildMoodDistributionChart(moodDistribution, timeWindow),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildStatsCards(int submissions, Map<String, int> moodDistribution, String highestMood, String timeWindow) {
+    return Column(
+      children: [
+        _buildSummaryCard(
+          '$timeWindow Submissions',
+          submissions.toString(),
+          Icons.how_to_vote,
+        ),
+        const SizedBox(height: 10),
+        _buildSummaryCard(
+          '$timeWindow Happiness',
+          _calculateHappinessScore(moodDistribution).toStringAsFixed(1),
+          Icons.sentiment_satisfied_alt,
+        ),
+        const SizedBox(height: 10),
+        _buildSummaryCard(
+          '$timeWindow Top Mood',
+          highestMood,
+          Icons.star,
+        ),
+      ],
+    );
+  }
+
+  BoxDecoration _cardDecoration() {
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(10),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryCard(String title, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _cardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
                   title,
                   style: TextStyle(
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w500,
+                    fontSize: 12,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                Icon(
-                  icon,
-                  color: const Color(0xFF2AABE2),
-                  size: 20,
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
               ),
+              Icon(
+                icon,
+                color: const Color(0xFF2AABE2),
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-          ],
-        ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }
@@ -971,67 +952,109 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       'Angry': const Color(0xFF7B241C),
     };
 
-    return Row(
-      children: [
-        Expanded(
-          flex: 3,
-          child: PieChart(
-            PieChartData(
-              sections: data.entries.map<PieChartSectionData>((entry) {
-                return PieChartSectionData(
-                  color: colors[entry.key] ?? Colors.grey,
-                  value: (entry.value).toDouble(),
-                  title: '',
-                  radius: 50,
-                );
-              }).toList(),
-              centerSpaceRadius: 40,
-              sectionsSpace: 2,
-            ),
-          ),
-        ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: data.entries.map<Widget>((entry) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 12,
-                      height: 10,
-                      decoration: BoxDecoration(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 400) {
+          // Very small screens - vertical layout
+          return Column(
+            children: [
+              Expanded(
+                flex: 3,
+                child: PieChart(
+                  PieChartData(
+                    sections: data.entries.map<PieChartSectionData>((entry) {
+                      return PieChartSectionData(
                         color: colors[entry.key] ?? Colors.grey,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        entry.key,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[800],
-                        ),
-                      ),
-                    ),
-                    Text(
-                      '${entry.value}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                        value: (entry.value).toDouble(),
+                        title: '',
+                        radius: 40,
+                      );
+                    }).toList(),
+                    centerSpaceRadius: 30,
+                    sectionsSpace: 2,
+                  ),
                 ),
-              );
-            }).toList(),
+              ),
+              const SizedBox(height: 10),
+              Expanded(
+                flex: 2,
+                child: _buildLegend(data, colors),
+              ),
+            ],
+          );
+        } else {
+          // Larger screens - horizontal layout
+          return Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: PieChart(
+                  PieChartData(
+                    sections: data.entries.map<PieChartSectionData>((entry) {
+                      return PieChartSectionData(
+                        color: colors[entry.key] ?? Colors.grey,
+                        value: (entry.value).toDouble(),
+                        title: '',
+                        radius: constraints.maxWidth < 600 ? 40 : 50,
+                      );
+                    }).toList(),
+                    centerSpaceRadius: constraints.maxWidth < 600 ? 30 : 40,
+                    sectionsSpace: 2,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                flex: 2,
+                child: _buildLegend(data, colors),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildLegend(Map<String, int> data, Map<String, Color> colors) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: data.entries.map<Widget>((entry) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2.0),
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: colors[entry.key] ?? Colors.grey,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  entry.key,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[800],
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                '${entry.value}',
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 
@@ -1051,106 +1074,113 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       return FlSpot(index.toDouble(), mood);
     });
 
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: true,
-          horizontalInterval: 1,
-          verticalInterval: 1,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey[300]!,
-              strokeWidth: 1,
-            );
-          },
-          getDrawingVerticalLine: (value) {
-            return FlLine(
-              color: Colors.grey[300]!,
-              strokeWidth: 1,
-            );
-          },
-        ),
-        titlesData: FlTitlesData(
-          show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: (value, meta) {
-                if (value % 1 != 0 || value < 0 || value >= data.length) {
-                  return const SizedBox();
-                }
-                final date = DateTime.parse(data[value.toInt()]['date']);
-                return Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    dateFormat.format(date),
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              reservedSize: 30,
-              getTitlesWidget: (value, meta) {
-                if (value % 1 != 0) {
-                  return const SizedBox();
-                }
-                return Text(
-                  value.toInt().toString(),
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                );
-              },
-            ),
-          ),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        ),
-        borderData: FlBorderData(
-          show: true,
-          border: Border.all(color: Colors.grey[300]!),
-        ),
-        minX: 0,
-        maxX: (data.length - 1).toDouble(),
-        minY: 1,
-        maxY: 5,
-        lineBarsData: [
-          LineChartBarData(
-            spots: spots,
-            isCurved: true,
-            color: const Color(0xFF2AABE2),
-            barWidth: 3,
-            isStrokeCapRound: true,
-            dotData: FlDotData(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmallScreen = constraints.maxWidth < 600;
+
+        return LineChart(
+          LineChartData(
+            gridData: FlGridData(
               show: true,
-              getDotPainter: (spot, percent, barData, index) {
-                return FlDotCirclePainter(
-                  radius: 4,
-                  color: const Color(0xFF2AABE2),
-                  strokeWidth: 2,
-                  strokeColor: Colors.white,
+              drawVerticalLine: true,
+              horizontalInterval: 1,
+              verticalInterval: isSmallScreen ? 2 : 1,
+              getDrawingHorizontalLine: (value) {
+                return FlLine(
+                  color: Colors.grey[300]!,
+                  strokeWidth: 1,
+                );
+              },
+              getDrawingVerticalLine: (value) {
+                return FlLine(
+                  color: Colors.grey[300]!,
+                  strokeWidth: 1,
                 );
               },
             ),
-            belowBarData: BarAreaData(
+            titlesData: FlTitlesData(
               show: true,
-              color: const Color(0xFF2AABE2).withOpacity(0.1),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 30,
+                  interval: isSmallScreen ? 2 : 1,
+                  getTitlesWidget: (value, meta) {
+                    if (value % (isSmallScreen ? 2 : 1) != 0 || value < 0 || value >= data.length) {
+                      return const SizedBox();
+                    }
+                    final date = DateTime.parse(data[value.toInt()]['date']);
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        dateFormat.format(date),
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.bold,
+                          fontSize: isSmallScreen ? 8 : 10,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 30,
+                  getTitlesWidget: (value, meta) {
+                    if (value % 1 != 0) {
+                      return const SizedBox();
+                    }
+                    return Text(
+                      value.toInt().toString(),
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold,
+                        fontSize: isSmallScreen ? 8 : 10,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
+            borderData: FlBorderData(
+              show: true,
+              border: Border.all(color: Colors.grey[300]!),
+            ),
+            minX: 0,
+            maxX: (data.length - 1).toDouble(),
+            minY: 1,
+            maxY: 5,
+            lineBarsData: [
+              LineChartBarData(
+                spots: spots,
+                isCurved: true,
+                color: const Color(0xFF2AABE2),
+                barWidth: 3,
+                isStrokeCapRound: true,
+                dotData: FlDotData(
+                  show: true,
+                  getDotPainter: (spot, percent, barData, index) {
+                    return FlDotCirclePainter(
+                      radius: isSmallScreen ? 3 : 4,
+                      color: const Color(0xFF2AABE2),
+                      strokeWidth: 2,
+                      strokeColor: Colors.white,
+                    );
+                  },
+                ),
+                belowBarData: BarAreaData(
+                  show: true,
+                  color: const Color(0xFF2AABE2).withOpacity(0.1),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -1159,18 +1189,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     if (comments.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: _cardDecoration(),
         child: const Center(
           child: Text(
             'No comments to display',
@@ -1217,57 +1236,115 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      color: moodColor,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${comment['mood']} (${comment['time_window']})',
-                    style: TextStyle(
-                      color: moodColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    comment['department'],
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  if (constraints.maxWidth < 400) {
+                    // Stack mood and department info vertically on very small screens
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: moodColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '${comment['mood']} (${comment['time_window']})',
+                                style: TextStyle(
+                                  color: moodColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          comment['department'],
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    // Horizontal layout for larger screens
+                    return Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: moodColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${comment['mood']} (${comment['time_window']})',
+                            style: TextStyle(
+                              color: moodColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          comment['department'],
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 8),
               Text(
                 comment['comment'],
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                 ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "", // user_email
+                  const Text(
+                    "", // user_email - keeping empty as in original
                     style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
+                      color: Colors.grey,
+                      fontSize: 10,
                     ),
                   ),
-                  Text(
-                    formattedDate,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
+                  Flexible(
+                    child: Text(
+                      formattedDate,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 10,
+                      ),
+                      textAlign: TextAlign.right,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],

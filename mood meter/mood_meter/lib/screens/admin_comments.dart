@@ -14,7 +14,7 @@ class _AdminCommentsScreenState extends State<AdminCommentsScreen> {
   final double maxContentWidth = 1200.0;
   final supabase = Supabase.instance.client;
   bool _isLoading = true;
-  String _selectedTimeFrame = 'This Week';
+  String _selectedTimeFrame = 'All';
   String _selectedDepartment = 'All Departments';
   List<Map<String, dynamic>> _submissions = [];
   List<String> _departments = [];
@@ -73,7 +73,11 @@ class _AdminCommentsScreenState extends State<AdminCommentsScreen> {
           department_id,
           users!inner(email),
           departments!inner(name)
-        ''').lte('created_at', nowString).gte('created_at', startDateString);
+        ''').lte('created_at', nowString);
+
+      if (_selectedTimeFrame != 'All') {
+        query = query.gte('created_at', startDateString);
+      }
 
       if (departmentId != null) {
         query = query.eq('department_id', departmentId);
@@ -136,6 +140,8 @@ class _AdminCommentsScreenState extends State<AdminCommentsScreen> {
         return DateTime(now.year, now.month, 1);
       case 'Last 3 Months':
         return DateTime(now.year, now.month - 3, now.day);
+      case 'All':
+        return DateTime(2000, 1, 1); // Effectively no lower bound
       default:
         return now.subtract(Duration(days: 7));
     }
@@ -161,7 +167,7 @@ class _AdminCommentsScreenState extends State<AdminCommentsScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              ...['Today', 'This Week', 'This Month', 'Last 3 Months'].map((timeFrame) => ListTile(
+              ...['Today', 'This Week', 'This Month', 'Last 3 Months', 'All'].map((timeFrame) => ListTile(
                 title: Text(timeFrame),
                 leading: Radio<String>(
                   value: timeFrame,

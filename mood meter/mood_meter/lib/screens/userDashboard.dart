@@ -25,7 +25,8 @@ class _UserDashboardState extends State<UserDashboard> {
   bool _hasSubmittedMorning = false;
   bool _hasSubmittedAfternoon = false;
   String _userName = '';
-  String? _userDepartment;
+  String? _userDepartment; // Now stores department name instead of ID
+  String? _userDepartmentId; // Store department ID separately for submission
   String? _errorMessage;
   bool _isMorningSubmissionWindow = false;
   bool _isAfternoonSubmissionWindow = false;
@@ -103,6 +104,7 @@ class _UserDashboardState extends State<UserDashboard> {
         return;
       }
 
+      // Fetch user data including department_id and name
       final userData = await Supabase.instance.client
           .from('users')
           .select('email, department_id, name')
@@ -110,14 +112,19 @@ class _UserDashboardState extends State<UserDashboard> {
           .single();
 
       String? departmentId = userData['department_id'];
+      String? departmentName;
+
       if (departmentId != null) {
-        final departmentExists = await Supabase.instance.client
+        // Fetch department name from departments table
+        final departmentData = await Supabase.instance.client
             .from('departments')
-            .select('id')
+            .select('name')
             .eq('id', departmentId)
             .maybeSingle();
-        if (departmentExists == null) {
-          departmentId = null;
+        if (departmentData != null) {
+          departmentName = departmentData['name'];
+        } else {
+          departmentId = null; // Department doesn't exist
         }
       }
 
@@ -125,14 +132,15 @@ class _UserDashboardState extends State<UserDashboard> {
 
       if (!mounted) return;
       setState(() {
-        _userName = userData['name'] ?? user.email?.split('@')[0] ?? 'User';
-        _userDepartment = departmentId;
+        _userName = userData['name']?.toUpperCase() ?? user.email?.split('@')[0].toUpperCase() ?? 'USER';
+        _userDepartment = departmentName; // Store department name
+        _userDepartmentId = departmentId; // Store department ID for submissions
         _hasSubmittedMorning = submissionStatus['morning']!;
         _hasSubmittedAfternoon = submissionStatus['afternoon']!;
         _isLoading = false;
       });
 
-      if (_userDepartment == null && mounted) {
+      if (_userDepartmentId == null && mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const DepartmentSelectionScreen()),
         );
@@ -210,7 +218,7 @@ class _UserDashboardState extends State<UserDashboard> {
       return;
     }
 
-    if (_userDepartment == null) {
+    if (_userDepartmentId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please select a department before submitting your mood'),
@@ -262,7 +270,7 @@ class _UserDashboardState extends State<UserDashboard> {
       await Supabase.instance.client.from('mood_submissions').insert({
         'user_id': user.id,
         'mood': moodName,
-        'department_id': _userDepartment,
+        'department_id': _userDepartmentId, // Use department ID for submission
         'comment': comment,
         'created_at': DateTime.now().toIso8601String(),
       });
