@@ -6,6 +6,7 @@ import 'package:mood_meter/screens/userDashboard.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:email_validator/email_validator.dart';
 import 'departmentSelection.dart';
+import 'moodAnalyticsScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -42,9 +43,13 @@ class _LoginScreenState extends State<LoginScreen> {
   // Check if user is already logged in
   Future<void> _checkSession() async {
     final session = Supabase.instance.client.auth.currentSession;
-    if (session != null) {
-      // User is logged in, handle navigation
-      await _handlePostAuth(session.user.email ?? '');
+    if(session?.user.email == "MGA@mgapparel.com"){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>AnalyticsDashboardScreen(forScreen: true,)));
+    } else{
+      if (session != null) {
+        // User is logged in, handle navigation
+        await _handlePostAuth(session.user.email ?? '');
+      }
     }
   }
 
@@ -75,6 +80,43 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Handle post-authentication navigation
       await _handlePostAuth(email);
+    } on AuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error during sign-in: $e');
+      setState(() {
+        _errorMessage = 'An unexpected error occurred during sign-in';
+        _isLoading = false;
+      });
+    }
+
+  }
+  Future<void> _guestSignIn() async {
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final email = "MGA@mgapparel.com";
+    final password = "H@mzakhan1";
+
+    try {
+      // Sign in with email and password
+      final response = await Supabase.instance.client.auth
+          .signInWithPassword(email: email, password: password);
+
+      if (response.user == null) {
+        throw AuthException('Sign-in failed. Please try again.');
+      }
+
+      // Handle post-authentication navigation
+      await Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const AnalyticsDashboardScreen(forScreen: true,)),
+      );
     } on AuthException catch (e) {
       setState(() {
         _errorMessage = e.message;
@@ -150,14 +192,22 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
 
+
       if (userData == null || userData['department_id'] == null) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const DepartmentSelectionScreen()),
         );
+
       } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const UserDashboard()),
-        );
+        if(email == "mga@mgapparel.com"){
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const AnalyticsDashboardScreen(forScreen: true,)),
+          );
+        } else{
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const AnalyticsDashboardScreen(forScreen: false,)),
+          );
+        }
       }
     } catch (e) {
       print('Error in post-auth: $e');
@@ -408,6 +458,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: TextButton(
+                                  onPressed: () {
+                                    _guestSignIn();
+
+                                  },
+                                  child: const Text(
+                                    'Guest Login',
+                                    style: TextStyle(
+                                      color: Colors.blueAccent,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -417,7 +482,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     width: 50,
                                   ),
                                   Text(
-                                    'Version 1.3(beta)',
+                                    'Version 1.4(beta)',
                                     style: TextStyle(
                                       color: Colors.grey,
                                     ),
