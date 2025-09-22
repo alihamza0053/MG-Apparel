@@ -29,6 +29,52 @@ export function Analytics() {
   const [pieData, setPieData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Function to generate real monthly trends data
+  const generateMonthlyTrends = async (pairs: any[], goals: any[], feedback: any[]) => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthlyData = [];
+
+    // Get data for the last 6 months
+    for (let i = 5; i >= 0; i--) {
+      const targetDate = new Date(currentYear, currentDate.getMonth() - i, 1);
+      const targetMonth = targetDate.getMonth();
+      const targetYear = targetDate.getFullYear();
+      const monthName = monthNames[targetMonth];
+
+      // Count pairs created in this month
+      const pairsInMonth = pairs?.filter(pair => {
+        if (!pair.created_at) return false;
+        const pairDate = new Date(pair.created_at);
+        return pairDate.getMonth() === targetMonth && pairDate.getFullYear() === targetYear;
+      }).length || 0;
+
+      // Count goals created in this month
+      const goalsInMonth = goals?.filter(goal => {
+        if (!goal.created_at) return false;
+        const goalDate = new Date(goal.created_at);
+        return goalDate.getMonth() === targetMonth && goalDate.getFullYear() === targetYear;
+      }).length || 0;
+
+      // Count feedback submitted in this month
+      const feedbackInMonth = feedback?.filter(fb => {
+        if (!fb.created_at) return false;
+        const feedbackDate = new Date(fb.created_at);
+        return feedbackDate.getMonth() === targetMonth && feedbackDate.getFullYear() === targetYear;
+      }).length || 0;
+
+      monthlyData.push({
+        month: monthName,
+        pairs: pairsInMonth,
+        goals: goalsInMonth,
+        feedback: feedbackInMonth
+      });
+    }
+
+    return monthlyData;
+  };
+
   useEffect(() => {
     if (user?.role === 'admin') {
       fetchAnalytics();
@@ -59,18 +105,19 @@ export function Analytics() {
       const completedGoals = goals?.filter(g => g.status === 'completed') || [];
 
       // Fetch feedback
+      // Fetch real feedback data
       const { data: feedback, error: feedbackError } = await supabase
         .from('feedback')
-        .select('rating')
-        .in('session_id', []);
+        .select('rating, created_at');
 
-      // For now, let's create mock feedback data since we need sessions
-      const mockFeedback = Array.from({ length: 15 }, (_, i) => ({
-        rating: Math.floor(Math.random() * 5) + 1
-      }));
+      if (feedbackError) {
+        console.log('Feedback error:', feedbackError);
+      }
 
-      const averageRating = mockFeedback.length > 0 
-        ? mockFeedback.reduce((sum, f) => sum + f.rating, 0) / mockFeedback.length 
+      // Calculate average rating from real feedback data
+      const realFeedback = feedback || [];
+      const averageRating = realFeedback.length > 0 
+        ? realFeedback.reduce((sum, f) => sum + (f.rating || 0), 0) / realFeedback.length 
         : 0;
 
       // Fetch materials
@@ -87,7 +134,7 @@ export function Analytics() {
         activePairs: activePairs.length,
         totalGoals: goals?.length || 0,
         completedGoals: completedGoals.length,
-        totalFeedback: mockFeedback.length,
+        totalFeedback: realFeedback.length,
         averageRating: parseFloat(averageRating.toFixed(1)),
         totalMaterials: materials?.length || 0
       });
@@ -99,15 +146,8 @@ export function Analytics() {
         { name: 'Completed', value: completedGoals.length }
       ];
 
-      // Bar chart data for monthly metrics
-      const monthlyData = [
-        { month: 'Jan', pairs: 5, goals: 8, feedback: 12 },
-        { month: 'Feb', pairs: 7, goals: 15, feedback: 18 },
-        { month: 'Mar', pairs: 10, goals: 22, feedback: 25 },
-        { month: 'Apr', pairs: 12, goals: 28, feedback: 30 },
-        { month: 'May', pairs: 15, goals: 35, feedback: 38 },
-        { month: 'Jun', pairs: pairs?.length || 0, goals: goals?.length || 0, feedback: mockFeedback.length }
-      ];
+      // Generate real monthly data based on actual database records
+      const monthlyData = await generateMonthlyTrends(pairs, goals, realFeedback);
 
       setChartData(monthlyData);
       setPieData(goalStatusData);
