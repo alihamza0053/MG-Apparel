@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import { Star, MessageCircle, Calendar, User, Search, Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAlert } from './CustomModals';
 
 interface Feedback {
   id: string;
@@ -43,6 +44,9 @@ const Feedback: React.FC = () => {
     pair_id: ''
   });
   const [pairs, setPairs] = useState<any[]>([]);
+
+  // Custom modal hook
+  const { showAlert, AlertComponent } = useAlert();
 
   const fetchData = useCallback(async () => {
     try {

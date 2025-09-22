@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import { Star, MessageCircle, Calendar, User, Search, Plus, BookOpen, Users, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAlert } from './CustomModals';
 
 // Session interface
 interface Session {
@@ -94,6 +95,9 @@ const SessionBasedFeedback: React.FC = () => {
     session_completed: false,
     next_session_goals: ''
   });
+
+  // Custom modal hook
+  const { showAlert, AlertComponent } = useAlert();
 
   // Fetch sessions
   const fetchSessions = useCallback(async () => {
@@ -247,14 +251,22 @@ const SessionBasedFeedback: React.FC = () => {
     e.preventDefault();
     try {
       if (!newFeedback.session_id || !newFeedback.session_date || !newFeedback.comments || !newFeedback.pair_id) {
-        alert('Please fill in all required fields: session, date, comments, and mentoring pair');
+        showAlert({
+          title: 'Missing Information',
+          message: 'Please fill in all required fields: session, date, comments, and mentoring pair',
+          type: 'warning'
+        });
         return;
       }
 
       // Get mentor and mentee IDs from the selected pair
       const selectedPairData = pairs.find(pair => pair.id === newFeedback.pair_id);
       if (!selectedPairData) {
-        alert('Please select a valid mentor-mentee pair');
+        showAlert({
+          title: 'Error',
+          message: 'Please select a valid mentor-mentee pair',
+          type: 'error'
+        });
         return;
       }
 
@@ -281,12 +293,20 @@ const SessionBasedFeedback: React.FC = () => {
 
       if (error) {
         console.error('Supabase error:', error);
-        alert('Error submitting feedback: ' + error.message);
+        showAlert({
+          title: 'Error',
+          message: 'Error submitting feedback: ' + error.message,
+          type: 'error'
+        });
         return;
       }
 
       console.log('Feedback added successfully:', data);
-      alert('Session feedback submitted successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Session feedback submitted successfully!',
+        type: 'success'
+      });
       
       setNewFeedback({
         session_id: '',
@@ -303,7 +323,11 @@ const SessionBasedFeedback: React.FC = () => {
       fetchFeedback();
     } catch (error) {
       console.error('Error creating feedback:', error);
-      alert('Error adding feedback. Check console for details.');
+      showAlert({
+        title: 'Error',
+        message: 'Error adding feedback. Check console for details.',
+        type: 'error'
+      });
     }
   };
 
@@ -775,6 +799,9 @@ const SessionBasedFeedback: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Custom Alert Component */}
+      <AlertComponent />
     </div>
   );
 };

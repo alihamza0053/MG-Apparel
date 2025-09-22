@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import { User } from '../types';
 import { Users, Plus, Edit, Trash2, Shield, UserCheck, UserX } from 'lucide-react';
+import { useConfirmation, useAlert } from './CustomModals';
 
 export function UserManagement() {
   const { user: currentUser } = useAuth();
@@ -11,6 +12,10 @@ export function UserManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+
+  // Custom modal hooks
+  const { showConfirmation, ConfirmationComponent } = useConfirmation();
+  const { showAlert, AlertComponent } = useAlert();
 
   useEffect(() => {
     if (currentUser?.role === 'admin') {
@@ -52,16 +57,25 @@ export function UserManagement() {
   const deleteUser = async (userId: string, userEmail: string) => {
     // Prevent users from deleting themselves
     if (userId === currentUser?.id) {
-      alert('You cannot delete your own account.');
+      showAlert({
+        title: 'Cannot Delete Account',
+        message: 'You cannot delete your own account.',
+        type: 'warning'
+      });
       return;
     }
 
     // Confirm deletion
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete user "${userEmail}"? This action cannot be undone.`
-    );
-    
-    if (!confirmDelete) return;
+    showConfirmation({
+      title: 'Delete User',
+      message: `Are you sure you want to delete user "${userEmail}"? This action cannot be undone.`,
+      type: 'danger',
+      confirmText: 'Delete',
+      onConfirm: () => deleteUserConfirmed(userId)
+    });
+  };
+
+  const deleteUserConfirmed = async (userId: string) => {
 
     try {
       // First, delete related data (mentoring pairs, feedback, etc.)
@@ -92,11 +106,19 @@ export function UserManagement() {
 
       if (error) throw error;
 
-      alert('User deleted successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'User deleted successfully!',
+        type: 'success'
+      });
       fetchUsers(); // Refresh the user list
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Error deleting user. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error deleting user. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -263,6 +285,10 @@ export function UserManagement() {
           </p>
         </div>
       )}
+
+      {/* Custom Modal Components */}
+      <ConfirmationComponent />
+      <AlertComponent />
     </div>
   );
 }

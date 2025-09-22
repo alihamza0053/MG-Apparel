@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import { Star, MessageCircle, Calendar, User, Search, Plus } from 'lucide-react';
 import { format } from 'date-fns';
+import { useAlert } from './CustomModals';
 
 interface Feedback {
   id: string;
@@ -26,6 +27,9 @@ const Feedback: React.FC = () => {
     rating: 5,
     comments: ''
   });
+
+  // Custom modal hook
+  const { showAlert, AlertComponent } = useAlert();
 
   const fetchData = async () => {
     try {
@@ -62,7 +66,11 @@ const Feedback: React.FC = () => {
       console.log('Submitting feedback:', newFeedback);
       
       if (!newFeedback.comments || newFeedback.rating === 0) {
-        alert('Please provide a rating and comments');
+        showAlert({
+          title: 'Missing Information',
+          message: 'Please provide a rating and comments',
+          type: 'warning'
+        });
         return;
       }
 
@@ -76,12 +84,20 @@ const Feedback: React.FC = () => {
 
       if (error) {
         console.error('Supabase error:', error);
-        alert('Error submitting feedback: ' + error.message);
+        showAlert({
+          title: 'Error',
+          message: 'Error submitting feedback: ' + error.message,
+          type: 'error'
+        });
         return;
       }
 
       console.log('Feedback added successfully:', data);
-      alert('Feedback submitted successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Feedback submitted successfully!',
+        type: 'success'
+      });
       
       setNewFeedback({
         rating: 5,
@@ -91,7 +107,11 @@ const Feedback: React.FC = () => {
       fetchData();
     } catch (error) {
       console.error('Error creating feedback:', error);
-      alert('Error adding feedback. Check console for details.');
+      showAlert({
+        title: 'Error',
+        message: 'Error adding feedback. Check console for details.',
+        type: 'error'
+      });
     }
   };
 
@@ -241,6 +261,9 @@ const Feedback: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Custom Alert Component */}
+      <AlertComponent />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient';
 import { useAuth } from '../AuthContext';
 import { Plus, Target, Clock, CheckCircle, Circle, Calendar, Users, BookOpen } from 'lucide-react';
 import { format } from 'date-fns';
+import { useConfirmation, useAlert } from './CustomModals';
 
 // Session interface
 interface Session {
@@ -74,6 +75,10 @@ const SessionBasedGoals: React.FC = () => {
     description: '',
     duration_weeks: 2
   });
+
+  // Custom modal hooks
+  const { showConfirmation, ConfirmationComponent } = useConfirmation();
+  const { showAlert, AlertComponent } = useAlert();
 
   // Fetch sessions (6 pre-defined sessions)
   const fetchSessions = useCallback(async () => {
@@ -214,13 +219,21 @@ const SessionBasedGoals: React.FC = () => {
     e.preventDefault();
     try {
       if (!selectedSession || !selectedPair) {
-        alert('Please select a session and mentoring pair');
+        showAlert({
+          title: 'Missing Information',
+          message: 'Please select a session and mentoring pair',
+          type: 'warning'
+        });
         return;
       }
 
       const pair = pairs.find(p => p.id === selectedPair);
       if (!pair) {
-        alert('Selected pair not found');
+        showAlert({
+          title: 'Error',
+          message: 'Selected pair not found',
+          type: 'error'
+        });
         return;
       }
 
@@ -254,7 +267,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (error) {
         console.error('Detailed error:', error);
-        alert(`Error adding goal: ${error.message}\nCode: ${error.code}\nDetails: ${error.details || 'No additional details'}`);
+        showAlert({
+          title: 'Error Adding Goal',
+          message: `Error adding goal: ${error.message}\nCode: ${error.code}\nDetails: ${error.details || 'No additional details'}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -272,10 +289,18 @@ const SessionBasedGoals: React.FC = () => {
       
       // Refresh goals
       fetchGoals();
-      alert('Goal added successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Goal added successfully!',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error adding goal:', error);
-      alert('Error adding goal. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error adding goal. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -283,7 +308,11 @@ const SessionBasedGoals: React.FC = () => {
     e.preventDefault();
     try {
       if (!newSession.title || !newSession.description) {
-        alert('Please fill in all required fields');
+        showAlert({
+          title: 'Missing Information',
+          message: 'Please fill in all required fields',
+          type: 'warning'
+        });
         return;
       }
 
@@ -314,7 +343,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (error) {
         console.error('Supabase error details:', error);
-        alert(`Error creating session: ${error.message}\nCode: ${error.code}\nDetails: ${error.details}`);
+        showAlert({
+          title: 'Error Creating Session',
+          message: `Error creating session: ${error.message}\nCode: ${error.code}\nDetails: ${error.details}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -331,18 +364,33 @@ const SessionBasedGoals: React.FC = () => {
       
       // Refresh sessions
       await fetchSessions();
-      alert('Session added successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Session added successfully!',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error adding session:', error);
-      alert('Error adding session. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error adding session. Please try again.',
+        type: 'error'
+      });
     }
   };
 
   // Handle session removal
   const handleRemoveSession = async (sessionId: string, sessionTitle: string) => {
-    if (!confirm(`Are you sure you want to remove the session "${sessionTitle}"? This will also remove all associated goals and feedback.`)) {
-      return;
-    }
+    showConfirmation({
+      title: 'Remove Session',
+      message: `Are you sure you want to remove the session "${sessionTitle}"? This will also remove all associated goals and feedback.`,
+      type: 'danger',
+      confirmText: 'Remove',
+      onConfirm: () => removeSessionConfirmed(sessionId)
+    });
+  };
+
+  const removeSessionConfirmed = async (sessionId: string) => {
 
     try {
       // First remove associated goals
@@ -353,7 +401,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (goalsError) {
         console.error('Error removing session goals:', goalsError);
-        alert(`Error removing session goals: ${goalsError.message}`);
+        showAlert({
+          title: 'Error',
+          message: `Error removing session goals: ${goalsError.message}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -365,7 +417,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (feedbackError) {
         console.error('Error removing session feedback:', feedbackError);
-        alert(`Error removing session feedback: ${feedbackError.message}`);
+        showAlert({
+          title: 'Error',
+          message: `Error removing session feedback: ${feedbackError.message}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -377,7 +433,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (sessionError) {
         console.error('Error removing session:', sessionError);
-        alert(`Error removing session: ${sessionError.message}`);
+        showAlert({
+          title: 'Error',
+          message: `Error removing session: ${sessionError.message}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -389,10 +449,18 @@ const SessionBasedGoals: React.FC = () => {
         setSelectedSession('');
       }
       
-      alert('Session removed successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Session removed successfully!',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error removing session:', error);
-      alert('Error removing session. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error removing session. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -406,7 +474,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (error) {
         console.error('Error updating goal status:', error);
-        alert(`Error updating goal status: ${error.message}`);
+        showAlert({
+          title: 'Error',
+          message: `Error updating goal status: ${error.message}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -414,7 +486,11 @@ const SessionBasedGoals: React.FC = () => {
       await fetchGoals();
     } catch (error) {
       console.error('Error updating goal status:', error);
-      alert('Error updating goal status. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error updating goal status. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -428,7 +504,11 @@ const SessionBasedGoals: React.FC = () => {
 
       if (error) {
         console.error('Error updating goal priority:', error);
-        alert(`Error updating goal priority: ${error.message}`);
+        showAlert({
+          title: 'Error',
+          message: `Error updating goal priority: ${error.message}`,
+          type: 'error'
+        });
         return;
       }
 
@@ -436,7 +516,11 @@ const SessionBasedGoals: React.FC = () => {
       await fetchGoals();
     } catch (error) {
       console.error('Error updating goal priority:', error);
-      alert('Error updating goal priority. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error updating goal priority. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -464,8 +548,16 @@ const SessionBasedGoals: React.FC = () => {
   };
 
   const deleteGoal = async (goalId: string) => {
-    if (!confirm('Are you sure you want to delete this goal?')) return;
-    
+    showConfirmation({
+      title: 'Delete Goal',
+      message: 'Are you sure you want to delete this goal?',
+      type: 'danger',
+      confirmText: 'Delete',
+      onConfirm: () => deleteGoalConfirmed(goalId)
+    });
+  };
+
+  const deleteGoalConfirmed = async (goalId: string) => {
     try {
       const { error } = await supabase
         .from('goals')
@@ -474,10 +566,18 @@ const SessionBasedGoals: React.FC = () => {
 
       if (error) throw error;
       fetchGoals();
-      alert('Goal deleted successfully!');
+      showAlert({
+        title: 'Success',
+        message: 'Goal deleted successfully!',
+        type: 'success'
+      });
     } catch (error) {
       console.error('Error deleting goal:', error);
-      alert('Error deleting goal. Please try again.');
+      showAlert({
+        title: 'Error',
+        message: 'Error deleting goal. Please try again.',
+        type: 'error'
+      });
     }
   };
 
@@ -965,6 +1065,10 @@ const SessionBasedGoals: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Custom Modal Components */}
+      <ConfirmationComponent />
+      <AlertComponent />
     </div>
   );
 };
